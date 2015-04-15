@@ -56,11 +56,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     }
     @Override
     public void onRendererShutdown(){
-     //   Log.i(TAG,"onRenderShutdown");
+        Log.i(TAG,"onRenderShutdown");
     }
     @Override
     public void onSurfaceChanged(int width, int height){
-       // Log.i(TAG,"onSurfaceChanged");
+        Log.i(TAG,"onSurfaceChanged");
 
     }
 
@@ -114,7 +114,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     @Override
     public void onSurfaceCreated(EGLConfig config) {
-
+        Log.i(TAG, "Surface Created");
     }
 
 
