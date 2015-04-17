@@ -38,11 +38,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final String TAG = "MainActivity_";
     private CardboardOverlayView mOverlay;
 
-    private static final int NUM_MOLECULE = 3;
+    private static final int NUM_MOLECULE = 1;
     private static final int COORDS_PER_VERTEX = 3;
 
     private FloatBuffer[] moleculeVertices ;
     private FloatBuffer[] mMoleculeColor ;
+
+    float[][] vMolecule;
+    float[][] cMolecule;
 
     private int[] mMoleculeProgram;
     private int[] mMoleculePositionParam;
@@ -88,6 +91,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         moleculeVertices = new FloatBuffer[NUM_MOLECULE];
         mMoleculeColor = new FloatBuffer[NUM_MOLECULE];
 
+        vMolecule = new float[NUM_MOLECULE][];
+        cMolecule = new float[NUM_MOLECULE][];
+
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
     }
@@ -103,20 +109,31 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.thing_vertex);
         int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.thing_frag);
 
+        TextParser parser = new TextParser();
+
+        try {
+            parser.parse();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         for (int i = 0; i < NUM_MOLECULE; i++) {
 
-            //Create ByteBuffer of vertices' position and color based on the float array created by "World"
-            /*ByteBuffer ByteVertices = ByteBuffer.allocateDirect(World.NEW_MOLECULE[i].length * 4);
-            ByteVertices.order(ByteOrder.nativeOrder());
-            mMoleculeVertices[i] = ByteVertices.asFloatBuffer();
-            mMoleculeVertices[i].put(World.MOLECULE);
-            mMoleculeVertices[i].position(0);
+            vMolecule[i] = parser.outputVertices();
+            cMolecule[i] = parser.outputColors();
 
-            ByteBuffer ByteColors = ByteBuffer.allocateDirect(World.NEW_MOLECULE_COLOR[i].length * 4);
+            //Create ByteBuffer of vertices' position and color based on the float array created by "World"
+            ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vMolecule.length * 4);
+            ByteVertices.order(ByteOrder.nativeOrder());
+            moleculeVertices[i] = ByteVertices.asFloatBuffer();
+            moleculeVertices[i].put(vMolecule[i]);
+            moleculeVertices[i].position(0);
+
+            ByteBuffer ByteColors = ByteBuffer.allocateDirect(cMolecule.length * 4);
             ByteColors.order(ByteOrder.nativeOrder());
-            mMoleculeColors[i] = ByteColors.asFloatBuffer();
-            mMoleculeColors[i].put(World.NEW_COLOR);
-            mMoleculeColors[i].position(0);*/
+            mMoleculeColor[i] = ByteColors.asFloatBuffer();
+            mMoleculeColor[i].put(cMolecule[i]);
+            mMoleculeColor[i].position(0);
 
             mMoleculeProgram[i] = GLES20.glCreateProgram();
             GLES20.glAttachShader(mMoleculeProgram[i], vertexShader);
@@ -200,7 +217,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
 
-        //GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,World.NEW_MOLECULE[index]);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,vMolecule[index].length);
 
         checkGLError("Drawing Thing");
     }

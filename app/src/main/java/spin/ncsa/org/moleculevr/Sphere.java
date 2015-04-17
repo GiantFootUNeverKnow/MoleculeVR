@@ -15,14 +15,17 @@ public class Sphere
         this.redColor = red;
         this.greenColor = green;
         this.blueColor = blue;
+
+        setCoordinates();
+        buildSphere();
     }
 
     public static final float X = (float) 0.52573111;
     public static final float Z = (float) 0.85065081;
-    public static int index = 0;
-    public static float xCoord = 0;
-    public static float yCoord = 0;
-    public static float zCoord = 0;
+    public int index = 0;
+    public float xCoord = 0;
+    public float yCoord = 0;
+    public float zCoord = 0;
 
     public float redColor;
     public float greenColor;
@@ -30,14 +33,13 @@ public class Sphere
 
 
     //NEED TO CHANGE THESE. BUT DON'T KNOW HOW
-    public static final float[][] vdata = new float[][]{
-            {-X + xCoord, 0.0f + yCoord, Z + zCoord}, {X + xCoord, 0.0f + yCoord, Z + zCoord},
-            {-X+ xCoord, 0.0f + yCoord, -Z + zCoord}, {X + xCoord, 0.0f + yCoord, -Z + zCoord},
-            {0.0f + xCoord, Z + yCoord, X + zCoord}, {0.0f + xCoord, Z + yCoord, -X + zCoord},
-            {0.0f + xCoord, -Z + yCoord, X + zCoord}, {0.0f + xCoord, -Z + yCoord, -X + zCoord},
-            {Z + xCoord,X + yCoord,0.0f + zCoord},{-Z +xCoord ,X + yCoord,0.0f + zCoord},{Z+xCoord,-X+yCoord,0.0f+zCoord},
-            {-Z+xCoord,-X+yCoord,0.0f+zCoord}
-    };
+    public float[][] vdata = new float[][]{
+            {-X , 0.0f , Z }, {X , 0.0f, Z },
+            {-X , 0.0f , -Z }, {X , 0.0f , -Z },
+            {0.0f, Z , X }, {0.0f , Z, -X },
+            {0.0f , -Z , X }, {0.0f , -Z , -X },
+            {Z ,X ,0.0f },{-Z  ,X ,0.0f },{Z ,-X,0.0f},
+            {-Z,-X ,0.0f}    };
 
     public static final int[][] tindices = new int[][]{
             {1,4,0},{4,9,0},{4,5,9},{8,5,4},{1,8,4},
@@ -50,6 +52,14 @@ public class Sphere
     public static final float[] NEW_THING = new float[180];
     public static final float[] NEW_COLOR = new float[240];
 */
+    public void setCoordinates(){//set up the prototyppe coordinate for the sphere
+        for (float[] coords : vdata){//maybe wrong
+            coords[0] += xCoord;
+            coords[1] += yCoord;
+            coords[2] += zCoord;
+        }
+    }
+
     public static void normalize(float v[]){
         float d = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (d == 0.0){
@@ -60,18 +70,18 @@ public class Sphere
         v[2] /= d;
     }
 
-    public static void subdivide(float[] v1,float[] v2,float[] v3, long depth){
+    public void subdivide(float[] v1,float[] v2,float[] v3, long depth){
         float[] v12,v23,v31;
         if (depth == 0){
-            NEW_THING[index] = v1[0];
-            NEW_THING[index + 1] = v1[1];
-            NEW_THING[index + 2] = v1[2];
-            NEW_THING[index + 3] = v2[0];
-            NEW_THING[index + 4] = v2[1];
-            NEW_THING[index + 5] = v2[2];
-            NEW_THING[index + 6] = v3[0];
-            NEW_THING[index + 7] = v3[1];
-            NEW_THING[index + 8] = v3[2];
+            vertices[index] = v1[0];
+            vertices[index + 1] = v1[1];
+            vertices[index + 2] = v1[2];
+            vertices[index + 3] = v2[0];
+            vertices[index + 4] = v2[1];
+            vertices[index + 5] = v2[2];
+            vertices[index + 6] = v3[0];
+            vertices[index + 7] = v3[1];
+            vertices[index + 8] = v3[2];
             index += 9;
             return;
         }
@@ -94,28 +104,28 @@ public class Sphere
 
 
     //sphere
-    public static final float[] NEW_THING = new float[2880];
-    public static final float[] NEW_COLOR = new float[3840];
+    public float[] vertices = new float[2880];
+    public float[] colors = new float[3840];
 
-    static {
+    private void buildSphere(){
         //For sphere
         for (int i = 0; i < 20; i++) {
             subdivide(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], 2);
         }
 
         for (int i = 0; i < 320; i++) {
-            NEW_COLOR[i * 12] = 0.8f;
-            NEW_COLOR[i * 12 + 1] = 0.2f;
-            NEW_COLOR[i * 12 + 2] = 0.2f;
-            NEW_COLOR[i * 12 + 3] = 1.0f;
-            NEW_COLOR[i * 12 + 4] = 0.8f;
-            NEW_COLOR[i * 12 + 5] = 0.1f;
-            NEW_COLOR[i * 12 + 6] = 0.3f;
-            NEW_COLOR[i * 12 + 7] = 1.0f;
-            NEW_COLOR[i * 12 + 8] = 0.8f;
-            NEW_COLOR[i * 12 + 9] = 0.3f;
-            NEW_COLOR[i * 12 + 10] = 0.1f;
-            NEW_COLOR[i * 12 + 11] = 1.0f;
+            colors[i * 12] = redColor + 0.05f;// Because we don't have shading/lighting yet, manually adjust the shades by adding +-0.05
+            colors[i * 12 + 1] = greenColor;
+            colors[i * 12 + 2] = blueColor;
+            colors[i * 12 + 3] = 1.0f;
+            colors[i * 12 + 4] = redColor -0.05f;
+            colors[i * 12 + 5] = greenColor;
+            colors[i * 12 + 6] = blueColor;
+            colors[i * 12 + 7] = 1.0f;
+            colors[i * 12 + 8] = redColor;
+            colors[i * 12 + 9] = greenColor;
+            colors[i * 12 + 10] = blueColor;
+            colors[i * 12 + 11] = 1.0f;
         }
     }
 
