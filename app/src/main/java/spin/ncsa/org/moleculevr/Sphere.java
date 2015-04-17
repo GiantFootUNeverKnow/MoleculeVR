@@ -53,10 +53,10 @@ public class Sphere
     public static final float[] NEW_COLOR = new float[240];
 */
     public void setCoordinates(){//set up the prototyppe coordinate for the sphere
-        for (float[] coords : vdata){//maybe wrong
-            coords[0] += xCoord;
-            coords[1] += yCoord;
-            coords[2] += zCoord;
+        for (int i = 0; i < vdata.length; i++){//maybe wrong
+           vdata[i][0] += xCoord;
+           vdata[i][1] += yCoord;
+           vdata[i][2] += zCoord;
         }
     }
 
