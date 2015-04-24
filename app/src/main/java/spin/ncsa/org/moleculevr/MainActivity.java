@@ -235,11 +235,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         int sizOfMol = vMolecule[index].length / COORDS_PER_VERTEX;
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,sizOfMol);
-        //GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,960);
         for  (int i = 0; i < nAtoms[index]; i++){
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES,i*Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
         }
+        //GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 32 * Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
 
         checkGLError("Drawing Thing");
     }
