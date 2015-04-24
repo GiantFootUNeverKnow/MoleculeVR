@@ -14,5 +14,5 @@ TODO_LIST:
           This initialization should be along with that for color, x, y, z and radius. 
         1.Assign colors to each atom
         2.Assign radius to each atom
-        3.fix the tilt of molecule
+        3.fix the tilt of molecule(Don't worry now, long-term goal)
         
