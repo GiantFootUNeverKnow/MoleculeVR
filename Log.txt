@@ -11,8 +11,8 @@ Some important parameters in sphere class(same for every sphere object)
          compile. 
          Actually there is an easy formula that I invented for calculating NUM_OF_FACES:
                   NUM_OF_FACES = 20 * (4 ^ refinement)
-         I was just so lazy to implement this formula. +.+
-         Something that needs doing...
+         I was just so lazy to implement this formula. +.+ It is still something that needs doing...
+         
 
 Corrected the geometric algorithm:
          1.We used to generate a sphere at targeted coordinates for each spheres, which drew weird shape spheres, maybe because of the formula for normalization
