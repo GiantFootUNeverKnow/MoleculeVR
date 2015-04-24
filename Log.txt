@@ -28,6 +28,7 @@ TODO_LIST:
           Right now UB is set to a constant 10, but we want to make it a variable that is initiazed when a sphere is created.
           This initialization should be along with that for color, x, y, z and radius. 
         1.Assign colors to each kind of atom, choose whatever color that suits
-        2.Assign radius to each kind of atom, the radius should be related to an atom's atomic number
+        2.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
+         because the size of screen is really limited. The ratio of the lightest atom to the heaviest atom shouldn't be over 1/4 
         3.fix the tilt of molecule(Don't worry now, long-term goal)
         
