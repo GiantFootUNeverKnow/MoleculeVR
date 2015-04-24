@@ -9,13 +9,22 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 public class TextParser {
 
     ArrayList<Sphere> m = new ArrayList<Sphere>();
 
     public float[] outputVertices(){
-        float[] v = new float[2880 * m.size()]; //2880 should be defined as constant of Sphere class
+        if (m.isEmpty()) return null;
+        //float[] v = new float[2880 * m.size()]; //2880 should be defined as constant of Sphere class
+        float[] v = new float[Sphere.NUMBER_OF_COORDS * m.size()]; // we need (# atom ) * (# coords per atom) float
         int i = 0;
         for (Sphere atom : m){
             for  (float k :atom.vertices){
@@ -27,7 +36,9 @@ public class TextParser {
     }
 
     public float[] outputColors(){
-        float[] c = new float[3840 * m.size()]; //3840 should be defined as constant of Sphere class
+        if (m.isEmpty()) return null;
+        //float[] c = new float[3840 * m.size()]; //3840 should be defined as constant of Sphere class
+        float[] c = new float[Sphere.NUMBER_OF_COLORS * m.size()];// we need (# atom ) * (# colors per atom) float
         int i = 0;
         for (Sphere atom : m){
             for  (float k :atom.colors){
@@ -38,11 +49,15 @@ public class TextParser {
         return c;
     }
 
-    public void parse() throws IOException {
+    public int outputNumOfAtoms(){
+        return m.size();
+    }
+
+    public void parse(BufferedReader bf) throws IOException {
         Scanner s = null;
 
         try {
-            s = new Scanner(new BufferedReader(new FileReader("molecule.txt")));
+            s = new Scanner(bf);
 
             boolean reachedCoordinates = false;
             int lineCount = 0;

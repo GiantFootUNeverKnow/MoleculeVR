@@ -6,6 +6,15 @@ package spin.ncsa.org.moleculevr;
 import android.util.Log;
 public class Sphere
 {
+    //If degree of refinement is changed, be sure to change NUMBER_OF_FACES to corresponding value, 20 * (4^degree_of_refinement)
+    public final static int DEGREE_OF_REFINEMENT = 1;// do only once the refinement
+    public final static int NUMBER_OF_FACES = 80; //do only once the refinement, 80 faces
+
+    public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only once the refinement, 80 faces, each with 3 vertices
+    public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only once the refinement, 320 vertices, each with 3 coords
+    public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only once the refinement, 320 vertices, each with 4 colors
+
+
     public Sphere(float x, float y, float z, float red, float green, float blue)
     {
         this.xCoord = x;
@@ -18,6 +27,7 @@ public class Sphere
 
         setCoordinates();
         buildSphere();
+
     }
 
     public static final float X = (float) 0.52573111;
@@ -30,6 +40,11 @@ public class Sphere
     public float redColor;
     public float greenColor;
     public float blueColor;
+
+
+    //sphere
+    public float[] vertices = new float[NUMBER_OF_COORDS];
+    public float[] colors = new float[NUMBER_OF_COLORS];
 
 
     //NEED TO CHANGE THESE. BUT DON'T KNOW HOW
@@ -52,14 +67,23 @@ public class Sphere
     public static final float[] NEW_THING = new float[180];
     public static final float[] NEW_COLOR = new float[240];
 */
+
     public void setCoordinates(){//set up the prototyppe coordinate for the sphere
         for (int i = 0; i < vdata.length; i++){//maybe wrong
-           vdata[i][0] += xCoord;
-           vdata[i][1] += yCoord;
-           vdata[i][2] += zCoord;
+            vdata[i][0] += xCoord;
+            vdata[i][1] += yCoord;
+            vdata[i][2] += zCoord;
         }
     }
 
+  /*  public void setCoordinates(){//set up the prototyppe coordinate for the sphere
+       for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
+           vertices[i] += xCoord;
+           vertices[i+1] += yCoord;
+           //vertices[i+2] += zCoord;
+       }
+    }
+*/
     public static void normalize(float v[]){
         float d = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (d == 0.0){
@@ -103,17 +127,13 @@ public class Sphere
     }
 
 
-    //sphere
-    public float[] vertices = new float[2880];
-    public float[] colors = new float[3840];
-
     private void buildSphere(){
         //For sphere
         for (int i = 0; i < 20; i++) {
-            subdivide(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], 2);
+            subdivide(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]],DEGREE_OF_REFINEMENT);
         }
 
-        for (int i = 0; i < 320; i++) {
+        for (int i = 0; i < NUMBER_OF_FACES; i++) { // for each face, we have 3 vertices, each needs 4 parameter to specify a color
             colors[i * 12] = redColor + 0.05f;// Because we don't have shading/lighting yet, manually adjust the shades by adding +-0.05
             colors[i * 12 + 1] = greenColor;
             colors[i * 12 + 2] = blueColor;
@@ -129,223 +149,4 @@ public class Sphere
         }
     }
 
-    /*
-        //almost sphere
-    public static final float[] NEW_THING = new float[720];
-    public static final float[] NEW_COLOR = new float[960];
-
-    static{
-        //For almost sphere
-
-        for (int i = 0; i < 20; i++){
-            subdivide(vdata[tindices[i][0]],vdata[tindices[i][1]],vdata[tindices[i][2]],1);
-        }
-
-        for (int i = 0; i < 80; i++){
-            NEW_COLOR[i * 12] = 0.8f;
-            NEW_COLOR[i * 12 + 1] = 0.2f;
-            NEW_COLOR[i * 12 + 2] = 0.2f;
-            NEW_COLOR[i * 12 + 3] = 1.0f;
-            NEW_COLOR[i * 12 + 4] = 0.8f;
-            NEW_COLOR[i * 12 + 5] = 0.1f;
-            NEW_COLOR[i * 12 + 6] = 0.3f;
-            NEW_COLOR[i * 12 + 7] = 1.0f;
-            NEW_COLOR[i * 12 + 8] = 0.8f;
-            NEW_COLOR[i * 12 + 9] = 0.3f;
-            NEW_COLOR[i * 12 + 10] = 0.1f;
-            NEW_COLOR[i * 12 + 11] = 1.0f;
-        }
-        */
-
-        /* For isosahedron
-        for (int i = 0; i < 20; i++){
-            for(int j = 0; j < 3; j++){
-                NEW_THING[i*9 + j*3 ] = vdata[tindices[i][j]][0];
-                NEW_THING[i*9 + j*3 + 1] = vdata[tindices[i][j]][1];
-                NEW_THING[i*9 + j*3 + 2] = vdata[tindices[i][j]][2];
-            }
-        }
-
-       for (int i = 0; i < 20; i++){
-            NEW_COLOR[i * 12] = 0.8f;
-            NEW_COLOR[i * 12 + 1] = 0.2f;
-            NEW_COLOR[i * 12 + 2] = 0.2f;
-            NEW_COLOR[i * 12 + 3] = 1.0f;
-           NEW_COLOR[i * 12 + 4] = 0.8f;
-           NEW_COLOR[i * 12 + 5] = 0.1f;
-           NEW_COLOR[i * 12 + 6] = 0.3f;
-           NEW_COLOR[i * 12 + 7] = 1.0f;
-           NEW_COLOR[i * 12 + 8] = 0.8f;
-           NEW_COLOR[i * 12 + 9] = 0.3f;
-           NEW_COLOR[i * 12 + 10] = 0.1f;
-           NEW_COLOR[i * 12 + 11] = 1.0f;
-        }*/
-
-
-
-    //A =  0.5f,0.0f,0.5f, // =A
-    //B = -0.5f,0.0f,-0.5f,// = B
-    //C = 0.5f,0.0f,-0.5f,// = C
-    //D = -0.5f,0.0f,0.5f, // = D
-    //E = 0.0f,0.5f,0.0f, // = E
-    //F = 0.0f,-0.5f,0.0f, // = F
-
-    //diamond
-    /*
-        public static final float[] NEW_THING = new float[]{
-                0.0f,0.5f,0.0f, // = E
-                -0.5f,0.0f,0.5f, // = D
-                0.5f,0.0f,0.5f, // =A
-
-                0.0f,0.5f,0.0f, // = E
-                0.5f,0.0f,0.5f, // =A
-                0.5f,0.0f,-0.5f,// = C
-
-                0.0f,0.5f,0.0f, // = E
-                0.5f,0.0f,-0.5f,// = C
-                -0.5f,0.0f,-0.5f,// = B
-
-                0.0f,0.5f,0.0f, // = E
-                -0.5f,0.0f,-0.5f,// = B
-                -0.5f,0.0f,0.5f, // = D
-
-                0.0f,-0.5f,0.0f, // = F
-                -0.5f,0.0f,0.5f, // = D
-                0.5f,0.0f,0.5f, // =A
-
-                0.0f,-0.5f,0.0f, // = F
-                0.5f,0.0f,0.5f, // =A
-                0.5f,0.0f,-0.5f,// = C
-
-                0.0f,-0.5f,0.0f, // = F
-                0.5f,0.0f,-0.5f,// = C
-                -0.5f,0.0f,-0.5f,// = B
-
-                0.0f,-0.5f,0.0f, // = F
-                -0.5f,0.0f,-0.5f,// = B
-                -0.5f,0.0f,0.5f, // = D
-        };
-
-        //color of diamond
-        //E = 0.8f,0.8f,0.8f,1.0f, //E
-        //F = 0.2f,0.2f,0.2f,1.0f, //F
-        //A = 0.6f,0.55f,0.4f,  //A
-        public static final float[] NEW_COLOR = new float[]{
-                0.8f,0.8f,0.8f,1.0f, //E
-                0.78f, 0.24f, 0.25f,1.0f,   //D
-                0.78f, 0.24f, 0.25f,1.0f,   //A
-                0.8f,0.8f,0.8f,1.0f, //E
-                0.78f, 0.24f, 0.25f,1.0f,   //A
-                0.78f, 0.24f, 0.25f,1.0f,   //C
-                0.8f,0.8f,0.8f,1.0f, //E
-                0.78f, 0.24f, 0.25f,1.0f,   //C
-                0.78f, 0.24f, 0.25f,1.0f,   //B
-                0.8f,0.8f,0.8f,1.0f, //E
-                0.78f, 0.24f, 0.25f,1.0f,   //B
-                0.78f, 0.24f, 0.25f,1.0f,   //D
-                0.2f,0.2f,0.2f,1.0f, //F
-                0.78f, 0.24f, 0.25f,1.0f,   //D
-                0.78f, 0.24f, 0.25f,1.0f,   //A
-                0.2f,0.2f,0.2f,1.0f, //F
-                0.78f, 0.24f, 0.25f,1.0f,   //A
-                0.78f, 0.24f, 0.25f,1.0f,   //C
-                0.2f,0.2f,0.2f,1.0f, //F
-                0.78f, 0.24f, 0.25f,1.0f,   //C
-                0.78f, 0.24f, 0.25f,1.0f,   //B
-                0.2f,0.2f,0.2f,1.0f, //F
-                0.78f, 0.24f, 0.25f,1.0f,   //B
-                0.78f, 0.24f, 0.25f,1.0f,   //D
-        };
-*/
-
-    //The smiley
-        /*public static final float[] NEW_THING = new float[]{
-            -0.65f, 0.7f, 0.0f,
-            -0.9f, 0.28f, -0.4f,
-            -0.58f, 0.4f, 0.0f,
-            -0.65f, 0.7f, 0.0f,
-            -0.35f, 0.3f, 0.0f,
-            -0.58f, 0.4f, 0.0f,
-            //left eye
-
-            0.65f, 0.7f, 0.0f,
-            0.9f, 0.28f, -0.4f,
-            0.58f, 0.4f, 0.0f,
-            0.65f, 0.7f, 0.0f,
-            0.35f, 0.3f, 0.0f,
-            0.58f, 0.4f, 0.0f,
-            //right eye
-
-            -0.68f,-0.1f,0.0f,
-            -0.54f,-0.3f,0.0f,
-            -0.33f,-0.65f,0.0f,
-            -0.68f,-0.1f,0.0f,
-            -0.33f,-0.45f,0.0f,
-            -0.33f,-0.65f,0.0f,
-            -0.33f,-0.45f,0.0f,
-            -0.33f,-0.65f,0.0f,
-            0.0f,-0.75f,0.0f,
-            -0.33f,-0.45f,0.0f,
-            0.0f,-0.6f,0.0f,
-            0.0f,-0.75f,0.0f,
-
-            0.68f,-0.1f,0.0f,
-            0.54f,-0.3f,0.0f,
-            0.33f,-0.65f,0.0f,
-            0.68f,-0.1f,0.0f,
-            0.33f,-0.45f,0.0f,
-            0.33f,-0.65f,0.0f,
-            0.33f,-0.45f,0.0f,
-            0.33f,-0.65f,0.0f,
-            0.0f,-0.75f,0.0f,
-            0.33f,-0.45f,0.0f,
-            0.0f,-0.6f,0.0f,
-            0.0f,-0.75f,0.0f
-    };*/
-    //color of the smiley
-        /*
-        public static final float[] NEW_COLOR = new float[]{
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-                0.8f,0.8f,0.0f,1.0f,
-
-                0.0f,0.1f,0.8f,1.0f,
-                0.0f,0.1f,0.8f,1.0f,
-                0.0f,0.1f,0.8f,1.0f,
-                0.0f,0.2f,0.8f,1.0f,
-                0.0f,0.2f,0.8f,1.0f,
-                0.0f,0.2f,0.8f,1.0f,
-                0.0f,0.25f,0.75f,1.0f,
-                0.0f,0.25f,0.75f,1.0f,
-                0.0f,0.25f,0.75f,1.0f,
-                0.0f,0.3f,0.75f,1.0f,
-                0.0f,0.3f,0.75f,1.0f,
-                0.0f,0.3f,0.75f,1.0f,
-
-                0.0f,0.3f,0.75f,1.0f,
-                0.0f,0.3f,0.75f,1.0f,
-                0.0f,0.3f,0.75f,1.0f,
-                0.0f,0.25f,0.75f,1.0f,
-                0.0f,0.25f,0.75f,1.0f,
-                0.0f,0.25f,0.75f,1.0f,
-                0.0f,0.25f,0.7f,1.0f,
-                0.0f,0.25f,0.7f,1.0f,
-                0.0f,0.25f,0.7f,1.0f,
-                0.0f,0.2f,0.7f,1.0f,
-                0.0f,0.2f,0.7f,1.0f,
-                0.0f,0.2f,0.7f,1.0f,
-        };
-        */
-
-
-}//ends Sphere class
+    }//ends Sphere class
