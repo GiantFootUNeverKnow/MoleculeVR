@@ -8,11 +8,11 @@ public class Sphere
 {
     //If degree of refinement is changed, be sure to change NUMBER_OF_FACES to corresponding value, 20 * (4^degree_of_refinement)
     public final static int DEGREE_OF_REFINEMENT = 2;// do only once the refinement
-    public final static int NUMBER_OF_FACES = 320; //do only once the refinement, 80 faces
+    public final static int NUMBER_OF_FACES = 320; //do only twice the refinement, 320 faces
 
-    public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only once the refinement, 80 faces, each with 3 vertices
-    public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only once the refinement, 320 vertices, each with 3 coords
-    public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only once the refinement, 320 vertices, each with 4 colors
+    public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
+    public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
+    public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
 
     public Sphere(float x, float y, float z, float red, float green, float blue)
@@ -25,9 +25,6 @@ public class Sphere
         this.greenColor = green;
         this.blueColor = blue;
 
-       /* setCoordinates();
-        buildSphere();
-*/
         buildSphere();
         setCoordinates();
     }
@@ -51,8 +48,6 @@ public class Sphere
     public float[] vertices = new float[NUMBER_OF_COORDS];
     public float[] colors = new float[NUMBER_OF_COLORS];
 
-
-    //NEED TO CHANGE THESE. BUT DON'T KNOW HOW
     public float[][] vdata = new float[][]{
             {-X , 0.0f , Z }, {X , 0.0f, Z },
             {-X , 0.0f , -Z }, {X , 0.0f , -Z },

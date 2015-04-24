@@ -237,10 +237,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         checkGLError("Drawing Thing");
     }
 
-    /**
-     * Increment the score, hide the object, and give feedback if the user pulls the magnet while
-     * looking at the object. Otherwise, remind the user what to do.
-     */
     @Override
     public void onCardboardTrigger() {
        /* if (isLookingAtObject()) {
