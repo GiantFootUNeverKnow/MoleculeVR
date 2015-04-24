@@ -7,8 +7,8 @@ import android.util.Log;
 public class Sphere
 {
     //If degree of refinement is changed, be sure to change NUMBER_OF_FACES to corresponding value, 20 * (4^degree_of_refinement)
-    public final static int DEGREE_OF_REFINEMENT = 1;// do only once the refinement
-    public final static int NUMBER_OF_FACES = 80; //do only once the refinement, 80 faces
+    public final static int DEGREE_OF_REFINEMENT = 2;// do only once the refinement
+    public final static int NUMBER_OF_FACES = 320; //do only once the refinement, 80 faces
 
     public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only once the refinement, 80 faces, each with 3 vertices
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only once the refinement, 320 vertices, each with 3 coords
@@ -34,6 +34,9 @@ public class Sphere
 
     public static final float X = (float) 0.52573111;
     public static final float Z = (float) 0.85065081;
+
+    public static final float UB = (float) 10.0;
+
     public int index = 0;
     public float xCoord = 0;
     public float yCoord = 0;
@@ -65,27 +68,11 @@ public class Sphere
             {10,1,6},{11,0,9},{2,11,9},{5,2,9},{11,2,7}
     };
 
-    /*isosahedron
-    public static final float[] NEW_THING = new float[180];
-    public static final float[] NEW_COLOR = new float[240];
-*/
-
-    /*public void setCoordinates(){//set up the prototyppe coordinate for the sphere
-        for (int i = 0; i < vdata.length; i++){//maybe wrong
-            vdata[i][0] += xCoord;
-            vdata[i][1] += yCoord;
-            vdata[i][2] += zCoord;
-        }
-    }
-*/
-    public void setCoordinates(){//set up the prototyppe coordinate for the sphere
+    public void setCoordinates(){//move sphere from origin to the given coordinates
        for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
-           vertices[i] = (float)( (vertices[i] + xCoord) / 10.0 );
-           vertices[i+1] = (float)( (vertices[i+1] + yCoord) / 10.0 );
-           vertices[i+2] = (float)( (vertices[i+2] + zCoord) / 10.0 );
-           /*vertices[i] += xCoord / 10.0;
-           vertices[i+1] += yCoord / 10.0;
-           vertices[i+2] += zCoord / 10.0;*/
+           vertices[i] = (float)( (vertices[i] + xCoord) / UB );
+           vertices[i+1] = (float)( (vertices[i+1] + yCoord) / UB );
+           vertices[i+2] = (float)( (vertices[i+2] + zCoord) / UB );
        }
     }
 

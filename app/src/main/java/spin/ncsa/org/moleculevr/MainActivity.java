@@ -134,9 +134,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             cMolecule[i] = parser.outputColors();
             nAtoms[i] = parser.outputNumOfAtoms();
 
-            //debugging
-//                if (vMolecule[i] == null)
-//                    Log.e(TAG,"No vertices");
             //Create ByteBuffer of vertices' position and color based on the float array created by "World"
             ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vMolecule[i].length * 4);
             ByteVertices.order(ByteOrder.nativeOrder());
@@ -233,12 +230,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
 
-        int sizOfMol = vMolecule[index].length / COORDS_PER_VERTEX;
-
         for  (int i = 0; i < nAtoms[index]; i++){
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES,i*Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
         }
-        //GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 32 * Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
 
         checkGLError("Drawing Thing");
     }

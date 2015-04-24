@@ -23,7 +23,6 @@ public class TextParser {
 
     public float[] outputVertices(){
         if (m.isEmpty()) return null;
-        //float[] v = new float[2880 * m.size()]; //2880 should be defined as constant of Sphere class
         float[] v = new float[Sphere.NUMBER_OF_COORDS * m.size()]; // we need (# atom ) * (# coords per atom) float
         int i = 0;
         for (Sphere atom : m){
@@ -37,7 +36,6 @@ public class TextParser {
 
     public float[] outputColors(){
         if (m.isEmpty()) return null;
-        //float[] c = new float[3840 * m.size()]; //3840 should be defined as constant of Sphere class
         float[] c = new float[Sphere.NUMBER_OF_COLORS * m.size()];// we need (# atom ) * (# colors per atom) float
         int i = 0;
         for (Sphere atom : m){
