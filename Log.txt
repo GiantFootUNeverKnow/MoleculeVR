@@ -1,0 +1,33 @@
+23/04/2015
+
+Some important parameters in sphere class(same for every sphere object)
+         Refinement: The depth of recursion of subdivisions, a nonnegative number. The intuition behind the subdivisions is that the more subdivision a programs does,
+         the sphere looks more smooth. Therefore, increasing refinement should enhance the quality of sphere rendering. The tradeoff is the cost
+         of computation. Currently, refinement is set to 2 because it looks good enough on my phone. We could variate it in future.
+         
+         NUM_OF_FACES: the number of triangles on the sphere. Same as refinement, more NUM_OF_FACES, more smooth the sphere is.
+         
+         These two parameters are specified at the very beginning of Sphere class. Be sure to change them correctly and together, otherwise it wouldn't
+         compile. 
+         Actually there is an easy formula that I invented for calculating NUM_OF_FACES:
+                  NUM_OF_FACES = 20 * (4 ^ refinement)
+         I was just so lazy to implement this formula. +.+
+         Something that needs doing...
+
+Corrected the geometric algorithm:
+         1.We used to generate a sphere at targeted coordinates for each spheres, which drew weird shape spheres, maybe because of the formula for normalization
+         The right way : we should first generate a sphere at the origin and then push that sphere to the targeted coordinates.
+         2. Decrease all coordinates by a factor of 10. Since our OPENGL universe is in a box of volume 1, we can't render things outside the box. Maybe it is another reason for the previous weird shapes
+         
+TODO_LIST:
+        0.Define the normalization factor:
+          Because our OPENGL coordinates only allow coordinate be in range (-1,1) for all x,y,z coordinates, some atoms with large value for coordinates such as
+          62 H   H28        -0.19378    9.96085    7.70894, 
+          are really hard to draw.
+          So for each atom(sphere), we want to define a upperbound value UB such that all coordiantes are smaller than UB.
+          Right now UB is set to a constant 10, but we want to make it a variable that is initiazed when a sphere is created.
+          This initialization should be along with that for color, x, y, z and radius. 
+        1.Assign colors to each atom
+        2.Assign radius to each atom
+        3.fix the tilt of molecule(Don't worry now, long-term goal)
+        
