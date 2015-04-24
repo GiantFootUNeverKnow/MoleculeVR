@@ -25,9 +25,11 @@ public class Sphere
         this.greenColor = green;
         this.blueColor = blue;
 
-        setCoordinates();
+       /* setCoordinates();
         buildSphere();
-
+*/
+        buildSphere();
+        setCoordinates();
     }
 
     public static final float X = (float) 0.52573111;
@@ -68,22 +70,25 @@ public class Sphere
     public static final float[] NEW_COLOR = new float[240];
 */
 
-    public void setCoordinates(){//set up the prototyppe coordinate for the sphere
+    /*public void setCoordinates(){//set up the prototyppe coordinate for the sphere
         for (int i = 0; i < vdata.length; i++){//maybe wrong
             vdata[i][0] += xCoord;
             vdata[i][1] += yCoord;
             vdata[i][2] += zCoord;
         }
     }
-
-  /*  public void setCoordinates(){//set up the prototyppe coordinate for the sphere
+*/
+    public void setCoordinates(){//set up the prototyppe coordinate for the sphere
        for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
-           vertices[i] += xCoord;
-           vertices[i+1] += yCoord;
-           //vertices[i+2] += zCoord;
+           vertices[i] = (float)( (vertices[i] + xCoord) / 10.0 );
+           vertices[i+1] = (float)( (vertices[i+1] + yCoord) / 10.0 );
+           vertices[i+2] = (float)( (vertices[i+2] + zCoord) / 10.0 );
+           /*vertices[i] += xCoord / 10.0;
+           vertices[i+1] += yCoord / 10.0;
+           vertices[i+2] += zCoord / 10.0;*/
        }
     }
-*/
+
     public static void normalize(float v[]){
         float d = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (d == 0.0){
