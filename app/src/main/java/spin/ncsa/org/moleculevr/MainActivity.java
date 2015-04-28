@@ -1,9 +1,6 @@
 package spin.ncsa.org.moleculevr;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
@@ -11,11 +8,8 @@ import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.google.vrtoolkit.cardboard.Viewport;
 
-import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -57,12 +51,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private float[] mModelMolecule;
     private float[] mHeadView;
+    private float[] mHeadUpVetcor;
     private float[] mCamera;
     private float[] mView;
     private float[] mModelView;
 
     private int idx;
     private int[] nAtoms;
+    private int debugging;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +75,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         mModelMolecule = new float[16];
         mHeadView = new float[16];
+        mHeadUpVetcor = new float[3];
         mCamera = new float[16];
         mModelView = new float[16];
         mView = new float[16];
@@ -98,6 +95,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
+
+        debugging = 0;
     }
 
 
@@ -118,7 +117,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         TextParser parser = new TextParser();
 
         //get the resources(vertices of molecules)!
-        InputStream inputStream = getResources().openRawResource(R.raw.molecule);
+        InputStream inputStream = getResources().openRawResource(R.raw.molecule1);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
 
@@ -206,6 +205,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         // Apply the eye transformation to the camera.
         Matrix.multiplyMM(mView, 0, eye.getEyeView(), 0, mCamera, 0);
+        /*eye.getEyeView() and mHeadView(the variable obtained by calling HeadTransform.getHeadView()) are almost the same
+        * on the documentation it is said that getEyeView() includes also position shift and interpupillary distance shift,
+        * which I didn't find noticeable trace of effect
+        * */
+        //Matrix.multiplyMM(mView, 0, mHeadView, 0, mCamera, 0);
+
 
         // Set the position of the light
        // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mView, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
@@ -261,6 +266,21 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Matrix.setLookAtM(mCamera,0,0.0f,0.0f,0.01f,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);//Viewing
 
         headTransform.getHeadView(mHeadView,0);
+
+        headTransform.getUpVector(mHeadUpVetcor,0);
+
+        /*When the phone is landscape, the first coordinate for upVector is near either 1 or -1
+          When the phone is portrait, the second cordinate for upVector is near either 1 or -1
+        * */
+        /*
+        debugging++;
+        if (debugging == 100) {
+            String temp = mHeadUpVetcor[0] + " " + mHeadUpVetcor[1] + " " + mHeadUpVetcor[2];
+            //mOverlay.show3DToast(temp);
+            Log.i(TAG,temp);
+            debugging = 0;
+        }
+        */
 
         checkGLError("OnReadyToDraw");
     }
