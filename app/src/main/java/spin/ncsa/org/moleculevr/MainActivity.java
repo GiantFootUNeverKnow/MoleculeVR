@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import java.lang.Math;
+
 import javax.microedition.khronos.egl.EGLConfig;
 
 public class MainActivity extends CardboardActivity implements CardboardView.StereoRenderer{
@@ -32,7 +34,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final String TAG = "MainActivity_";
     private CardboardOverlayView mOverlay;
 
+    //If you added molecules or deleted molecules, please change this variable
     private static final int NUM_MOLECULE = 2;
+
     private static final int COORDS_PER_VERTEX = 3;
 
     private FloatBuffer[] moleculeVertices ;
@@ -58,6 +62,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private int idx;
     private int[] nAtoms;
+    private int timeCounter;
+
     private int debugging;
 
     @Override
@@ -97,6 +103,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mOverlay.show3DToast("Succeeded in creating this!");
 
         debugging = 0;
+        timeCounter = 0;
     }
 
 
@@ -273,10 +280,21 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         headTransform.getUpVector(mHeadUpVetcor,0);
 
-        /*When the phone is landscape, the first coordinate for upVector is near either 1 or -1
-          When the phone is portrait, the second cordinate for upVector is near either 1 or -1
+        /*When the phone is landscape, the second coordinate for upVector is near either 1 or -1
+          When the phone is portrait, the first cordinate for upVector is near either 1 or -1
+          When the phone is sitting on table, the third coordinate for upVector is near either 1 or -1
         * */
-        /*
+        timeCounter++;
+        if (timeCounter == 100) {
+            if ((Math.abs(mHeadUpVetcor[0])  > 0.95)
+                    && (Math.abs(mHeadUpVetcor[1])  < 0.5)
+                    && (Math.abs(mHeadUpVetcor[2])  < 0.5)
+                    ) {
+                idx = (idx + 1) % NUM_MOLECULE;
+            }
+            timeCounter = 0;
+        }
+         /*
         debugging++;
         if (debugging == 100) {
             String temp = mHeadUpVetcor[0] + " " + mHeadUpVetcor[1] + " " + mHeadUpVetcor[2];
