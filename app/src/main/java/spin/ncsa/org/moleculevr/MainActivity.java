@@ -255,6 +255,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
         // Always give user feedback
         mVibrator.vibrate(50);*/
+        idx = (idx + 1) % NUM_MOLECULE;
+        mOverlay.show3DToast("Switched to "+idx +"-th molecule" );
     }
 
 
