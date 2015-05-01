@@ -32,7 +32,7 @@ public class Sphere
     public static final float X = (float) 0.52573111;
     public static final float Z = (float) 0.85065081;
 
-    public static final float UB = (float) 10.0;
+    public static final float UB = (float) 15.0;
 
     public int index = 0;
     public float xCoord = 0;

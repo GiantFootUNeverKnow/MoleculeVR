@@ -32,7 +32,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final String TAG = "MainActivity_";
     private CardboardOverlayView mOverlay;
 
-    private static final int NUM_MOLECULE = 1;
+    private static final int NUM_MOLECULE = 2;
     private static final int COORDS_PER_VERTEX = 3;
 
     private FloatBuffer[] moleculeVertices ;
@@ -111,23 +111,25 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.thing_frag);
 
         //set the index of molecule to be drawn to zero
-        idx = 0;
+        idx = 1;
 
         //init the textparser parser
         TextParser parser = new TextParser();
 
         //get the resources(vertices of molecules)!
-        InputStream inputStream = getResources().openRawResource(R.raw.molecule1);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-
-        try {
-            parser.parse(reader);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        InputStream inputStream1 = getResources().openRawResource(R.raw.molecule1);
+        InputStream inputStream2 = getResources().openRawResource(R.raw.molecule2);
+        BufferedReader[] reader = new BufferedReader[2];
+        reader[0] = new BufferedReader(new InputStreamReader(inputStream1));
+        reader[1] = new BufferedReader(new InputStreamReader(inputStream2));
 
         for (int i = 0; i < NUM_MOLECULE; i++) {
+
+            try {
+                parser.parse(reader[i]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             vMolecule[i] = parser.outputVertices();
             cMolecule[i] = parser.outputColors();
