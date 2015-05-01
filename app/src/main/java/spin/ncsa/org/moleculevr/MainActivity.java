@@ -8,8 +8,10 @@ import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.google.vrtoolkit.cardboard.Viewport;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.os.Vibrator;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -32,6 +34,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             * @param savedInstanceState
     */
     private static final String TAG = "MainActivity_";
+    private Vibrator vibrator;
     private CardboardOverlayView mOverlay;
 
     //If you added molecules or deleted molecules, please change this variable
@@ -102,6 +105,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
 
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         debugging = 0;
         timeCounter = 0;
     }
@@ -118,7 +123,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.thing_frag);
 
         //set the index of molecule to be drawn to zero
-        idx = 1;
+        idx = 0;
 
         //init the textparser parser
         TextParser parser = new TextParser();
@@ -259,9 +264,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             ...
         } else {
             mOverlayView.show3DToast("Look around to find the object!");
-        }
+        }*/
         // Always give user feedback
-        mVibrator.vibrate(50);*/
+        vibrator.vibrate(50);
         idx = (idx + 1) % NUM_MOLECULE;
         mOverlay.show3DToast("Switched to "+idx +"-th molecule" );
     }
@@ -290,6 +295,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                     && (Math.abs(mHeadUpVetcor[1])  < 0.5)
                     && (Math.abs(mHeadUpVetcor[2])  < 0.5)
                     ) {
+                vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
             }
             timeCounter = 0;
