@@ -1,4 +1,4 @@
-23/04/2015
+04/23/2015
 
 Some important parameters in sphere class(same for every sphere object)
          Refinement: The depth of recursion of subdivisions, a nonnegative number. The intuition behind the subdivisions is that the more subdivision a programs does,
@@ -18,7 +18,34 @@ Corrected the geometric algorithm:
          1.We used to generate a sphere at targeted coordinates for each spheres, which drew weird shape spheres, maybe because of the formula for normalization
          The right way : we should first generate a sphere at the origin and then push that sphere to the targeted coordinates.
          2. Decrease all coordinates by a factor of 10. Since our OPENGL universe is in a box of volume 1, we can't render things outside the box. Maybe it is another reason for the previous weird shapes
-         
+
+05/01/2015
+The formula for detecting a switching:
+
+The formula now is
+ if(v[0]> 0.95 && v[1] <0.5 && v[2] < 0.5)
+     then switch.
+
+Where v is the upVector of the world created in app.
+There are three components in v, each component of v is a float between [0,1]
+I think the norm for v should be 1. Hence, if one component, say v[0], is dominant, the other two, v[1] and v[2], could be pretty small.
+
+ If the phone is held portrait, v[0] is the dominant component
+ If the phone is held landscape, which is usually the case for Cardboard App, v[1] is the dominant component
+ If the phone is put flat on table, v[2] is the dominant component
+
+We used this feature to detect whether the user wants to switch molecules. Since they usually hold the phone in landscape mode/ flat mode when they use
+CardBoard headset, one component, v[0], should be small for the most of the time. When this component is dominant, we can regard it as an action that user
+does it on purpose--tilting their heads..
+
+And we have a timer in onNewFrame() thread which refreshed v value once per hundred times.
+
+Parameters that maybe reconfigured later:
+Criteria for a switching: now is x>0.95, y <0.5, z <0.5
+Looping time: 100 times
+Normalizing factor for molecule: now *(1/15)
+Distance from origin: now 0.0
+
 TODO_LIST:
         0.Define and calculate the normalization factor(upperbound for coordinates):
           Because our OPENGL coordinates only allow coordinate be in range (-1,1) for all x,y,z coordinates, some atoms with large value for coordinates such as
