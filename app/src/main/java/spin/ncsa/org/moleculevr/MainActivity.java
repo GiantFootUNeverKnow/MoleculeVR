@@ -68,6 +68,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int timeCounter;
 
     private int debugging;
+    private String debuggingStr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -204,7 +205,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     @Override
     public void onFinishFrame(Viewport viewport){ //temporarily useless
-
+        //mOverlay.show3DToast(debuggingStr);
         //Log.i(TAG,"onFinishFrame");
     }
 
@@ -298,6 +299,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
             }
+            //debuggingStr = mHeadUpVetcor[0] + " " + mHeadUpVetcor[1] + " " + mHeadUpVetcor[2];
             timeCounter = 0;
         }
          /*
