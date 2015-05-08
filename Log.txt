@@ -45,6 +45,21 @@ Criteria for a switching: now is x>0.95, y <0.5, z <0.5
 Looping time: 100 times
 Normalizing factor for molecule: now *(1/15)
 Distance from origin: now 0.0
+Background Color: now Black
+Initial Molecule: now 0
+
+05/07/2015
+Add the color-assigning feature to the app:
+1.A file, colorpicker.txt, in /raw has the colors for each element. You can write comment in this file.
+    The format for writing this file is
+    [Element Symbol] [Red Component] [Green Component] [Blue Component]
+    e.g.H 239 187 242 is giving H a pinkish color with RGB values in scale of 256
+2.A method of TextParser.java, loadColor(BufferedReader bf), has been added
+    This method takes an input of a file through a bufferedReader that is formatted as colorpicker.txt and
+    uses its coloring to update ColorHashTable, a hashmap that stores color for each element
+3. In surfaceCreated method, parser.loadColor() is called before parser.parse() to predefine coloring of elements
+4. Found a bug in parser.parse().
+    The parser can only parse lines before 98.
 
 TODO_LIST:
         0.Define and calculate the normalization factor(upperbound for coordinates):
@@ -53,9 +68,8 @@ TODO_LIST:
           are really hard to draw.
           So for each atom(sphere), we want to define a upperbound value UB such that all coordiantes are smaller than UB.
           Right now UB is set to a constant 10, but we want to make it a variable that is initiazed when a sphere is created.
-          This initialization should be along with that for color, x, y, z and radius. 
-        1.Assign colors to each kind of atom, choose whatever color that suits
-        2.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
+          This initialization should be along with that for color, x, y, z and radius.
+        1.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
          because the size of screen is really limited. The ratio of the lightest atom to the heaviest atom shouldn't be over 1/4 
-        3.fix the tilt of molecule(Don't worry now, long-term goal)
+        2.fix the tilt of molecule(Don't worry now, long-term goal)
         
