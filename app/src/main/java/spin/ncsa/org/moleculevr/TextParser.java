@@ -3,33 +3,20 @@ package spin.ncsa.org.moleculevr;
 /**
  * Created by Radhir on 4/17/15.
  */
-import android.app.backup.SharedPreferencesBackupHelper;
 import android.graphics.Color;
-
-
-
-import java.io.*;
-import java.nio.Buffer;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Scanner;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Scanner;
 
 public class TextParser {
 
-    ArrayList<Sphere> m = new ArrayList<Sphere>();
+    ArrayList<Sphere> m = new ArrayList<>();
 
     //ArrayList<Color> colors = null;
-    Hashtable<String, Integer> colorHashtable = null;
+    Hashtable colorHashtable = null;
 
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
@@ -70,7 +57,7 @@ public class TextParser {
     public void loadColor(BufferedReader bf){
         if (colorHashtable != null)
             return;
-        colorHashtable = new Hashtable<String,Integer>();
+        colorHashtable = new Hashtable();
         Scanner s = new Scanner(bf);
 
         while(s.hasNext()) {
@@ -85,7 +72,7 @@ public class TextParser {
             int G = ss.nextInt();
             int B = ss.nextInt();
             int RGB = Color.rgb(R, G, B);
-            colorHashtable.put(element, new Integer(RGB));
+            colorHashtable.put(element, RGB);
 
         }
 
@@ -105,7 +92,7 @@ public class TextParser {
     public void parse(BufferedReader bf) throws IOException {
         Scanner s = null;
         m = null;
-        m = new ArrayList<Sphere>();
+        m = new ArrayList<>();
 
         try {
             s = new Scanner(bf);
