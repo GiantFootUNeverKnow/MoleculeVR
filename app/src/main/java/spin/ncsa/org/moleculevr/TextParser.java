@@ -101,9 +101,10 @@ public class TextParser {
                 String line = s.nextLine();
                 boolean check = line.contains("x") && line.contains("y") && line.contains("z");
                 lineCount ++;
+                //lineCount <= 98 is so buggy!
                 if(check && line.contains("Occ.") && lineCount <= 98)
                     reachedCoordinates = true;
-                if(lineCount >= 98)
+               if(lineCount >= 98)
                     reachedCoordinates = false;
                 if(reachedCoordinates)
                 {
