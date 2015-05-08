@@ -1,0 +1,6 @@
+//R G B
+H 239 187 242
+C 242 228 27
+Br 245 148 22
+Pb 168 167 165
+//This is a dummy file, just for the sake of testing codes, we need real data

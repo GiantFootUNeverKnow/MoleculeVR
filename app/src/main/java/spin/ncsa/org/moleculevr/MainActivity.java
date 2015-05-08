@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -128,6 +129,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         //init the textparser parser
         TextParser parser = new TextParser();
+
+        //load the predefined colors for each element
+        InputStream iS = getResources().openRawResource(R.raw.colorpicker);
+        BufferedReader readColor = new BufferedReader(new InputStreamReader(iS));
+        parser.loadColor(readColor);
 
         //get the resources(vertices of molecules)!
         InputStream inputStream1 = getResources().openRawResource(R.raw.molecule1);

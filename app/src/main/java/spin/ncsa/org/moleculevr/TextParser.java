@@ -4,10 +4,17 @@ package spin.ncsa.org.moleculevr;
  * Created by Radhir on 4/17/15.
  */
 import android.app.backup.SharedPreferencesBackupHelper;
+import android.graphics.Color;
+
+
 
 import java.io.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Scanner;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +27,12 @@ import java.nio.FloatBuffer;
 public class TextParser {
 
     ArrayList<Sphere> m = new ArrayList<Sphere>();
+
+    //ArrayList<Color> colors = null;
+    Hashtable<String, Integer> colorHashtable = null;
+
+    //A TAG for debugging display messages
+    static final String TAG = "TextParser";
 
     //a variable used for convenient demo
     int ColorPicker = 0;
@@ -52,6 +65,41 @@ public class TextParser {
 
     public int outputNumOfAtoms(){
         return m.size();
+    }
+
+    public void loadColor(BufferedReader bf){
+        if (colorHashtable != null)
+            return;
+        colorHashtable = new Hashtable<String,Integer>();
+        Scanner s = new Scanner(bf);
+
+        while(s.hasNext()) {
+            String line = s.nextLine();
+            boolean ifComments = line.contains("//");
+            if (ifComments)
+                continue;
+
+            Scanner ss = new Scanner(line);
+            String element = ss.next();
+            int R = ss.nextInt();
+            int G = ss.nextInt();
+            int B = ss.nextInt();
+            int RGB = Color.rgb(R, G, B);
+            colorHashtable.put(element, new Integer(RGB));
+
+        }
+
+        s.close();
+
+        //debugging
+//       Enumeration<String> keys = colorHashtable.keys();
+//      while(keys.hasMoreElements()) {
+//         String str = (String) keys.nextElement();
+//         int RGB = colorHashtable.get(str);
+//         Log.i(TAG,str + ": " +
+//                Color.red(RGB) +" " + Color.green(RGB)+ " " + Color.blue(RGB)         );
+//      }
+      //
     }
 
     public void parse(BufferedReader bf) throws IOException {
