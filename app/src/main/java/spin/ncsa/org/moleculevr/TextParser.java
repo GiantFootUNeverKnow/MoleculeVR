@@ -21,9 +21,6 @@ public class TextParser {
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
 
-    //a variable used for convenient demo
-    int ColorPicker = 0;
-
     public float[] outputVertices(){
         if (m.isEmpty()) return null;
         float[] v = new float[Sphere.NUMBER_OF_COORDS * m.size()]; // we need (# atom ) * (# coords per atom) float
@@ -116,24 +113,26 @@ public class TextParser {
                         continue;
                     else
                     {
+                        //parse the name of element
+                        String elementName = line.split("\\s+")[2];
+                        //parse the coordiante of that atom
                         float xCoord = (float)Double.parseDouble(line.substring(20,28));
                         float yCoord = (float)Double.parseDouble(line.substring(31,39));
                         float zCoord = (float)Double.parseDouble(line.substring(42,50));
+                        //calculate color for the atom
+                        int _color = (int) colorHashtable.get(elementName);
+                        float red_color =  ((float)Color.red(_color)/255);
+                        float green_color =  ((float)Color.green(_color)/255);
+                        float blue_color =  ((float)Color.blue(_color)/255);
                         //CREATE SPHERE OBJECTS IN HERE
                         Sphere ball;
-                        //This selection is used just for demo, it needs to be removed after the proper color setter is coded
-                        if (ColorPicker == 0)
-                            ball = new Sphere(xCoord,yCoord,zCoord,0.8f,0.1f,0.3f);//Color should be replaced by fixed color of ann element
-                        else
-                            ball = new Sphere(xCoord,yCoord,zCoord,0.7f,0.1f,0.9f);//Color should be replaced by fixed color of ann element
+                        ball = new Sphere(xCoord,yCoord,zCoord,red_color,green_color,blue_color);
                         m.add(ball);
                     }
 
                 }
             }
         } finally {
-            //This line needs to be removed once the proper color setter is coded.
-            ColorPicker++;
 
             if (s != null) {
                 s.close();

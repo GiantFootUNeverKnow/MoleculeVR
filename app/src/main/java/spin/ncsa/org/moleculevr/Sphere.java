@@ -65,9 +65,9 @@ public class Sphere
 
     public void setCoordinates(){//move sphere from origin to the given coordinates
        for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
-           vertices[i] = (float)( (vertices[i] + xCoord) / UB );
-           vertices[i+1] = (float)( (vertices[i+1] + yCoord) / UB );
-           vertices[i+2] = (float)( (vertices[i+2] + zCoord) / UB );
+           vertices[i] = ( (vertices[i] + xCoord) / UB );
+           vertices[i+1] = ( (vertices[i+1] + yCoord) / UB );
+           vertices[i+2] = ( (vertices[i+2] + zCoord) / UB );
        }
     }
 
