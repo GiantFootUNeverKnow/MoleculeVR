@@ -95,17 +95,22 @@ public class TextParser {
             s = new Scanner(bf);
 
             boolean reachedCoordinates = false;
-            int lineCount = 0;
             while (s.hasNext())
             {
                 String line = s.nextLine();
-                boolean check = line.contains("x") && line.contains("y") && line.contains("z");
-                lineCount ++;
-                //lineCount <= 98 is so buggy!
-                if(check && line.contains("Occ.") && lineCount <= 98)
+
+                //check that parser is reading relevant data
+                boolean check = line.contains("x") && line.contains("y") && line.contains("z") && line.contains("Occ.");
+                if (check) {
                     reachedCoordinates = true;
-               if(lineCount >= 98)
-                    reachedCoordinates = false;
+                    continue;
+                }
+
+                //parser reached the end of relevant data
+                boolean reachEnd = line.contains("===");
+                if (reachedCoordinates && reachEnd)
+                    break;
+
                 if(reachedCoordinates)
                 {
                     String temp = line;
