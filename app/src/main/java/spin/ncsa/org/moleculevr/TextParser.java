@@ -115,9 +115,9 @@ public class TextParser {
                 {
                     String temp = line;
                     temp = temp.trim();
-                    if(check || temp.isEmpty())
-                        continue;
-                    else
+                    if(!temp.isEmpty())
+                        //continue;
+                    //else
                     {
                         //parse the name of element
                         String elementName = line.split("\\s+")[2];
