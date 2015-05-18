@@ -72,4 +72,9 @@ TODO_LIST:
         1.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
          because the size of screen is really limited. The ratio of the lightest atom to the heaviest atom shouldn't be over 1/4 
         2.fix the tilt of molecule(Don't worry now, long-term goal)
-        
+
+05/18/2015
+1.Fix the bug in parser.parse()
+    The parser now should be able to read through a table in raw data
+2.Add a file, cpk_coloring to raw folder. This is a coloring conventionally used by chemists, so we adapt to this coloring.
+
