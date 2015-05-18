@@ -129,12 +129,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //init the textparser parser
         TextParser parser = new TextParser();
 
-        //load the predefined colors for each element
-        InputStream iS = getResources().openRawResource(R.raw.colorpicker);
+        //load the predefined colors for each element from file R.raw.xxx
+        InputStream iS = getResources().openRawResource(R.raw.cpk_coloring);
         BufferedReader readColor = new BufferedReader(new InputStreamReader(iS));
         parser.loadColor(readColor);
 
-        //get the resources(vertices of molecules)!
+        //get the resources(vertices of molecules from files R.raw.xxx!
         InputStream inputStream1 = getResources().openRawResource(R.raw.molecule1);
         InputStream inputStream2 = getResources().openRawResource(R.raw.molecule2);
         BufferedReader[] reader = new BufferedReader[2];
