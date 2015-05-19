@@ -15,7 +15,7 @@ public class Sphere
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
 
-    public Sphere(float x, float y, float z, float red, float green, float blue)
+    public Sphere(float x, float y, float z, float red, float green, float blue,float radius)
     {
         this.xCoord = x;
         this.yCoord = y;
@@ -24,6 +24,8 @@ public class Sphere
         this.redColor = red;
         this.greenColor = green;
         this.blueColor = blue;
+
+        this.radius = radius;
 
         buildSphere();
         setCoordinates();
@@ -34,7 +36,7 @@ public class Sphere
 
     public static final float UB = (float) 15.0;
 
-    public int index = 0;
+    private int index = 0;
     public float xCoord = 0;
     public float yCoord = 0;
     public float zCoord = 0;
@@ -43,6 +45,7 @@ public class Sphere
     public float greenColor;
     public float blueColor;
 
+    public float radius;
 
     //sphere
     public float[] vertices = new float[NUMBER_OF_COORDS];

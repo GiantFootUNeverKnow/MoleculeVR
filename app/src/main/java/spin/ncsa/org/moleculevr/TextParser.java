@@ -205,7 +205,7 @@ public class TextParser {
     //normalize an array of floating points to an array in ranges[-0.8,0.8]
     //Normalization formula: z_i = 1.6 * ( (x_i - min)/(max - min) - 0.5 ), where max&&min are the maximum && minimum of the array
     //option b.
-    //normalize an array of floating points to an array in ranges[0,1]
+    //normalize an array of floating points to an array in ranges[1,2]
     //Normalization formula: z_i = ( (x_i - min)/(max - min)  ), where max&&min are the maximum && minimum of the array
     //precondition: The type of arr has to be Float
     private void normalize(ArrayList<Float> arr,char opt){
@@ -224,7 +224,7 @@ public class TextParser {
                         (float)( 1.6 * ( (arr.get(i) - min)/(max - min) - 0.5) ) );
             else if (opt == 'b')
                 arr.set(i,
-                        (arr.get(i) - min)/(max - min));
+                        (arr.get(i) - min)/(max - min) + 1);
             }
     }
 }

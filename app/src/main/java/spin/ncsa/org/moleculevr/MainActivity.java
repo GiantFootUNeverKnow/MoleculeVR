@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -135,6 +136,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         InputStream iS = getResources().openRawResource(R.raw.cpk_coloring);
         BufferedReader readColor = new BufferedReader(new InputStreamReader(iS));
         parser.loadColor(readColor);
+
+        //load table of atom mass from file R.raw.atommass
+        iS = getResources().openRawResource(R.raw.atommass);
+        BufferedReader readAtomMass = new BufferedReader(new InputStreamReader(iS));
+        parser.loadAtomMass(readAtomMass);
 
         //get the resources(vertices of molecules from files R.raw.xxx!
         InputStream inputStream1 = getResources().openRawResource(R.raw.molecule1);
