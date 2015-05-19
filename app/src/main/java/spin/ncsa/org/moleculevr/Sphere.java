@@ -14,9 +14,19 @@ public class Sphere
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
-
+    /*Precondition: x,y,z should be in range[-0.8,0.8],
+                    red,green,blue should be in range [0,1]
+    *               radius should be in range [1,2]
+    */
     public Sphere(float x, float y, float z, float red, float green, float blue,float radius)
     {
+        //error checking
+        if (x > 0.8 || x < -0.8 || y > 0.8 || y < -0.8 || z > 0.8 || z <-0.8 ||
+                red > 1 || red < 0 || green > 0 || green < 0 || blue > 0 || blue < 0 ||
+                radius > 2 || radius < 1) {
+            throw new IllegalArgumentException("Arguments out of range");
+        }
+
         this.xCoord = x;
         this.yCoord = y;
         this.zCoord = z;
@@ -25,7 +35,7 @@ public class Sphere
         this.greenColor = green;
         this.blueColor = blue;
 
-        this.radius = radius;
+        this.radius = radius * 10;
 
         buildSphere();
         setCoordinates();
