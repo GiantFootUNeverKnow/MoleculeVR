@@ -1,10 +1,4 @@
-OpenGL version: 2.1 INTEL-10.0.86
-Video configuration: Intel Iris OpenGL Engine
-Maximum supported width and height of the viewport: 16384 x 16384
-OpenGL depth buffer bit: 16
 
-
-/Users/Radhir/Desktop/smallcell.xyz
 ====================================================================================
 Title               H24 Pb4 C4 Br12 N4
 
