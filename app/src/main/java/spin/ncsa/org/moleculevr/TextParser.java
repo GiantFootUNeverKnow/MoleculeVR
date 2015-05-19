@@ -4,7 +4,6 @@ package spin.ncsa.org.moleculevr;
  * Created by Radhir on 4/17/15.
  */
 import android.graphics.Color;
-import android.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,8 +15,8 @@ public class TextParser {
 
     ArrayList<Sphere> m = new ArrayList<>();
 
-    //ArrayList<Color> colors = null;
     Hashtable colorHashtable = null;
+    Hashtable massHashtable =  null;
 
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
@@ -50,6 +49,38 @@ public class TextParser {
 
     public int outputNumOfAtoms(){
         return m.size();
+    }
+
+    public void loadAtomMass(BufferedReader bf){
+        if (massHashtable != null)
+            return;
+        massHashtable = new Hashtable();
+        Scanner s = new Scanner(bf);
+
+        //each iteration the parser parses a line
+        //I will try a different way to parse the string than the way I did with color, just for fun
+        //all error checking are also just practice of usage of scanner
+        while(s.hasNext()){
+            //skip the atomic number
+            if (s.hasNextInt())
+                s.next();
+            //read atomic symbol
+            String element = null ;
+            if (s.hasNext())
+                element = s.next();
+            //skip the name of element
+            if (s.hasNext())
+                s.next();
+            //read atom mass
+            float f = -1;
+            if (s.hasNextDouble())
+                f = (float)s.nextDouble();
+            //add a hash
+            if (f!=-1 && element != null)
+                massHashtable.put(element,f);
+        }
+
+        s.close();
     }
 
     public void loadColor(BufferedReader bf){
