@@ -1,5 +1,7 @@
 package spin.ncsa.org.moleculevr;
-
+/*
+    Created by Xusheng on 04/14/2015
+ */
 import android.os.Bundle;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
