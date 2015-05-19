@@ -206,7 +206,7 @@ public class TextParser {
     //Normalization formula: z_i = 1.6 * ( (x_i - min)/(max - min) - 0.5 ), where max&&min are the maximum && minimum of the array
     //option b.
     //normalize an array of floating points to an array in ranges[1,2]
-    //Normalization formula: z_i = ( (x_i - min)/(max - min)  ), where max&&min are the maximum && minimum of the array
+    //Normalization formula: z_i = ( (x_i - min)/(max - min) + 1 ), where max&&min are the maximum && minimum of the array
     //precondition: The type of arr has to be Float
     private void normalize(ArrayList<Float> arr,char opt){
             float max,min;

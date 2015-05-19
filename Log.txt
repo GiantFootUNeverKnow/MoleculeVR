@@ -95,6 +95,37 @@ Distance from origin: now 0.0
 Background Color: now Black
 Initial Molecule: now 2
 
-TODO_LIST:
-        1.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
-         because the size of screen is really limited. The ratio of the lightest atom to the heaviest atom shouldn't be over 1/4
+05/19/2015
+0.Added a file atommass.txt which has atomic mass for all elements
+1.Added a method TextParser.loadAtomMass() that could load atomic mass for each element from atommass.txt
+2.Adjust radius of a sphere according to the atomic mass of that element by the following algorithm:
+    After TextParser finishes parsing, it stores atomic masses of all atoms in the molecule to an array and normalizes their masses
+        The formula used for normalization:
+        z_i = ( (x_i - min)/(max - min) + 1 ), where max&&min are the maximum && minimum of the array
+    Hence, the resulting masses are between 1.0f and 2.0f.
+        An atom with normalized mass 2.0f is the heaviest atom of the molecule
+        An atom with normalized mass 1.0f is the lightest atom of the molecule
+        (This 2:1 ratio is adjustable)
+    Then TextParser passes masses to Sphere constructor as one argument.
+    Sphere class generates a sphere by using this formula to normalize its vertices
+        vertices[i] = (vertices[i]  * radius )/RESIZING_FACTOR + xCoord
+        ~~ + yCoord
+        ~~ + zCoord
+        RESIZING_FACTOR is also an adjustable constant
+3. Filter out invalid arguments passed into Sphere's constructor. If there is any illegal argument, IllegalArgumentException would occur
+4. Sophisticate TextParser.normalize()
+    Temporarily option a is used for normalizing coordinates, normalizing a random array to range [-0.8f,0.8f]
+                option b is used for normalizing atomic masses, normalizing a random array to range [1.0f,2.0f]
+    Details are on the comments of codes
+
+Parameters that maybe reconfigured later:
+Criteria for a switching: now is x>0.95, y <0.5, z <0.5
+Looping time: 100 times
+Size of frame of molecules: [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]
+Range of radii of atoms; [1.0,2.0]
+RESIZING_FACTOR: 20
+Distance from origin: now 0.0
+Background Color: now Black
+Initial Molecule: now 2
+
+

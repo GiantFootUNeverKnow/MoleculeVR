@@ -14,7 +14,7 @@ public class Sphere
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
-    public final static float RESIZING_FACTOR = 20.0f;
+    public final static float RESIZING_FACTOR = 20.0f;//resize the ball by factor of 20
 
     /*Precondition: x,y,z should be in range[-0.8,0.8],
                     red,green,blue should be in range [0,1]
@@ -22,7 +22,7 @@ public class Sphere
     */
     public Sphere(float x, float y, float z, float red, float green, float blue,float radius)
     {
-        //error checking
+        //argument checking
         if ( Float.compare(x, 0.8f) > 0 || Float.compare(x, -0.8f) < 0 )
             throw new IllegalArgumentException(" x is out of range ");
         if ( Float.compare(y , 0.8f) > 0 || Float.compare(y,  -0.8f) < 0 )
