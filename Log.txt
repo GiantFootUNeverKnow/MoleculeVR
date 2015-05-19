@@ -61,20 +61,40 @@ Add the color-assigning feature to the app:
 4. Found a bug in parser.parse().
     The parser can only parse lines before 98.
 
-TODO_LIST:
-        0.Define and calculate the normalization factor(upperbound for coordinates):
-          Because our OPENGL coordinates only allow coordinate be in range (-1,1) for all x,y,z coordinates, some atoms with large value for coordinates such as
-          62 H   H28        -0.19378    9.96085    7.70894, 
-          are really hard to draw.
-          So for each atom(sphere), we want to define a upperbound value UB such that all coordiantes are smaller than UB.
-          Right now UB is set to a constant 10, but we want to make it a variable that is initiazed when a sphere is created.
-          This initialization should be along with that for color, x, y, z and radius.
-        1.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
-         because the size of screen is really limited. The ratio of the lightest atom to the heaviest atom shouldn't be over 1/4 
-        2.fix the tilt of molecule(Don't worry now, long-term goal)
 
 05/18/2015
 1.Fix the bug in parser.parse()
     The parser now should be able to read through a table in raw data
 2.Add a file, cpk_coloring to raw folder. This is a coloring conventionally used by chemists, so we adapt to this coloring.
+3.Pre-normalize coordinates in given molecule data.
+ After normalization, all coordinates(x,y,z) should be in range [-0.8,0.8].
+ An atom set at 0.8 is the maximum(rightmost, uppermost, or farthest) atom in that dimension
+ Inversely, an atom set at -0.8 is the minimum(leftmost, lowermost, or nearest) atom in that dimension.
+ The rest of atoms are linearly interpolated between -0.8 and 0.8.
+ Specific Normalization Formula:
+        z_i = 1.6 * ( (x_i - min)/(max - min) - 0.5 )
+ The reason why 0.8 is used instead of 1.0 is to provide a better vision of the whole molecule(no clipping on edges of models)
+4.Modified the algorithm to modeling.
+    (i).Instead of creating spheres along with parsing a text file, now the program first finished all parsing job and then creating spheres based on normalized
+    coordinates. The normalization has to happen after all parsing because it requires to know all coordinates in a molecule.
+        This change happens in TextParser.parse()
+     (ii).Since the coordinates given in text-file is not necessarily between [-1.0,1.0], they need to be resized before modelling.
+     Without normalization,the program used to adopt a dumb approach to resize: it defined a temporary "refactoring constant" UB, then divided all coordinates by
+     UB. The value of VB is determined merely by experiments and is not guaranteed to be a precise value at all. Now that there is normalization, UB is not needed.
+        However, there is still trace of UB remained in Sphere.setCoordinate() because of another resizing! We generated Spheres with different centers but the program
+     didn't assign radius to them yet. Hence, UB, as a spare variable, is a convenient constant to represent a "uniform radius" that is applied to all atoms.
+     I know it is a lazy & dangerous practice to reuse an existing variable for a different purpose, but for the sake of now, just leave it there.
+     I'll implement radius feature immediately as the first task and get rid of UB completely.
 
+
+Parameters that maybe reconfigured later:
+Criteria for a switching: now is x>0.95, y <0.5, z <0.5
+Looping time: 100 times
+Size of frame of molecules: [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]
+Distance from origin: now 0.0
+Background Color: now Black
+Initial Molecule: now 2
+
+TODO_LIST:
+        1.Assign radius to each kind of atom, choose whatever number that suits. Although the radius should be related to an atom's atomic number, don't make a He atom as twice as big as an H atom
+         because the size of screen is really limited. The ratio of the lightest atom to the heaviest atom shouldn't be over 1/4

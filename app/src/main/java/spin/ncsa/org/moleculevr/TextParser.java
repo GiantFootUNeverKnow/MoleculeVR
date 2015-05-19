@@ -122,12 +122,10 @@ public class TextParser {
                     String temp = line;
                     temp = temp.trim();
                     if(!temp.isEmpty())
-                        //continue;
-                    //else
                     {
                         //parse the name of element
                         String elementName = line.split("\\s+")[2];
-                        //parse the coordiante of that atom
+                        //parse the coordinates of that atom
                         float xCoord = (float)Double.parseDouble(line.substring(20,28));
                         float yCoord = (float)Double.parseDouble(line.substring(31,39));
                         float zCoord = (float)Double.parseDouble(line.substring(42,50));
@@ -136,15 +134,6 @@ public class TextParser {
                         y_coords.add(yCoord);
                         z_coords.add(zCoord);
                         elem_names.add(elementName);
-                        //calculate color for the atom
-                        /*int _color = (int) colorHashtable.get(elementName);
-                        float red_color =  ((float)Color.red(_color)/255);
-                        float green_color =  ((float)Color.green(_color)/255);
-                        float blue_color =  ((float)Color.blue(_color)/255);*/
-                        //CREATE SPHERE OBJECTS IN HERE
-                        /*Sphere ball;
-                        ball = new Sphere(xCoord,yCoord,zCoord,red_color,green_color,blue_color);
-                        m.add(ball);*/
                     }
 
                 }
@@ -173,6 +162,8 @@ public class TextParser {
         }
     }
 
+    //normalize an array of floating points to an array in ranges[-0.8,0.8]
+    //Normalization formula: z_i = 1.6 * ( (x_i - min)/(max - min) - 0.5 ), where max&&min are the maximum && minimum of the array
     private void normalize(ArrayList<Float> arr){
             float max,min;
             max = Float.MIN_VALUE;
