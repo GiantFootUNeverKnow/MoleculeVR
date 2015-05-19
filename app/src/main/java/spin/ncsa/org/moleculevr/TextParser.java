@@ -126,6 +126,7 @@ public class TextParser {
         ArrayList<Float> x_coords = new ArrayList<>();
         ArrayList<Float> y_coords = new ArrayList<>();
         ArrayList<Float> z_coords = new ArrayList<>();
+        ArrayList<Float> masses = new ArrayList<>();
         ArrayList<String> elem_names = new ArrayList<>();
 
         try {
@@ -156,6 +157,9 @@ public class TextParser {
                     {
                         //parse the name of element
                         String elementName = line.split("\\s+")[2];
+                        //calculate atommass for the atom
+                        float _mass = (float)massHashtable.get(elementName );
+                        masses.add(_mass);
                         //parse the coordinates of that atom
                         float xCoord = (float)Double.parseDouble(line.substring(20,28));
                         float yCoord = (float)Double.parseDouble(line.substring(31,39));
@@ -177,10 +181,12 @@ public class TextParser {
             }
         }
 
-        //normalize x,y,z coordinates separately
-        normalize(x_coords);
-        normalize(y_coords);
-        normalize(z_coords);
+        //normalize x,y,z coordinates and atommass separately
+        //normalize coordinates using option a, normalize
+        normalize(x_coords,'a');
+        normalize(y_coords,'a');
+        normalize(z_coords,'a');
+        normalize(masses,'b');
         //create an array of Spheres
         for (int i = 0; i < elem_names.size(); i++){
             //calculate color for the atom
@@ -190,14 +196,19 @@ public class TextParser {
             float blue_color =  ((float)Color.blue(_color)/255);
             //CREATE SPHERE OBJECTS IN HERE
             Sphere ball;
-            ball = new Sphere(x_coords.get(i),y_coords.get(i),z_coords.get(i),red_color,green_color,blue_color);
+            ball = new Sphere(x_coords.get(i),y_coords.get(i),z_coords.get(i),red_color,green_color,blue_color,masses.get(i));
             m.add(ball);
         }
     }
 
+    //option a.
     //normalize an array of floating points to an array in ranges[-0.8,0.8]
     //Normalization formula: z_i = 1.6 * ( (x_i - min)/(max - min) - 0.5 ), where max&&min are the maximum && minimum of the array
-    private void normalize(ArrayList<Float> arr){
+    //option b.
+    //normalize an array of floating points to an array in ranges[0,1]
+    //Normalization formula: z_i = ( (x_i - min)/(max - min)  ), where max&&min are the maximum && minimum of the array
+    //precondition: The type of arr has to be Float
+    private void normalize(ArrayList<Float> arr,char opt){
             float max,min;
             max = Float.MIN_VALUE;
             min = Float.MAX_VALUE;
@@ -208,8 +219,12 @@ public class TextParser {
                     min = f;
             }
             for (int i = 0; i < arr.size(); i++){
+            if (opt == 'a')
                 arr.set(i,
                         (float)( 1.6 * ( (arr.get(i) - min)/(max - min) - 0.5) ) );
+            else if (opt == 'b')
+                arr.set(i,
+                        (arr.get(i) - min)/(max - min));
             }
     }
 }
