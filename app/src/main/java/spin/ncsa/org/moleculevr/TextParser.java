@@ -4,6 +4,7 @@ package spin.ncsa.org.moleculevr;
  * Created by Radhir on 4/17/15.
  */
 import android.graphics.Color;
+import android.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -91,6 +92,11 @@ public class TextParser {
         m = null;
         m = new ArrayList<>();
 
+        ArrayList<Float> x_coords = new ArrayList<>();
+        ArrayList<Float> y_coords = new ArrayList<>();
+        ArrayList<Float> z_coords = new ArrayList<>();
+        ArrayList<String> elem_names = new ArrayList<>();
+
         try {
             s = new Scanner(bf);
 
@@ -125,15 +131,20 @@ public class TextParser {
                         float xCoord = (float)Double.parseDouble(line.substring(20,28));
                         float yCoord = (float)Double.parseDouble(line.substring(31,39));
                         float zCoord = (float)Double.parseDouble(line.substring(42,50));
+                        //put coordinates and name of elements into arrays
+                        x_coords.add(xCoord);
+                        y_coords.add(yCoord);
+                        z_coords.add(zCoord);
+                        elem_names.add(elementName);
                         //calculate color for the atom
-                        int _color = (int) colorHashtable.get(elementName);
+                        /*int _color = (int) colorHashtable.get(elementName);
                         float red_color =  ((float)Color.red(_color)/255);
                         float green_color =  ((float)Color.green(_color)/255);
-                        float blue_color =  ((float)Color.blue(_color)/255);
+                        float blue_color =  ((float)Color.blue(_color)/255);*/
                         //CREATE SPHERE OBJECTS IN HERE
-                        Sphere ball;
+                        /*Sphere ball;
                         ball = new Sphere(xCoord,yCoord,zCoord,red_color,green_color,blue_color);
-                        m.add(ball);
+                        m.add(ball);*/
                     }
 
                 }
@@ -144,5 +155,37 @@ public class TextParser {
                 s.close();
             }
         }
+        //normalize x,y,z coordinates separately
+        normalize(x_coords);
+        normalize(y_coords);
+        normalize(z_coords);
+        //create an array of Spheres
+        for (int i = 0; i < elem_names.size(); i++){
+            //calculate color for the atom
+            int _color = (int) colorHashtable.get( elem_names.get(i) );
+            float red_color =  ((float)Color.red(_color)/255);
+            float green_color =  ((float)Color.green(_color)/255);
+            float blue_color =  ((float)Color.blue(_color)/255);
+            //CREATE SPHERE OBJECTS IN HERE
+            Sphere ball;
+            ball = new Sphere(x_coords.get(i),y_coords.get(i),z_coords.get(i),red_color,green_color,blue_color);
+            m.add(ball);
+        }
+    }
+
+    private void normalize(ArrayList<Float> arr){
+            float max,min;
+            max = Float.MIN_VALUE;
+            min = Float.MAX_VALUE;
+            for (float f: arr){
+                if (f > max)
+                    max = f;
+                if (f < min)
+                    min = f;
+            }
+            for (int i = 0; i < arr.size(); i++){
+                arr.set(i,
+                        (float)( 1.6 * ( (arr.get(i) - min)/(max - min) - 0.5) ) );
+            }
     }
 }
