@@ -14,6 +14,8 @@ public class Sphere
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
+    public final static float RESIZING_FACTOR = 20.0f;
+
     /*Precondition: x,y,z should be in range[-0.8,0.8],
                     red,green,blue should be in range [0,1]
     *               radius should be in range [1,2]
@@ -42,7 +44,7 @@ public class Sphere
         this.greenColor = green;
         this.blueColor = blue;
 
-        this.radius = radius * 10;
+        this.radius = radius;
 
         buildSphere();
         setCoordinates();
@@ -51,7 +53,7 @@ public class Sphere
     public static final float X = (float) 0.52573111;
     public static final float Z = (float) 0.85065081;
 
-    public static final float UB = (float) 15.0;
+    //public static final float UB = (float) 15.0;
 
     private int index = 0;
     public float xCoord = 0;
@@ -85,9 +87,9 @@ public class Sphere
 
     public void setCoordinates(){//move sphere from origin to the given coordinates
        for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
-           vertices[i] = ( (vertices[i]  / UB ) + xCoord);
-           vertices[i+1] = ( (vertices[i+1]  / UB ) + yCoord);
-           vertices[i+2] = ( (vertices[i+2]  / UB ) + zCoord);
+           vertices[i] = ( (vertices[i]  * radius )/RESIZING_FACTOR + xCoord);
+           vertices[i+1] = ( (vertices[i+1]  * radius )/RESIZING_FACTOR + yCoord);
+           vertices[i+2] = ( (vertices[i+2]  * radius )/RESIZING_FACTOR + zCoord);
        }
     }
 
