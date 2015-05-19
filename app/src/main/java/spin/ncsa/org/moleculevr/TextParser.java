@@ -140,10 +140,12 @@ public class TextParser {
             }
         } finally {
 
+            //close scanner and end parsing
             if (s != null) {
                 s.close();
             }
         }
+
         //normalize x,y,z coordinates separately
         normalize(x_coords);
         normalize(y_coords);
