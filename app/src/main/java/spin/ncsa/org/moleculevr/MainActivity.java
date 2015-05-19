@@ -41,7 +41,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private CardboardOverlayView mOverlay;
 
     //If you added molecules or deleted molecules, please change this variable
-    private static final int NUM_MOLECULE = 2;
+    private static final int NUM_MOLECULE = 3;
 
     private static final int COORDS_PER_VERTEX = 3;
 
@@ -143,16 +143,28 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         parser.loadAtomMass(readAtomMass);
 
         //get the resources(vertices of molecules from files R.raw.xxx!
+        /*
         InputStream inputStream1 = getResources().openRawResource(R.raw.molecule1);
         InputStream inputStream2 = getResources().openRawResource(R.raw.molecule2);
-        BufferedReader[] reader = new BufferedReader[2];
+        InputStream inputStream0 = getResources().openRawResource(R.raw.molecule0);
+        BufferedReader[] reader = new BufferedReader[3];
         reader[0] = new BufferedReader(new InputStreamReader(inputStream1));
         reader[1] = new BufferedReader(new InputStreamReader(inputStream2));
+        reader[2] = new BufferedReader(new InputStreamReader(inputStream0));*/
+        InputStream[] inputStreams = new InputStream[NUM_MOLECULE];
+        BufferedReader[] readers = new BufferedReader[NUM_MOLECULE];
+        for (int i = 0; i <NUM_MOLECULE; i++){
+            String resourceName = "molecule" + i ;
+            //open the resource by its resourceIdetifier which could be gained through the resourceName
+            int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
+            inputStreams[i] = getResources().openRawResource(iD);
+            readers[i] = new BufferedReader(new InputStreamReader(inputStreams[i]));
+        }
 
         for (int i = 0; i < NUM_MOLECULE; i++) {
 
             try {
-                parser.parse(reader[i]);
+                parser.parse(readers[i]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
