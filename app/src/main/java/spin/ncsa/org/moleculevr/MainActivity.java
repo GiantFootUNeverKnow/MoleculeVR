@@ -143,14 +143,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         parser.loadAtomMass(readAtomMass);
 
         //get the resources(vertices of molecules from files R.raw.xxx!
-        /*
-        InputStream inputStream1 = getResources().openRawResource(R.raw.molecule1);
-        InputStream inputStream2 = getResources().openRawResource(R.raw.molecule2);
-        InputStream inputStream0 = getResources().openRawResource(R.raw.molecule0);
-        BufferedReader[] reader = new BufferedReader[3];
-        reader[0] = new BufferedReader(new InputStreamReader(inputStream1));
-        reader[1] = new BufferedReader(new InputStreamReader(inputStream2));
-        reader[2] = new BufferedReader(new InputStreamReader(inputStream0));*/
+
         InputStream[] inputStreams = new InputStream[NUM_MOLECULE];
         BufferedReader[] readers = new BufferedReader[NUM_MOLECULE];
         for (int i = 0; i <NUM_MOLECULE; i++){
@@ -265,12 +258,43 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Draw rest of the scene.
     }
 
+    //adjust vertices to fit oscillation, just try to oscillate at x-axis in scale of 0.01 currently
+    private void adjustVertices(int index){
+
+        moleculeVertices[index].clear();//clear out vertices in this buffer
+        float [] temp = vMolecule[index].clone();//make a local copy of the molecules
+        float SCALE = 0.01f;
+
+        for (int i = 0; i < nAtoms[index]; i++){
+            //generate a random vector of size 3 in scale of +-0.01 for each atom
+            float incre_x = (float)(Math.random() - 0.5f) * SCALE;
+            float incre_y = (float)(Math.random() - 0.5f) * SCALE;
+            float incre_z = (float)(Math.random() - 0.5f) * SCALE;
+                        //add the increment_vector to each vertices of the atom
+                        for (int j = 0; j < Sphere.NUMBER_OF_VERTICES; j++){
+                            //access the x-axis coordinate of the j-th vertex on the i-th atom, that for y-axis and that for z-axis following
+                            int x_index = i * Sphere.NUMBER_OF_COORDS + COORDS_PER_VERTEX * j + 0;
+                            int y_index = x_index + 1;
+                            int z_index = x_index + 2;
+                            temp[x_index] += incre_x;
+                            temp[y_index] += incre_y;
+                            temp[z_index] += incre_z;
+                        }
+        }
+        moleculeVertices[index].put(temp);
+        moleculeVertices[index].position(0);
+
+    }
+
     //the function to draw the i-th molecule
     public void drawMolecule(int index){
         GLES20.glUseProgram(mMoleculeProgram[index]);
 
         GLES20.glUniformMatrix4fv(mMoleculeModelParam[index],1,false,mModelMolecule,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
+
+        //adjust the positions to form random oscillation
+        adjustVertices(index);
 
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
