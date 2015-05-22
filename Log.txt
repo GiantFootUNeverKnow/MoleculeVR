@@ -131,4 +131,12 @@ Distance from origin: now 0.0
 Background Color: now Black
 Initial Molecule: now 2
 
-
+05/21/2015
+1.Add oscillation feature to molecule
+    -A new function called adjustVertices(int index) will be called each time a frame is drawn,
+    which takes care of various adjustment to molecule that could be added in future
+    -By now, this function moves each atom by a random translational vector that is within scale 0.01
+    i.e. all components of the vector should be at most 0.01, at least -0.01. For each frame, different random vectors
+    would be generated and used to different atoms. Basically, these atoms shake irregularly.
+2. It seems to be bit hard for a large cell to move, the calculation is quite large. Maybe consider to use another Timer to control the oscillation or
+oscillate once for every few frames 

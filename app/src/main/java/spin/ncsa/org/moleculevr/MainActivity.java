@@ -258,7 +258,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Draw rest of the scene.
     }
 
-    //adjust vertices to fit oscillation, just try to oscillate at x-axis in scale of 0.01 currently
+    //adjust vertices to fit oscillation, which randomly move to any direction in scale +-0.01
     private void adjustVertices(int index){
 
         moleculeVertices[index].clear();//clear out vertices in this buffer
