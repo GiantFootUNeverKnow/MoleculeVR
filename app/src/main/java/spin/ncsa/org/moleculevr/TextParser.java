@@ -7,6 +7,7 @@ import android.graphics.Color;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
@@ -17,6 +18,8 @@ public class TextParser {
 
     Hashtable colorHashtable = null;
     Hashtable massHashtable =  null;
+
+    Hashtable NearestNeighbor = null;
 
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
@@ -45,6 +48,10 @@ public class TextParser {
             }
         }
         return c;
+    }
+
+    public void OutputBonds(){
+
     }
 
     public int outputNumOfAtoms(){
@@ -196,8 +203,58 @@ public class TextParser {
             float blue_color =  ((float)Color.blue(_color)/255);
             //CREATE SPHERE OBJECTS IN HERE
             Sphere ball;
-            ball = new Sphere(x_coords.get(i),y_coords.get(i),z_coords.get(i),red_color,green_color,blue_color,masses.get(i));
+            ball = new Sphere(elem_names.get(i),x_coords.get(i),y_coords.get(i),z_coords.get(i),red_color,green_color,blue_color,masses.get(i));
             m.add(ball);
+        }
+
+        //generate bonds based on nearest neighbor policy
+        createBonds();
+        //testing
+        System.out.println("Nothing");
+    }
+
+    /*
+    * Construct a Nearest Neighbors' hash table of a molecule specified in array m , which hashes an atom to its nearest neighbors,
+    * Note: this method would erase previous defined NN hashtable
+    * Note: if m is an empty array, this method exits immediately
+    * */
+    private void createBonds(){
+        //init
+        if (m == null)
+            return;
+        NearestNeighbor = null;
+        NearestNeighbor = new Hashtable<Sphere,ArrayList<Float>>();
+
+        //naive way:iterate all vertices
+        for (Sphere a: m){
+            float minDist = Float.MAX_VALUE;
+            ArrayList<Sphere> neighbors = new ArrayList<>();
+
+            float[] a_coords = new float[3];
+            a_coords[0] = a.xCoord;
+            a_coords[1] = a.yCoord;
+            a_coords[2] = a.zCoord;
+
+            for (Sphere b :m){
+
+                float[] b_coords = new float[3];
+                b_coords[0] = b.xCoord;
+                b_coords[1] = b.yCoord;
+                b_coords[2] = b.zCoord;
+
+                //if atom b is nearer than all previous atoms, replace neighbors by an arrayList with b
+                if (Float.compare(util.EuclidDistance(a_coords,b_coords) , minDist) < 0.0f ){
+                    neighbors.clear();
+                    neighbors.add(b);
+                    minDist = util.EuclidDistance(a_coords,b_coords);
+                }
+                //if atom b is as near as atoms in neighbors, add b into neighbors
+                else if (Float.compare(util.EuclidDistance(a_coords,b_coords),0.0f) == 0 ){
+                    neighbors.add(b);
+                }
+            }
+
+            NearestNeighbor.put(a,neighbors);
         }
     }
 

@@ -20,7 +20,7 @@ public class Sphere
                     red,green,blue should be in range [0,1]
     *               radius should be in range [1,2]
     */
-    public Sphere(float x, float y, float z, float red, float green, float blue,float radius)
+    public Sphere(String name,float x, float y, float z, float red, float green, float blue,float radius)
     {
         //argument checking
         if ( Float.compare(x, 0.8f) > 0 || Float.compare(x, -0.8f) < 0 )
@@ -46,6 +46,8 @@ public class Sphere
 
         this.radius = radius;
 
+        this.elem_name = name;
+
         buildSphere();
         setCoordinates();
     }
@@ -59,6 +61,7 @@ public class Sphere
     public float xCoord = 0;
     public float yCoord = 0;
     public float zCoord = 0;
+    public String  elem_name = null;
 
     public float redColor;
     public float greenColor;
