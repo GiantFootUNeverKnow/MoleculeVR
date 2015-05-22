@@ -139,4 +139,4 @@ Initial Molecule: now 2
     i.e. all components of the vector should be at most 0.01, at least -0.01. For each frame, different random vectors
     would be generated and used to different atoms. Basically, these atoms shake irregularly.
 2. It seems to be bit hard for a large cell to move, the calculation is quite large. Maybe consider to use another Timer to control the oscillation or
-oscillate once for every few frames 
+oscillate once for every few frames

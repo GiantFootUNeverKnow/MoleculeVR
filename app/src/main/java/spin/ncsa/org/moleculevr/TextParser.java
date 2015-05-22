@@ -51,8 +51,34 @@ public class TextParser {
         return c;
     }
 
+    //return colors of bonds
+    public float[] outputBondingColors(){
+        ArrayList<Float> ret = new ArrayList<>();
+
+        for (Sphere a: m){
+            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
+            for (Sphere b : neighbors){
+                ret.add(a.redColor);
+                ret.add(a.greenColor);
+                ret.add(a.blueColor);
+
+                ret.add(b.redColor);
+                ret.add(b.greenColor);
+                ret.add(b.blueColor);
+            }
+        }
+
+        float[] floatArray = new float[ret.size()];
+        int i = 0;
+        for (Float f : ret) {
+            floatArray[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
+        }
+
+        return floatArray;
+    }
+
     //return bonds stored in Nearest Neighbors in forms of pairs of vertices
-    public float[] OutputBonds(){
+    public float[] outputBonds(){
         ArrayList<Float> ret = new ArrayList<>();
 
         for (Sphere a: m){
@@ -246,7 +272,7 @@ public class TextParser {
         if (m == null)
             return;
         NearestNeighbor = null;
-        NearestNeighbor = new Hashtable<Sphere,ArrayList<Sphere>>();
+        NearestNeighbor = new Hashtable<>();
 
         //naive way:iterate all vertices
         for (Sphere a: m){

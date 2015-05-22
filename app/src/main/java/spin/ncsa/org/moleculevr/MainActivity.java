@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -48,8 +47,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private FloatBuffer[] moleculeVertices ;
     private FloatBuffer[] mMoleculeColor ;
 
+    private FloatBuffer[] bondingVertices;
+    private FloatBuffer[] mBondingColor;
+
     float[][] vMolecule;
+    float[][] vBondings;
     float[][] cMolecule;
+    float[][] cBondings;
 
     private int[] mMoleculeProgram;
     private int[] mMoleculePositionParam;
@@ -57,9 +61,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mMoleculeModelParam;
     private int[] mMoleculeModelViewParam;
 
+    private int[] mBondingProgram;
+    private int[] mBondingPositionParam;
+    private int[] mBondingColorParam;
+    private int[] mBondingModelParam;
+    private int[] mBondingModelViewParam;
+
     private float DistanceToScreen = (float)0.0;
 
     private float[] mModelMolecule;
+    private float[] mModelBonding;
     private float[] mHeadView;
     private float[] mHeadUpVetcor;
     private float[] mCamera;
@@ -87,6 +98,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Log.i(TAG,"onCreate");
 
         mModelMolecule = new float[16];
+        mModelBonding = new float[16];
         mHeadView = new float[16];
         mHeadUpVetcor = new float[3];
         mCamera = new float[16];
@@ -99,11 +111,22 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mMoleculeModelParam = new int[NUM_MOLECULE];
         mMoleculeModelViewParam = new int[NUM_MOLECULE];
 
+        mBondingProgram = new int[NUM_MOLECULE];
+        mBondingPositionParam = new int[NUM_MOLECULE];
+        mBondingColorParam = new int[NUM_MOLECULE];
+        mBondingModelParam = new int[NUM_MOLECULE];
+        mBondingModelViewParam = new int[NUM_MOLECULE];
+
         moleculeVertices = new FloatBuffer[NUM_MOLECULE];
         mMoleculeColor = new FloatBuffer[NUM_MOLECULE];
 
+        bondingVertices = new FloatBuffer[NUM_MOLECULE];
+        mBondingColor = new FloatBuffer[NUM_MOLECULE];
+
         vMolecule = new float[NUM_MOLECULE][];
+        vBondings = new float[NUM_MOLECULE][];
         cMolecule = new float[NUM_MOLECULE][];
+        cBondings = new float[NUM_MOLECULE][];
         nAtoms = new int[NUM_MOLECULE];
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
@@ -143,7 +166,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         parser.loadAtomMass(readAtomMass);
 
         //get the resources(vertices of molecules from files R.raw.xxx!
-
         InputStream[] inputStreams = new InputStream[NUM_MOLECULE];
         BufferedReader[] readers = new BufferedReader[NUM_MOLECULE];
         for (int i = 0; i <NUM_MOLECULE; i++){
@@ -154,6 +176,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             readers[i] = new BufferedReader(new InputStreamReader(inputStreams[i]));
         }
 
+        //build model and shader machine
         for (int i = 0; i < NUM_MOLECULE; i++) {
 
             try {
@@ -163,8 +186,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             }
 
             vMolecule[i] = parser.outputVertices();
+            vBondings[i] = parser.outputBonds();
             cMolecule[i] = parser.outputColors();
+            cBondings[i] = parser.outputBondingColors();
             nAtoms[i] = parser.outputNumOfAtoms();
+
+            //Build Molecule Program
 
             //Create ByteBuffer of vertices' position and color based on the float array created by "World"
             ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vMolecule[i].length * 4);
@@ -185,7 +212,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             GLES20.glLinkProgram(mMoleculeProgram[i]);
             GLES20.glUseProgram(mMoleculeProgram[i]);
 
-            checkGLError("Create program ");
+            checkGLError("Create molecule program ");
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
             mMoleculePositionParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Position");
@@ -197,11 +224,48 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             GLES20.glEnableVertexAttribArray(mMoleculePositionParam[i]);
             GLES20.glEnableVertexAttribArray(mMoleculeColorParam[i]);
 
-            checkGLError("Thing Program Params");
+            checkGLError("Molecule Program Params");
+
+            //Build Bonding Program
+
+            //Create ByteBuffer of vertices' position and color based on the float array created by "World"
+            ByteBuffer ByteVertices2 = ByteBuffer.allocateDirect(vBondings[i].length * 4);
+            ByteVertices2.order(ByteOrder.nativeOrder());
+            bondingVertices[i] = ByteVertices2.asFloatBuffer();
+            bondingVertices[i].put(vBondings[i]);
+            bondingVertices[i].position(0);
+
+            ByteBuffer ByteColors2 = ByteBuffer.allocateDirect(cBondings[i].length * 4);
+            ByteColors2.order(ByteOrder.nativeOrder());
+            mBondingColor[i] = ByteColors2.asFloatBuffer();
+            mBondingColor[i].put(cBondings[i]);
+            mBondingColor[i].position(0);
+
+            mBondingProgram[i] = GLES20.glCreateProgram();
+            GLES20.glAttachShader(mBondingProgram[i], vertexShader);
+            GLES20.glAttachShader(mBondingProgram[i], passthroughShader);
+            GLES20.glLinkProgram(mBondingProgram[i]);
+            GLES20.glUseProgram(mBondingProgram[i]);
+
+            checkGLError("Create bondings program ");
+
+            mBondingPositionParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Position");
+            mBondingColorParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Color");
+
+            mBondingModelParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_Model");
+            mBondingModelViewParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_MVMatrix");
+
+            GLES20.glEnableVertexAttribArray(mBondingPositionParam[i]);
+            GLES20.glEnableVertexAttribArray(mBondingColorParam[i]);
+
+            checkGLError("Bonding Program Params");
        }
 
         Matrix.setIdentityM(mModelMolecule, 0);
         Matrix.translateM(mModelMolecule, 0, 0, 0, -DistanceToScreen);
+
+        Matrix.setIdentityM(mModelBonding, 0);
+        Matrix.translateM(mModelBonding, 0, 0, 0, -DistanceToScreen);
 
         checkGLError("onSurfaceCreated");
 
