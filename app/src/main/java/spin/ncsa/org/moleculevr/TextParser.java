@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
 
+
 public class TextParser {
 
     ArrayList<Sphere> m = new ArrayList<>();
@@ -19,7 +20,7 @@ public class TextParser {
     Hashtable colorHashtable = null;
     Hashtable massHashtable =  null;
 
-    Hashtable NearestNeighbor = null;
+    Hashtable<Sphere,ArrayList<Sphere>> NearestNeighbor = null;
 
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
@@ -50,8 +51,30 @@ public class TextParser {
         return c;
     }
 
-    public void OutputBonds(){
+    //return bonds stored in Nearest Neighbors in forms of pairs of vertices
+    public float[] OutputBonds(){
+        ArrayList<Float> ret = new ArrayList<>();
 
+        for (Sphere a: m){
+            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
+            for (Sphere b : neighbors){
+                ret.add(a.xCoord);
+                ret.add(a.yCoord);
+                ret.add(a.zCoord);
+
+                ret.add(b.xCoord);
+                ret.add(b.yCoord);
+                ret.add(b.zCoord);
+            }
+        }
+
+        float[] floatArray = new float[ret.size()];
+        int i = 0;
+        for (Float f : ret) {
+            floatArray[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
+        }
+
+        return floatArray;
     }
 
     public int outputNumOfAtoms(){
@@ -223,7 +246,7 @@ public class TextParser {
         if (m == null)
             return;
         NearestNeighbor = null;
-        NearestNeighbor = new Hashtable<Sphere,ArrayList<Float>>();
+        NearestNeighbor = new Hashtable<Sphere,ArrayList<Sphere>>();
 
         //naive way:iterate all vertices
         for (Sphere a: m){
@@ -237,13 +260,19 @@ public class TextParser {
 
             for (Sphere b :m){
 
+                //one's neighbor is not one itself
+                if (b.equals(a))
+                    continue;
+
                 float[] b_coords = new float[3];
                 b_coords[0] = b.xCoord;
                 b_coords[1] = b.yCoord;
                 b_coords[2] = b.zCoord;
 
+                //maybe we should think about compare distance with tolerance so that we could have more than one "nearest neighbor"
+
                 //if atom b is nearer than all previous atoms, replace neighbors by an arrayList with b
-                if (Float.compare(util.EuclidDistance(a_coords,b_coords) , minDist) < 0.0f ){
+                if (Float.compare(util.EuclidDistance(a_coords,b_coords) , minDist) < 0 ){
                     neighbors.clear();
                     neighbors.add(b);
                     minDist = util.EuclidDistance(a_coords,b_coords);
