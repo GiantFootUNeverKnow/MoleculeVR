@@ -7,7 +7,6 @@ import android.graphics.Color;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
@@ -17,8 +16,8 @@ public class TextParser {
 
     ArrayList<Sphere> m = new ArrayList<>();
 
-    Hashtable colorHashtable = null;
-    Hashtable massHashtable =  null;
+    Hashtable<String,Integer> colorHashtable = null;
+    Hashtable<String, Float> massHashtable =  null;
 
     Hashtable<Sphere,ArrayList<Sphere>> NearestNeighbor = null;
 
@@ -110,7 +109,7 @@ public class TextParser {
     public void loadAtomMass(BufferedReader bf){
         if (massHashtable != null)
             return;
-        massHashtable = new Hashtable();
+        massHashtable = new Hashtable<>();
         Scanner s = new Scanner(bf);
 
         //each iteration the parser parses a line
@@ -142,7 +141,7 @@ public class TextParser {
     public void loadColor(BufferedReader bf){
         if (colorHashtable != null)
             return;
-        colorHashtable = new Hashtable();
+        colorHashtable = new Hashtable<>();
         Scanner s = new Scanner(bf);
 
         while(s.hasNext()) {
@@ -214,7 +213,7 @@ public class TextParser {
                         //parse the name of element
                         String elementName = line.split("\\s+")[2];
                         //calculate atommass for the atom
-                        float _mass = (float)massHashtable.get(elementName );
+                        float _mass = massHashtable.get(elementName );
                         masses.add(_mass);
                         //parse the coordinates of that atom
                         float xCoord = (float)Double.parseDouble(line.substring(20,28));
@@ -246,7 +245,7 @@ public class TextParser {
         //create an array of Spheres
         for (int i = 0; i < elem_names.size(); i++){
             //calculate color for the atom
-            int _color = (int) colorHashtable.get( elem_names.get(i) );
+            int _color = colorHashtable.get( elem_names.get(i) );
             float red_color =  ((float)Color.red(_color)/255);
             float green_color =  ((float)Color.green(_color)/255);
             float blue_color =  ((float)Color.blue(_color)/255);
