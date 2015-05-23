@@ -40,7 +40,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private CardboardOverlayView mOverlay;
 
     //If you added molecules or deleted molecules, please change this variable
-    private static final int NUM_MOLECULE = 3;
+    private static final int NUM_MOLECULE = 5;
 
     private static final int COORDS_PER_VERTEX = 3;
 
