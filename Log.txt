@@ -171,3 +171,5 @@ oscillate once for every few frames
             (*)Concern1: Wouldn't doing just GL.LINES be so simple representation of a bond? Considering adjust thickness of these OPENGL lines
             (*)Concern2: Will oscillation feature implemented before be smoothly applied to a molecule with bondings? I am afraid that the shaking makes lines
                 discontinue
+
+TODOLIST: solve concerns described above.
