@@ -79,6 +79,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private int idx;
     private int[] nAtoms;
+    private int[] nBonds;
     private int timeCounter;
 
     private int debugging;
@@ -128,6 +129,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         cMolecule = new float[NUM_MOLECULE][];
         cBondings = new float[NUM_MOLECULE][];
         nAtoms = new int[NUM_MOLECULE];
+        nBonds = new int[NUM_MOLECULE];
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
@@ -190,6 +192,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             cMolecule[i] = parser.outputColors();
             cBondings[i] = parser.outputBondingColors();
             nAtoms[i] = parser.outputNumOfAtoms();
+            nBonds[i] = parser.outputNumOfBonds();
 
             //Build Molecule Program
 
@@ -312,12 +315,21 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Set the position of the light
        // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mView, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
 
+        /*Draw Molecules*/
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
         drawMolecule(idx);
+
+        /*Draw Bondings*/
+        // Build the ModelView and ModelViewProjection matrices
+        // for calculating cube position and light.
+        //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+        Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
+        //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+        drawBondings(idx);
 
         // Draw rest of the scene.
     }
@@ -367,7 +379,27 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES,i*Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
         }
 
-        checkGLError("Drawing Thing");
+        checkGLError("Drawing Molecule");
+    }
+
+    //the function to draw bondings of the i-th molecule
+    public void drawBondings(int index){
+        GLES20.glUseProgram(mBondingProgram[index]);
+
+        GLES20.glUniformMatrix4fv(mBondingModelParam[index],1,false,mModelBonding,0);//set the model in the shader
+        GLES20.glUniformMatrix4fv(mBondingModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
+
+        //adjust the positions to form random oscillation
+        //adjustVertices(index);
+
+        GLES20.glVertexAttribPointer(mBondingPositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,bondingVertices[index]);
+        GLES20.glVertexAttribPointer(mBondingColorParam[index],4, GLES20.GL_FLOAT, false,0,mBondingColor[index]);
+
+        for  (int i = 0; i < nBonds[index]; i++){
+            GLES20.glDrawArrays(GLES20.GL_LINES,i*2 ,2);
+        }
+
+        checkGLError("Drawing Bondings");
     }
 
     @Override

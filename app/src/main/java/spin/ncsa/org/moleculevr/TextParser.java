@@ -21,6 +21,8 @@ public class TextParser {
 
     Hashtable<Sphere,ArrayList<Sphere>> NearestNeighbor = null;
 
+    int num_bonds;
+
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
 
@@ -105,6 +107,8 @@ public class TextParser {
     public int outputNumOfAtoms(){
         return m.size();
     }
+
+    public int outputNumOfBonds() { return num_bonds; }
 
     public void loadAtomMass(BufferedReader bf){
         if (massHashtable != null)
@@ -272,6 +276,7 @@ public class TextParser {
             return;
         NearestNeighbor = null;
         NearestNeighbor = new Hashtable<>();
+        num_bonds = 0;
 
         //naive way:iterate all vertices
         for (Sphere a: m){
@@ -309,6 +314,7 @@ public class TextParser {
             }
 
             NearestNeighbor.put(a,neighbors);
+            num_bonds += neighbors.size();
         }
     }
 
