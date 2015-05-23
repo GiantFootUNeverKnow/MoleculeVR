@@ -183,5 +183,5 @@ Range of radii of atoms; [1.0,2.0]
 RESIZING_FACTOR: 20
 Distance from origin: now 0.0
 Background Color: now Black
-Initial Molecule: now 2
+Initial Molecule: now 5
 Scale of oscillation: [-0.01,0.01]
