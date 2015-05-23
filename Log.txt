@@ -140,3 +140,34 @@ Initial Molecule: now 2
     would be generated and used to different atoms. Basically, these atoms shake irregularly.
 2. It seems to be bit hard for a large cell to move, the calculation is quite large. Maybe consider to use another Timer to control the oscillation or
 oscillate once for every few frames
+
+05/22/2015
+1.Temporarily shut down/ commented out the feature of oscillation because this feature needs heavy workload on each frame
+2.Added an attribute elem_name to Sphere class that would be passed in when initialization
+    -There is no argument checking for this argument, leave it blank when it is still unnecessary
+3.Managed to draw bondings on screen
+    The whole process is described as follows:
+    (i.)On the last step of method TextParser.parse() after all information of atoms are known and properly processed, the program calls a new method
+        TextParser.createBonds()
+    (ii.)All calculations about the decision if two atoms should be connected through a bond are done within createBonds()
+        An atom is only connected to a group of atoms that are in the shortest distance from it.
+        The program constructed a hashTable that records such group of atoms for each atom.
+        This group of atoms is found by a linearly search for minimum distance through all atoms in that molecule.
+        (*)Concern1: Right now, as a result of this algorithm, sizes of the group "Nearest Neighbors" described above is always 1. A bit suspicious!
+            I guess for some atom in the sample, such as Nitrogen, their number of nearest neighbors should be three hydrogen atoms.
+        (*)Concern2: This algorithm could be accelerated by construction of a K-d Tree. (Takes approximately 3 hours to do such a boost)
+        (*)Concern3: Finding such "Nearest Neighbors" may not be very meaningful. For example, the nearest neighbor of some Bromine in the sample would be
+            a hydrogen, but in reality, they are not supposed to be connected. The Bromine belongs to the cage that is consisted of Pb and Br.
+    (iii.)Interface for communications between MainActivity and TextParser is established by three functions
+        TextParser.outputBonds(),TextParser.outputBondingColors(), TextParser.outputNumOfBonds()
+        outputBonds() reformats the hashTable "Nearest Neighbors" built in step(ii) to a simple array readable by functions in MainActivity
+        outputBindingColors() loads in coloring for a bond connecting two atoms by interpolation of colors of those two atoms
+        outputNumOfBonds() simply returns a private variable of TextParser that records number of bonding for the molecule.
+            This value would be reset each time createBonds() is called
+    (iv.)In MainActivity.onSurfaceCreated(), the program constructs a OPENGL program for rendering bonding in the same way it renders atoms of the molecule
+        This program would be fed in data from the output of the interfaces described in (iii.)
+    (v.) All the framework codes for rendering atoms and rendering bondings are similar except that we use GL.LINES for bondings instead of GL.TRIANGLES
+        drawBondings() method would be called after drawMolecule()
+            (*)Concern1: Wouldn't doing just GL.LINES be so simple representation of a bond? Considering adjust thickness of these OPENGL lines
+            (*)Concern2: Will oscillation feature implemented before be smoothly applied to a molecule with bondings? I am afraid that the shaking makes lines
+                discontinue

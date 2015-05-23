@@ -62,10 +62,13 @@ public class TextParser {
                 ret.add(a.redColor);
                 ret.add(a.greenColor);
                 ret.add(a.blueColor);
+                ret.add(1.0f);
 
                 ret.add(b.redColor);
                 ret.add(b.greenColor);
                 ret.add(b.blueColor);
+                ret.add(1.0f);
+
             }
         }
 
@@ -262,7 +265,7 @@ public class TextParser {
         //generate bonds based on nearest neighbor policy
         createBonds();
         //testing
-        System.out.println("Nothing");
+        //System.out.println("Nothing");
     }
 
     /*
