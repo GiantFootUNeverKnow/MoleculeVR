@@ -15,7 +15,7 @@ public class Cylinder {
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
-    private float RESIZING_FACTOR = 20.0f;
+    private float RESIZING_FACTOR = 40.0f;
 
     public Cylinder(float [] end_a, float [] end_b, float [] color_a, float[] color_b){
             xcoord1 = end_a[0];
