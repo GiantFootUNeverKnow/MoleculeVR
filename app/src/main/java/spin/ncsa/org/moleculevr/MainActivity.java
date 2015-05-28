@@ -395,6 +395,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glVertexAttribPointer(mBondingPositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,bondingVertices[index]);
         GLES20.glVertexAttribPointer(mBondingColorParam[index],4, GLES20.GL_FLOAT, false,0,mBondingColor[index]);
 
+        //gonna be changed
         for  (int i = 0; i < nBonds[index]; i++){
             GLES20.glDrawArrays(GLES20.GL_LINES,i*2 ,2);
         }

@@ -61,6 +61,8 @@ public class TextParser {
         for (Sphere a: m){
             ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
             for (Sphere b : neighbors){
+
+                //gonna be changed
                 ret.add(a.redColor);
                 ret.add(a.greenColor);
                 ret.add(a.blueColor);
@@ -90,6 +92,8 @@ public class TextParser {
         for (Sphere a: m){
             ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
             for (Sphere b : neighbors){
+
+                //gonna be changed
                 ret.add(a.xCoord);
                 ret.add(a.yCoord);
                 ret.add(a.zCoord);

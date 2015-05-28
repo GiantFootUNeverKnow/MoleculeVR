@@ -164,12 +164,12 @@ oscillate once for every few frames
         outputBindingColors() loads in coloring for a bond connecting two atoms by interpolation of colors of those two atoms
         outputNumOfBonds() simply returns a private variable of TextParser that records number of bonding for the molecule.
             This value would be reset each time createBonds() is called
-    (iv.)In MainActivity.onSurfaceCreated(), the program constructs a OPENGL program for rendering bonding in the same way it renders atoms of the molecule
+    (iv.)In MainActivity.onSurfaceCreated(), the program constructs an OPENGL program for rendering bonding in the same way it renders atoms of the molecule
         This program would be fed in data from the output of the interfaces described in (iii.)
     (v.) All the framework codes for rendering atoms and rendering bondings are similar except that we use GL.LINES for bondings instead of GL.TRIANGLES
         drawBondings() method would be called after drawMolecule()
-            (*)Concern1: Wouldn't doing just GL.LINES be so simple representation of a bond? Considering adjust thickness of these OPENGL lines
-            (*)Concern2: Will oscillation feature implemented before be smoothly applied to a molecule with bondings? I am afraid that the shaking makes lines
+            (*)Concern4: Wouldn't doing just GL.LINES be so simple representation of a bond? Considering adjust thickness of these OPENGL lines
+            (*)Concern5: Will oscillation feature implemented before be smoothly applied to a molecule with bondings? I am afraid that the shaking makes lines
                 discontinue
     (vi.) All variables used to build a molecule have their counterparts for building bondings
 

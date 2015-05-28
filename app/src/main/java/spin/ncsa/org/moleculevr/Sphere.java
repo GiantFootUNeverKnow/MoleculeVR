@@ -58,6 +58,7 @@ public class Sphere
     //public static final float UB = (float) 15.0;
 
     private int index = 0;
+
     public float xCoord = 0;
     public float yCoord = 0;
     public float zCoord = 0;
@@ -88,7 +89,7 @@ public class Sphere
             {10,1,6},{11,0,9},{2,11,9},{5,2,9},{11,2,7}
     };
 
-    public void setCoordinates(){//move sphere from origin to the given coordinates
+    private void setCoordinates(){//move sphere from origin to the given coordinates
        for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
            vertices[i] = ( (vertices[i]  * radius )/RESIZING_FACTOR + xCoord);
            vertices[i+1] = ( (vertices[i+1]  * radius )/RESIZING_FACTOR + yCoord);
@@ -99,14 +100,14 @@ public class Sphere
     public static void normalize(float v[]){
         float d = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (d == 0.0){
-            Log.e("World","normalize");
+            Log.e("Sphere","normalize");
         }
         v[0] /= d;
         v[1] /= d;
         v[2] /= d;
     }
 
-    public void subdivide(float[] v1,float[] v2,float[] v3, long depth){
+    private void subdivide(float[] v1,float[] v2,float[] v3, long depth){
         float[] v12,v23,v31;
         if (depth == 0){
             vertices[index] = v1[0];
