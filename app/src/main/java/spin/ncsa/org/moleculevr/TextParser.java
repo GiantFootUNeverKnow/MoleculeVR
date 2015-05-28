@@ -55,104 +55,35 @@ public class TextParser {
         return c;
     }
 
+    //return bonds stored in Nearest Neighbors in forms of coordinates
+    public float[] outputBonds(){
+        if (l.isEmpty()) return null;
+        float[] v = new float[Cylinder.NUMBER_OF_COORDS * l.size()]; // we need (# atom ) * (# coords per atom) float
+        int i = 0;
+        for (Cylinder bond : l){
+            for  (float k :bond.vertices){
+                v[i] = k;
+                i++;
+            }
+        }
+        return v;
+    }
+
+
     //return colors of bonds
     public float[] outputBondingColors(){
-        ArrayList<Float> ret = new ArrayList<>();
-
-        for (Sphere a: m){
-            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
-            for (Sphere b : neighbors){
-
-                //gonna be changed
-                ret.add(a.redColor);
-                ret.add(a.greenColor);
-                ret.add(a.blueColor);
-                ret.add(1.0f);
-
-                ret.add(b.redColor);
-                ret.add(b.greenColor);
-                ret.add(b.blueColor);
-                ret.add(1.0f);
-
-            }
-        }
-
-        float[] floatArray = new float[ret.size()];
+        if (l.isEmpty()) return null;
+        float[] c = new float[Cylinder.NUMBER_OF_COLORS * l.size()];// we need (# atom ) * (# colors per atom) float
         int i = 0;
-        for (Float f : ret) {
-            floatArray[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
-        }
-
-        return floatArray;
-    }
-
-    private void formBonds(){
-
-        //memory clean up
-        if (l != null){
-            l = null;
-            l = new ArrayList<>();
-        }
-
-
-        for (Sphere a:m){
-            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
-            for (Sphere b : neighbors){
-                float[] a_coord = new float[3];
-                float[] b_coord = new float[3];
-                float[] a_color = new float[3];
-                float[] b_color = new float[3];
-
-                a_coord[0] = a.xCoord;
-                a_coord[1] = a.yCoord;
-                a_coord[2] = a.zCoord;
-
-                b_coord[0] = b.xCoord;
-                b_coord[1] = b.yCoord;
-                b_coord[2] = b.zCoord;
-
-                a_color[0] = a.redColor;
-                a_color[1] = a.greenColor;
-                a_color[2] = a.blueColor;
-
-                b_color[0] = b.redColor;
-                b_color[1] = b.greenColor;
-                b_color[2] = b.blueColor;
-
-                Cylinder stick = new Cylinder(a_coord,b_coord,a_color,b_color);
-                l.add(stick);
+        for (Cylinder bond : l){
+            for  (float k :bond.colors){
+                c[i] = k;
+                i++;
             }
         }
+        return c;
     }
 
-    //return bonds stored in Nearest Neighbors in forms of pairs of vertices
-    public float[] outputBonds(){
-        ArrayList<Float> ret = new ArrayList<>();
-
-        for (Sphere a: m){
-            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
-            for (Sphere b : neighbors){
-
-                //gonna be changed
-
-                ret.add(a.xCoord);
-                ret.add(a.yCoord);
-                ret.add(a.zCoord);
-
-                ret.add(b.xCoord);
-                ret.add(b.yCoord);
-                ret.add(b.zCoord);
-            }
-        }
-
-        float[] floatArray = new float[ret.size()];
-        int i = 0;
-        for (Float f : ret) {
-            floatArray[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
-        }
-
-        return floatArray;
-    }
 
     public int outputNumOfAtoms(){
         return m.size();
@@ -314,6 +245,7 @@ public class TextParser {
 
         //create an array of cylinder to represent bonds
         formBonds();
+
     }
 
     /*
@@ -372,6 +304,47 @@ public class TextParser {
             num_bonds += neighbors.size();
         }
     }
+
+    private void formBonds(){
+
+        //memory clean up
+        if (l != null){
+            l = null;
+            l = new ArrayList<>();
+        }
+
+
+        for (Sphere a:m){
+            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
+            for (Sphere b : neighbors){
+                float[] a_coord = new float[3];
+                float[] b_coord = new float[3];
+                float[] a_color = new float[3];
+                float[] b_color = new float[3];
+
+                a_coord[0] = a.xCoord;
+                a_coord[1] = a.yCoord;
+                a_coord[2] = a.zCoord;
+
+                b_coord[0] = b.xCoord;
+                b_coord[1] = b.yCoord;
+                b_coord[2] = b.zCoord;
+
+                a_color[0] = a.redColor;
+                a_color[1] = a.greenColor;
+                a_color[2] = a.blueColor;
+
+                b_color[0] = b.redColor;
+                b_color[1] = b.greenColor;
+                b_color[2] = b.blueColor;
+
+                Cylinder stick = new Cylinder(a_coord,b_coord,a_color,b_color);
+                l.add(stick);
+            }
+        }
+    }
+
+
 
     //option a.
     //normalize an array of floating points to an array in ranges[-0.8,0.8]

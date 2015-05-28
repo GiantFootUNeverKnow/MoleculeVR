@@ -15,7 +15,7 @@ public class Cylinder {
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
-    private float RESIZING_FACTOR = 40.0f;
+    private float RESIZING_FACTOR = 75.0f;
 
     public Cylinder(float [] end_a, float [] end_b, float [] color_a, float[] color_b){
             xcoord1 = end_a[0];
@@ -38,12 +38,7 @@ public class Cylinder {
             setCoordinate();
     }
 
-    private void setCoordinate(){//move sphere from origin to the given coordinates
-        /*for (int i = 0; i < NUMBER_OF_COORDS; i+=3){
-            vertices[i] = ( (vertices[i]  * radius )/RESIZING_FACTOR + xCoord);
-            vertices[i+1] = ( (vertices[i+1]  * radius )/RESIZING_FACTOR + yCoord);
-            vertices[i+2] = ( (vertices[i+2]  * radius )/RESIZING_FACTOR + zCoord);
-        }*/
+    private void setCoordinate(){//move cylinder from origin to the given coordinates
         int coord_choice = 2;
         for (int i = 0; i < NUMBER_OF_VERTICES; i++){
             if (coord_choice == 2){
