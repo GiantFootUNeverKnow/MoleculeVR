@@ -3,7 +3,7 @@ package spin.ncsa.org.moleculevr;
 import android.util.Log;
 
 /**
- * Created by asus on 28/05/2015.
+ * Created by Xusheng on 28/05/2015.
  */
 public class Cylinder {
 
@@ -14,6 +14,8 @@ public class Cylinder {
     public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
     public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
+
+    private float RESIZING_FACTOR = 20.0f;
 
     public Cylinder(float [] end_a, float [] end_b, float [] color_a, float[] color_b){
             xcoord1 = end_a[0];
@@ -47,21 +49,19 @@ public class Cylinder {
             if (coord_choice == 2){
                 vertices[3 * i] = ( vertices[3 * i] / RESIZING_FACTOR) + xcoord2;
                 vertices[3 * i + 1] = ( vertices[3 * i + 1] / RESIZING_FACTOR) + ycoord2;
-                vertices[3 * i + 2] = ( vertices[3 * i + 2] / RESIZING_FACTOR) + zcoord2;
+                vertices[3 * i + 2] = ( (vertices[3 * i + 2] - 0.5f) / RESIZING_FACTOR) + zcoord2;
                 coord_choice = 1;
             }
-            else if (coord_choice == 1){
+            else{//coord_choice == 1
                 vertices[3 * i] = ( vertices[3 * i] / RESIZING_FACTOR) + xcoord1;
                 vertices[3 * i + 1] = ( vertices[3 * i + 1] / RESIZING_FACTOR) + ycoord1;
-                vertices[3 * i + 2] = ( vertices[3 * i + 2] / RESIZING_FACTOR) + zcoord1;
+                vertices[3 * i + 2] = ( (vertices[3 * i + 2] - 0.5f) / RESIZING_FACTOR) + zcoord1;
                 coord_choice = 2;
             }
         }
     }
 
     private int index = 0;
-
-    private float RESIZING_FACTOR = 20.0f;
 
     public float xcoord1;
     public float ycoord1;
@@ -93,14 +93,14 @@ public class Cylinder {
     private void subdivide(float [] v1, float[] v2, int depth){
         float[] v11 = {0.0f,0.0f,0.0f};
         float[] v22 = {0.0f,0.0f,0.0f};
-        float[] v0 = {0.0f,0.0f,0.0f};
         float[] v12 = new float[3];
 
         if (depth == 0){
-            for (int i = 0; i < 3; i++){
+            for (int i = 0; i < 2; i++){
                 v22[i] = v2[i];
                 v11[i] = v1[i];
             }
+            v22[2] = v11[2] = 1.0f;
 
             //a rectangle consists of 2 triangles, vertices arranged in a way that their colors should be alternatively color1 and color2
 
@@ -159,7 +159,7 @@ public class Cylinder {
                 colors[i * 4 + 3] = 1.0f;
                 color_choice = 1;
             }
-            else if (color_choice == 1){
+            else{ //color_choice == 1
                 colors[i * 4] = redColor1;
                 colors[i * 4 + 1] = greenColor1;
                 colors[i * 4 + 2] = blueColor1;

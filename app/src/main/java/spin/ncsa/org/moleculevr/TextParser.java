@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class TextParser {
 
     ArrayList<Sphere> m = new ArrayList<>();
+    ArrayList<Cylinder> l = new ArrayList<>();
 
     Hashtable<String,Integer> colorHashtable = null;
     Hashtable<String, Float> massHashtable =  null;
@@ -85,6 +86,45 @@ public class TextParser {
         return floatArray;
     }
 
+    private void formBonds(){
+
+        //memory clean up
+        if (l != null){
+            l = null;
+            l = new ArrayList<>();
+        }
+
+
+        for (Sphere a:m){
+            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
+            for (Sphere b : neighbors){
+                float[] a_coord = new float[3];
+                float[] b_coord = new float[3];
+                float[] a_color = new float[3];
+                float[] b_color = new float[3];
+
+                a_coord[0] = a.xCoord;
+                a_coord[1] = a.yCoord;
+                a_coord[2] = a.zCoord;
+
+                b_coord[0] = b.xCoord;
+                b_coord[1] = b.yCoord;
+                b_coord[2] = b.zCoord;
+
+                a_color[0] = a.redColor;
+                a_color[1] = a.greenColor;
+                a_color[2] = a.blueColor;
+
+                b_color[0] = b.redColor;
+                b_color[1] = b.greenColor;
+                b_color[2] = b.blueColor;
+
+                Cylinder stick = new Cylinder(a_coord,b_coord,a_color,b_color);
+                l.add(stick);
+            }
+        }
+    }
+
     //return bonds stored in Nearest Neighbors in forms of pairs of vertices
     public float[] outputBonds(){
         ArrayList<Float> ret = new ArrayList<>();
@@ -94,6 +134,7 @@ public class TextParser {
             for (Sphere b : neighbors){
 
                 //gonna be changed
+
                 ret.add(a.xCoord);
                 ret.add(a.yCoord);
                 ret.add(a.zCoord);
@@ -270,8 +311,9 @@ public class TextParser {
 
         //generate bonds based on nearest neighbor policy
         createBonds();
-        //testing
-        //System.out.println("Nothing");
+
+        //create an array of cylinder to represent bonds
+        formBonds();
     }
 
     /*
@@ -324,8 +366,6 @@ public class TextParser {
                     neighbors.add(b);
                 }
                 //[4] is omitted
-
-
             }
 
             NearestNeighbor.put(a,neighbors);
