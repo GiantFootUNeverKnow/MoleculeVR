@@ -23,6 +23,8 @@ public class TextParser {
 
     int num_bonds;
 
+    private static final float bonding_tolerance = 0.03f;
+
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
 
@@ -302,18 +304,24 @@ public class TextParser {
                 b_coords[1] = b.yCoord;
                 b_coords[2] = b.zCoord;
 
-                //maybe we should think about compare distance with tolerance so that we could have more than one "nearest neighbor"
-
-                //if atom b is nearer than all previous atoms, replace neighbors by an arrayList with b
-                if (Float.compare(util.EuclidDistance(a_coords,b_coords) , minDist) < 0 ){
+                //bonding_tolerance is defined at the beginning of this class
+                float newDist = util.EuclidDistance(a_coords,b_coords);
+                //distance graph: ______0__________[3]_____(minDist-tolerance)_____[1]__________minDist_______[2]__________(minDist+tolerance)_____[4]_______
+                if (Float.compare(newDist,minDist - bonding_tolerance) <= 0){//[3]
                     neighbors.clear();
                     neighbors.add(b);
-                    minDist = util.EuclidDistance(a_coords,b_coords);
+                    minDist = newDist;
                 }
-                //if atom b is as near as atoms in neighbors, add b into neighbors
-                else if (Float.compare(util.EuclidDistance(a_coords,b_coords),0.0f) == 0 ){
+                else if(Float.compare(newDist,minDist) < 0){ //[1]
+                    neighbors.add(b);
+                    minDist = (minDist + newDist) / 2;
+                }
+                else if (Float.compare(newDist,minDist + bonding_tolerance) < 0){//[2]
                     neighbors.add(b);
                 }
+                //[4] is omitted
+
+
             }
 
             NearestNeighbor.put(a,neighbors);
