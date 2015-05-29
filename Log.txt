@@ -173,7 +173,6 @@ oscillate once for every few frames
                 discontinue
     (vi.) All variables used to build a molecule have their counterparts for building bondings
 
-TODOLIST: solve concerns described above.
 
 Parameters that maybe reconfigured later:
 Criteria for a switching: now is x>0.95, y <0.5, z <0.5
@@ -185,3 +184,66 @@ Distance from origin: now 0.0
 Background Color: now Black
 Initial Molecule: now 5
 Scale of oscillation: [-0.01,0.01]
+
+05/28/2015
+1.Resolved concern1 mentioned in the last post.
+    -Modified TextParser.CreateBonds()
+    -Replace the absolute comparing standard by a standard with a tolerance so that a group of nearest neighbors could be obtained when these neighbors are
+    only different in distances with the floating point representation, i.e., if these neighbors are physically in equal distances, they would all be
+    considered the nearest neighbors
+    -The strategy applied to picking nearest neighbors is the following:
+    distance graph: ______0__________[3]_____(minDist-tolerance)_____[1]__________minDist_______[2]__________(minDist+tolerance)_____[4]_______
+    For example, the optimal neighbor for a certain atom X is minDist away from it. newDist is the distance between X and any one of atoms in the molecule
+    There is a predefined constant named "bonding_tolerance".
+    Situation[3]:If an atom is less than minDist-tolerance from X, the atom would be considered a new nearest neighbor and the only one nearest neighbor
+    Situation[1]:If an atom is less than minDist from X, while this amount of optimization is very possibly due to floating-point representation, both this atom and
+    all previous found nearest neighbors are the nearest neighbors, with minDist = (minDist + newDist)/2
+    Situation[2]:If an atom is more than minDist from X, while this amount of exceeding is very possibly due to floating-point representation, both this atom and
+    all previous found nearest neighbors are the nearest neighbors, with minDist unchanged
+    Situation[4]:If an atom is far more than minDist from X such that floating-point representation is no longer a valid excuse, this atom is not a candidate for
+    the nearest neighbors.
+2.Resolved concern4 mentioned in the last post.
+    -Since openGL ES2.0 has not provided any function to adjust thickness of a line, a method that Google's results suggested is to draw a cylinder to represent a
+    line with thickness.
+    -A book written by Jim X. Chen "3D Programming ***" has the code I want, which uses subdivision to render a cylinder
+    -The algorithm is simply enough:
+    (i.)Use Liu Hui's π algorithm to approximate a circle
+    (ii.)Duplicate another circle that is exactly same as the circle drawn in (i)
+    (iii.)Connect corresponding points on these two circles
+    !!!
+    -Created a class Cylinder.java to implement this algorithm
+        -General structure , methods and member variables are similar to that of Sphere
+        -A cylinder has coordinates of and colors of the two centers of circles as arguments of construction.
+        -It models a cylinder based on these two circles but these two base face wouldn't be modelled. i.e. Only a tube-like object is to be drawn
+        -This cylinder would be placed between the two endpoints and assigned their colors
+        -Color would be interpolated on the cylinder
+        -Cylinder has the same parameters as Sphere has, which are also publicly accessible:
+            DEGREE_OF_REFINEMENT
+            NUMBER_OF_FACES
+            NUMBER_OF_VERTICES
+            NUMBER_OF_COORDS
+            NUMBER_OF_COLORS
+            If DEGREE_OF_REFINEMENT is changed, NUMBER_OF_FACES has to change correspondingly. Formula # of faces = 8 * (2^degree_of_refinement)
+        -RESIZING_FACTOR is a predefined constant that decides the radius of a cylinder. I manually set it to 75.0, which may not be an optimal value
+        -A tube is composed of many triangles
+    -Adjust TextParser and MainActivity.
+        -Added a method TextParser.formBonds() that takes care of creating an array of Cylinder objects(containers)
+        -Simplify interface methods outputBonds() and outputBondingColors(). Now they are more readable
+        -Use GL.TRIANGLES to draw bonds instead of naive GL.LINES
+
+TODOLIST: solve concerns described above.
+
+Parameters that maybe reconfigured later:
+Criteria for a switching: now is x>0.95, y <0.5, z <0.5
+Looping time: 100 times
+Size of frame of molecules: [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]
+Range of radii of atoms; [1.0,2.0]
+RESIZING_FACTOR(Sphere): 20.0
+RESIZING_FACTOR(Cylinder): 75.0
+DEGREE_OF_REFINEMENT(Sphere): 2
+DEGREE_OF_REFINEMENT(Cylinder): 2
+Distance from origin: now 0.0
+Background Color: now Black
+Initial Molecule: now 5
+Scale of oscillation: [-0.01,0.01]
+bonding_distance: 0.03f
