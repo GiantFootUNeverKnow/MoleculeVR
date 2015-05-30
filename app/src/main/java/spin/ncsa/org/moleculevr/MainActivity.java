@@ -148,8 +148,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //set up background color
        // GLES20.glClearColor(0.4f, 0.4f, 0.8f, 0.5f);
 
-        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.thing_vertex);
-        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.thing_frag);
+        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.vertex);
+        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
 
         //set the index of molecule to be drawn to zero
         idx = 0;
@@ -370,7 +370,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
         //adjust the positions to form random oscillation
-        //adjustVertices(index);
+        adjustVertices(index);
 
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
