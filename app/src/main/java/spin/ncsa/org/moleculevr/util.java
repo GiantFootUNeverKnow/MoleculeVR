@@ -20,6 +20,34 @@ public final class util {
 
     //calculate linear interpolation of origValue in origScale to an equivalent value in newScale
     //subject of conversion is a n-dimensional vector of floats
+    public final static float[] interpolate(float origValue, float origScaleMax, float origScaleMin,
+                                            float[] newScaleMax, float[] newScaleMin){
+        float tolerance = 0.000001f;
+
+        //check if arguments provided are valid
+        if (newScaleMax.length != newScaleMin.length    )
+            throw new IllegalArgumentException("length mismatches");
+
+        if (Math.abs(origValue-origScaleMax) < tolerance || origValue > origScaleMax){
+            return newScaleMax;
+        }
+        else if (Math.abs(origValue-origScaleMin) < tolerance || origValue < origScaleMin){
+            return newScaleMin;
+        }
+
+        int n = newScaleMax.length;
+        float mu;
+        float[] ret = new float[n];
+        mu = (origValue - origScaleMin) / (origScaleMax - origScaleMin);
+        for (int i = 0; i < n; i++){
+            ret[i] = newScaleMin[i] + mu * (newScaleMax[i] - newScaleMin[i]);
+        }
+
+        return ret;
+    }
+
+    //calculate linear interpolation of origValue in origScale to an equivalent value in newScale
+    //subject of conversion is a n-dimensional vector of floats
     public final static float[] interpolate(float[] origValue, float[] origScaleMax, float[] origScaleMin,
                                             float[] newScaleMax, float[] newScaleMin){
         float tolerance = 0.000001f;

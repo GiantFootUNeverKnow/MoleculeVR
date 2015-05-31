@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import spin.ncsa.org.moleculevr.util;
 
 /**
- * Created by asus on 30/05/2015.
+ * Created by Xusheng on 30/05/2015.
  */
 public class Isosurface {
 
@@ -304,7 +304,7 @@ public class Isosurface {
     public float[] vertices;
     public float[] colors;
     private ArrayList<Float> v = null;
-    private ArrayList<Float> c = null;
+    //private ArrayList<Float> c = null;
 
     private float isolevel;//The isolevel to be drawn
     private int row;        //number of rows in the grid--the first dimension
@@ -314,9 +314,10 @@ public class Isosurface {
     private float[][][] values; //values for all vertices on the 3-D grid
     private float x_min, x_max, y_min, y_max, z_min, z_max;
 
-    public Isosurface(float[][][] v){
+    public Isosurface(float[][][] v, float isolevel){
         y_min = z_min = x_min = -1.0f;
         y_max = z_max = x_max = 1.0f;
+        this.isolevel = isolevel;
 
         //error checking maybe added soon
 
@@ -340,6 +341,7 @@ public class Isosurface {
     public Isosurface(float[][][] v, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
         this.x_max = x_max;        this.y_max = y_max;        this.z_max = z_max;
         this.x_min = x_min;        this.y_min = y_min;        this.z_min = z_min;
+        this.isolevel = isolevel;
 
         //error checking may be added soon
 

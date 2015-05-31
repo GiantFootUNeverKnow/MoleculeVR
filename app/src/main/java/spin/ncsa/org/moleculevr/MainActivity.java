@@ -138,6 +138,19 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         debugging = 0;
         timeCounter = 0;
+
+        //testing interpolation
+//        float [] a = {2.0f,3.0f,4.0f,5.0f};
+//        float [] b = {0.0f,0.0f,0.0f,0.0f};
+//
+//        float [] c = {100.0f,100.0f,100.0f,100.0f};
+//        float [] d  = {0.0f,0.0f,0.0f,0.0f};
+//
+//        float [] v = {1.0f,1.0f,1.0f,1.0f};
+//
+//        float [] ret = util.interpolate(v,a,b,c,d);
+//        Log.i(TAG,ret[0] + " " + ret[1] + " " +ret[2] + " " + ret[3]);
+
     }
 
 
