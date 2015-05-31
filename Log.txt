@@ -250,3 +250,34 @@ bonding_distance: 0.03f
 
 05/30/2015
 1.Renamed the shaders
+2.Added interpolation method to util.java
+    -util.interpolate() could be used on interpolate a vector to a vector or a scalar to a vector
+    -two version provided, so the returned type is either a scalar or an array with the same size as the original value
+3.Adopted Paul Bourke's marching cube codes to generate an isosurface
+    -Created a class named Isosurface
+    -There are two constructors:
+        -Simple one: Load a 3-dimensional array of discrete scalar fields and a value denoting the level of isosurface to draw
+        -Sophisticated one: Load a 3-dimensional array of discrete scalar fields , a value denoting the level of isosurface to draw, and
+            the ranges for x,y and z dimension
+    -Each Isosurface object should have an array of vertex coordinates and an array of colors(not done yet)
+    -Indexing for unit cube is described by this graph. This indexing could be random, as long as being consistent
+        /**             4 -------- 5
+         *             /|        / |
+         *           7 ------- 6   |
+         *           |  0 ---- | - 1
+         *           | /       | /
+         *           3 ------- 2
+         *
+         *          i  -
+         *          j  |
+         *          k  /
+         */
+
+TODOLIST:
+0.solve concerns described above.
+1.Write x^2 + y^2 + z^2 = r^2 generation function
+2.Write test case for Isosurface class
+3.Finish color assignment for Isosurface object
+4.Write necessary codes for drawing isosurface out
+5.Clear out testing case and comments
+5.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
