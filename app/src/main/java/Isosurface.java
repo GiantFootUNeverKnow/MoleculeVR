@@ -5,6 +5,13 @@ import spin.ncsa.org.moleculevr.util;
 /**
  * Created by Xusheng on 30/05/2015.
  */
+
+/*
+The algorithm used to model an isosurface is the classical marching-cube algorithm
+whereas the details such as lookup table and control logic are adapted from
+Paul Bourke's "Polygonising a scalar field", 1994
+Reference: Polygonising a scalar field
+* */
 public class Isosurface {
 
     public static final int edgeTable[]={
