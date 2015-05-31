@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+
+import spin.ncsa.org.moleculevr.util;
+
 /**
  * Created by asus on 30/05/2015.
  */
@@ -299,6 +303,8 @@ public class Isosurface {
     //Isosurface
     public float[] vertices;
     public float[] colors;
+    private ArrayList<Float> v = null;
+    private ArrayList<Float> c = null;
 
     private float isolevel;//The isolevel to be drawn
     private int row;        //number of rows in the grid--the first dimension
@@ -311,25 +317,188 @@ public class Isosurface {
     public Isosurface(float[][][] v){
         y_min = z_min = x_min = -1.0f;
         y_max = z_max = x_max = 1.0f;
+
+        //error checking maybe added soon
+
+        row = v.length;
+        column = v[0].length;
+        slice = v[0][0].length;
+        values = new float[row][][];
+        for (int i = 0; i < row; i++){
+            values[i] = new float[column][];
+            for (int j = 0;j < column; j++){
+                values[i][j] = new float[slice];
+                for (int k = 0; j < slice; k++){
+                    values[i][j][k] = v[i][j][k];
+                }
+            }
+        }
+
+        builtIsosurface();
     }
 
     public Isosurface(float[][][] v, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
-        this.x_max = x_max;
-        this.y_max = y_max;
-        this.z_max = z_max;
-        this.x_min = x_min;
-        this.y_min = y_min;
-        this.z_min = z_min;
+        this.x_max = x_max;        this.y_max = y_max;        this.z_max = z_max;
+        this.x_min = x_min;        this.y_min = y_min;        this.z_min = z_min;
+
+        //error checking may be added soon
+
+        row = v.length;
+        column = v[0].length;
+        slice = v[0][0].length;
+        values = new float[row][][];
+        for (int i = 0; i < row; i++){
+            values[i] = new float[column][];
+            for (int j = 0;j < column; j++){
+                values[i][j] = new float[slice];
+                for (int k = 0; j < slice; k++){
+                    values[i][j][k] = v[i][j][k];
+                }
+            }
+        }
+
+        builtIsosurface();
+    }
+
+    private float[] gridCoord(int i, int j, int k){
+        float unit_length_x = (x_max - x_min) / (row - 1);
+        float unit_length_y = (y_max - y_min) / (column - 1);
+        float unit_length_z = (z_max - z_min) / (slice - 1);
+
+        float [] ret = new float[3];
+        ret[0] = x_min + unit_length_x * i;
+        ret[1] = y_min + unit_length_y * j;
+        ret[2] = z_min + unit_length_z * k;
+
+        return ret;
     }
 
     //split grid to small cube
     private void builtIsosurface(){
+        if (v != null)
+            v = null;
+        v = new ArrayList<>();
 
+        //start from 1 because there are row-1 * column-1 * slice-1 unit cube
+        for (int i = 1; i < row; i++){
+            for (int j = 1; j < column; j++){
+                for (int k = 1; k < slice; k++){
+                    marchingCube(i,j,k);
+                }
+            }
+        }
+
+        //convert ArrayList<Float> to float[]
+        vertices = new float[v.size()];
+        int i = 0;
+
+        for (Float f : v) {
+            vertices[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
+        }
     }
 
     //main part for algorithm marching cube
-    private void marchingCube(int i, int j, int k){
+    /**             4 -------- 5
+     *             /|        / |
+     *           7 ------- 6   |
+     *           |  0 ---- | - 1
+     *           | /       | /
+     *           3 ------- 2
+     *
+     *          i  -
+     *          j  |
+     *          k  /
+     */
 
+    private void marchingCube(int i, int j, int k){
+        float [][] coords = new float[8][3];
+        coords[0] = gridCoord(i-1,j-1,k-1);
+        coords[1] = gridCoord(i,j-1,k-1);
+        coords[2] = gridCoord(i,j-1,k);
+        coords[3] = gridCoord(i-1,j-1,k);
+        coords[4] = gridCoord(i-1,j,k-1);
+        coords[5] = gridCoord(i,j,k-1);
+        coords[6] = gridCoord(i,j,k);
+        coords[7] = gridCoord(i-1,j,k);
+
+        float [] vals = new float[8];
+        vals[0] = values[i-1][j-1][k-1];
+        vals[1] = values[i][j-1][k-1];
+        vals[2] = values[i][j-1][k];
+        vals[3] = values[i-1][j-1][k];
+        vals[4] = values[i-1][j][k-1];
+        vals[5] = values[i][j][k-1];
+        vals[6] = values[i][j][k];
+        vals[7] = values[i-1][j][k];
+
+        int cubeindex = 0;
+        if (vals[0] < isolevel) cubeindex |= 1;
+        if (vals[1] < isolevel) cubeindex |= 2;
+        if (vals[2] < isolevel) cubeindex |= 4;
+        if (vals[3] < isolevel) cubeindex |= 8;
+        if (vals[4] < isolevel) cubeindex |= 16;
+        if (vals[5] < isolevel) cubeindex |= 32;
+        if (vals[6] < isolevel) cubeindex |= 64;
+        if (vals[7] < isolevel) cubeindex |= 128;
+
+        /* Cube is entirely in/out of the surface */
+        if (edgeTable[cubeindex] == 0)
+            return;
+
+        //record the coordinate of the point where isosurface cuts through the edge
+        float [][] vertlist = new float[12][3];
+
+          /* Find the vertices where the surface intersects the cube */
+        if ( (edgeTable[cubeindex] & 1) != 0)
+            vertlist[0] =
+                    util.interpolate(isolevel,vals[0],vals[1],coords[0],coords[1]);
+        if ( (edgeTable[cubeindex] & 2) != 0)
+            vertlist[1] =
+                    util.interpolate(isolevel,vals[1],vals[2],coords[1],coords[2]);
+        if ((edgeTable[cubeindex] & 4) != 0)
+            vertlist[2] =
+                    util.interpolate(isolevel,vals[2],vals[3],coords[2],coords[3]);
+        if ((edgeTable[cubeindex] & 8) != 0)
+            vertlist[3] =
+                    util.interpolate(isolevel,vals[3],vals[0],coords[3],coords[0]);
+        if ( (edgeTable[cubeindex] & 16) != 0)
+            vertlist[4] =
+                    util.interpolate(isolevel,vals[4],vals[5],coords[4],coords[5]);
+        if ( (edgeTable[cubeindex] & 32) != 0 )
+            vertlist[5] =
+                    util.interpolate(isolevel, vals[5], vals[6],coords[5], coords[6]);
+        if ( (edgeTable[cubeindex] & 64) != 0 )
+            vertlist[6] =
+                    util.interpolate(isolevel, vals[6], vals[7], coords[6], coords[7]);
+        if ( (edgeTable[cubeindex] & 128)  != 0 )
+            vertlist[7] =
+                    util.interpolate(isolevel, vals[7], vals[4], coords[7],coords[4] );
+        if ((edgeTable[cubeindex] & 256) != 0)
+            vertlist[8] =
+                    util.interpolate(isolevel,vals[0], vals[4], coords[0], coords[4]);
+        if ((edgeTable[cubeindex] & 512) != 0)
+            vertlist[9] =
+                    util.interpolate(isolevel, vals[1], vals[5], coords[0], coords[5]);
+        if ( (edgeTable[cubeindex] & 1024) != 0)
+            vertlist[10] =
+                    util.interpolate(isolevel,vals[2], vals[6], coords[2], coords[6]);
+        if ((edgeTable[cubeindex] & 2048) != 0)
+            vertlist[11] =
+                    util.interpolate(isolevel,vals[3], vals[7],coords[3], coords[7]);
+
+          /* Create the triangle */
+        /*ntriang = 0;
+        for (i=0;triTable[cubeindex][i]!=-1;i+=3) {
+            triangles[ntriang].p[0] = vertlist[triTable[cubeindex][i  ]];
+            triangles[ntriang].p[1] = vertlist[triTable[cubeindex][i+1]];
+            triangles[ntriang].p[2] = vertlist[triTable[cubeindex][i+2]];
+            ntriang++;
+        }*/
+        for (int ii = 0; triTable[cubeindex][ii] != -1; ii++){
+            v.add(vertlist[triTable[cubeindex][ii]][0]);
+            v.add(vertlist[triTable[cubeindex][ii]][1]);
+            v.add(vertlist[triTable[cubeindex][ii]][2]);
+        }
     }
 
 
