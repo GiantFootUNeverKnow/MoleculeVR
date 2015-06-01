@@ -1,6 +1,7 @@
 package spin.ncsa.org.moleculevr;
 
 import java.util.ArrayList;
+import android.graphics.Color;
 
 import spin.ncsa.org.moleculevr.util;
 
@@ -415,11 +416,18 @@ public class Isosurface {
         //length of colors and vertices should be accessed more easily
         //there should be a function to return the number of triangles
         colors = new float[nTriang * 4];
+        float v = (float)Math.random();
+        float h = (float)Math.random() * 360;
         for (int p = 0; p < colors.length; p+= 4){
-            colors[p +0] = 0.3f;
-            colors[p +1] = 0.1f;
-            colors[p +2]= 0.8f;
-            colors[p +3] = 0.1f;
+            float [] hsv = new float[3];
+            hsv[0] = h;
+            hsv[1] = (float)Math.random();
+            hsv[2] = v;
+            int RGB = Color.HSVToColor(hsv);
+            colors[p + 0] = Color.red(RGB) / 255.0f;
+            colors[p + 1] = Color.green(RGB) / 255.0f;
+            colors[p + 2] = Color.blue(RGB) / 255.0f;
+            colors[p + 3] = 0.2f;
         }
     }
 
