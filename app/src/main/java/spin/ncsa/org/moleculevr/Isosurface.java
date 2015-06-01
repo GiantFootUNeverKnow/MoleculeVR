@@ -411,6 +411,8 @@ public class Isosurface {
         //later consider adding dynamic decided color
         //length of colors and vertices should be accessed more easily
         //there should be a function to return the number of triangles
+        if (colors != null)
+            colors = null;
         colors = new float[nTriang * 4];
         float v = 0.8f;
         float h = (float)Math.random() * 360;
