@@ -8,12 +8,12 @@ import android.util.Log;
 public class Cylinder {
 
     //If degree of refinement is changed, be sure to change NUMBER_OF_FACES to corresponding value, 8 * (2^degree_of_refinement)
-    public final static int DEGREE_OF_REFINEMENT = 2;// do only once the refinement
-    public final static int NUMBER_OF_FACES = 32; //do only twice the refinement, 320 faces
+    private final static int DEGREE_OF_REFINEMENT = 2;// do only once the refinement
+    private final static int NUMBER_OF_FACES = 32; //do only twice the refinement, 320 faces
 
-    public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
-    public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
-    public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
+    private final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
+    private final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
+    private final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
     private float RESIZING_FACTOR = 75.0f;
 
@@ -74,7 +74,7 @@ public class Cylinder {
     public float ycoord2;
     public float zcoord2;
 
-    public float vdata[][] = new float[][]{
+    private float vdata[][] = new float[][]{
             {1.0f,0.0f,0.0f},
             {0.0f,1.0f,0.0f},
             {-1.0f,0.0f,0.0f},
@@ -164,7 +164,7 @@ public class Cylinder {
         }
     }
 
-    public static void normalize(float v[]){
+    private static void normalize(float v[]){
         float d = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (d == 0.0){
             Log.e("Cylinder", "normalize");

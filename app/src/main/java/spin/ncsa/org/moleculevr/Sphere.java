@@ -7,14 +7,14 @@ import android.util.Log;
 public class Sphere
 {
     //If degree of refinement is changed, be sure to change NUMBER_OF_FACES to corresponding value, 20 * (4^degree_of_refinement)
-    public final static int DEGREE_OF_REFINEMENT = 2;// do only once the refinement
-    public final static int NUMBER_OF_FACES = 320; //do only twice the refinement, 320 faces
+    private final static int DEGREE_OF_REFINEMENT = 2;// do only once the refinement
+    private final static int NUMBER_OF_FACES = 320; //do only twice the refinement, 320 faces
 
-    public final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
-    public final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
-    public final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
+    private final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
+    private final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
+    private final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
 
-    public final static float RESIZING_FACTOR = 20.0f;//resize the ball by factor of 20
+    private final static float RESIZING_FACTOR = 20.0f;//resize the ball by factor of 20
 
     /*Precondition: x,y,z should be in range[-0.8,0.8],
                     red,green,blue should be in range [0,1]
@@ -52,8 +52,8 @@ public class Sphere
         setCoordinates();
     }
 
-    public static final float X = (float) 0.52573111;
-    public static final float Z = (float) 0.85065081;
+    private static final float X = (float) 0.52573111;
+    private static final float Z = (float) 0.85065081;
 
     //public static final float UB = (float) 15.0;
 
@@ -74,7 +74,7 @@ public class Sphere
     public float[] vertices = new float[NUMBER_OF_COORDS];
     public float[] colors = new float[NUMBER_OF_COLORS];
 
-    public float[][] vdata = new float[][]{
+    private float[][] vdata = new float[][]{
             {-X , 0.0f , Z }, {X , 0.0f, Z },
             {-X , 0.0f , -Z }, {X , 0.0f , -Z },
             {0.0f, Z , X }, {0.0f , Z, -X },
@@ -82,7 +82,7 @@ public class Sphere
             {Z ,X ,0.0f },{-Z  ,X ,0.0f },{Z ,-X,0.0f},
             {-Z,-X ,0.0f}    };
 
-    public static final int[][] tindices = new int[][]{
+    private static final int[][] tindices = new int[][]{
             {1,4,0},{4,9,0},{4,5,9},{8,5,4},{1,8,4},
             {1,10,8},{10,3,8},{8,3,5},{3,2,5},{3,7,2},
             {3,10,7},{10,6,7},{6,11,7},{6,0,11},{6,1,0},
@@ -97,7 +97,7 @@ public class Sphere
        }
     }
 
-    public static void normalize(float v[]){
+    private static void normalize(float v[]){
         float d = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (d == 0.0){
             Log.e("Sphere","normalize");
