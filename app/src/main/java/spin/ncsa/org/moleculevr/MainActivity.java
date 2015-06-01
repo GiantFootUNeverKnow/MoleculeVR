@@ -212,6 +212,15 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             readers[i] = new BufferedReader(new InputStreamReader(inputStreams[i]));
         }
 
+        //enable depth test
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+
+        // Enable blending
+        GLES20.glEnable(GLES20.GL_BLEND);
+        //GLES20.glBlendFunc(GLES20.GL_DST_COLOR, GLES20.GL_ZERO);
+        //GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE);
+       GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
         //build model and shader machine
         for (int i = 0; i < NUM_MOLECULE; i++) {
 
@@ -250,7 +259,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             GLES20.glUseProgram(mMoleculeProgram[i]);
 
             checkGLError("Create molecule program ");
-            GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
             mMoleculePositionParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Position");
             mMoleculeColorParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Color");
@@ -411,7 +419,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        //drawIsosurface(idx);
+        drawIsosurface(idx);
 
         // Draw rest of the scene.
     }
