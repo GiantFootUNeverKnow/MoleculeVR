@@ -17,7 +17,7 @@ Reference: Polygonising a scalar field
 * */
 public class Isosurface {
 
-    public static final int edgeTable[]={
+    private static final int edgeTable[]={
                 0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
                 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
                 0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
@@ -51,7 +51,7 @@ public class Isosurface {
                 0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
                 0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0   };
 
-    public static final int triTable[][] =
+    private static final int triTable[][] =
         {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -316,30 +316,39 @@ public class Isosurface {
     public int nTriang;
 
     private ArrayList<Float> v = null;
-    //private ArrayList<Float> c = null;
 
     private float isolevel;//The isolevel to be drawn
-    private int row;        //number of rows in the grid--the first dimension
-    private int column;     //number of columns in the grid--the second dimension
-    private int slice;      //number of slices in the grid--the third dimension
+    private int row;        //number of scalars in the grid on the first dimension
+    private int column;     //number of scalars in the grid on the second dimension
+    private int slice;      //number of scalars in the grid on the third dimension
 
-    private float[][][] values; //values for all vertices on the 3-D grid
+    private float[][][] values; //values for all scalars on the 3-D grid
+
     private float x_min, x_max, y_min, y_max, z_min, z_max;
+    //These variables could be controlled by users, and the grid is created in user-defined space [x_min,x_max] * [y_min,y_max] * [z_min,z_max]
+    //Their default values are -1.0 and 1.0 for every pair.
+    //CAUTION: User-defined *_max cannot be greater than 1.0,  *_min cannot be less than -1.0, and *_max > *_min must satisfy
 
     public Isosurface(float[][][] v, float isolevel){
         y_min = z_min = x_min = -1.0f;
         y_max = z_max = x_max = 1.0f;
         this.isolevel = isolevel;
 
-        //error checking maybe added soon
+        if ( (v == null) || (v[0] == null)  || v[0][0] == null)
+            throw new IllegalArgumentException("v contains null pointer");
 
         row = v.length;
         column = v[0].length;
         slice = v[0][0].length;
+
         values = new float[row][][];
         for (int i = 0; i < row; i++){
+            if (v[i].length != column)
+                throw new IllegalArgumentException("Elements in v are not assigned properly or there is an empty sub-array in v");
             values[i] = new float[column][];
             for (int j = 0;j < column; j++){
+                if (v[i][j].length != slice)
+                    throw new IllegalArgumentException("Elements in v are not assigned properly or there is an empty sub-array in v");
                 values[i][j] = new float[slice];
                 System.arraycopy(v[i][j],0,values[i][j],0,slice);
             }
@@ -349,19 +358,39 @@ public class Isosurface {
     }
 
     public Isosurface(float[][][] v, float isolevel, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
+
+        if (x_max <= x_min)
+            throw new IllegalArgumentException("x_max must be greater than x_min");
+        if (y_max <= y_min)
+            throw new IllegalArgumentException("y_max must be greater than y_min");
+        if (z_max <= z_min)
+            throw new IllegalArgumentException("z_max must be greater than z_min");
+        if ( (x_max > 1.0f) || (x_min < -1.0f) )
+            throw new IllegalArgumentException("x_max must be no greater than 1.0 and x_min must be no less than -1.0 ");
+        if ( (y_max > 1.0f) || (y_min < -1.0f) )
+            throw new IllegalArgumentException("y_max must be no greater than 1.0 and y_min must be no less than -1.0 ");
+        if ( (z_max > 1.0f) || (z_min < -1.0f) )
+            throw new IllegalArgumentException("z_max must be no greater than 1.0 and z_min must be no less than -1.0 ");
+
         this.x_max = x_max;        this.y_max = y_max;        this.z_max = z_max;
         this.x_min = x_min;        this.y_min = y_min;        this.z_min = z_min;
         this.isolevel = isolevel;
 
-        //error checking may be added soon
+        if ( (v == null) || (v[0] == null)  || v[0][0] == null)
+            throw new IllegalArgumentException("v contains null pointer");
 
         row = v.length;
         column = v[0].length;
         slice = v[0][0].length;
+
         values = new float[row][][];
         for (int i = 0; i < row; i++){
+            if (v[i].length != column)
+                throw new IllegalArgumentException("Elements in v are not assigned properly or there is an empty sub-array in v");
             values[i] = new float[column][];
             for (int j = 0;j < column; j++){
+                if (v[i][j].length != slice)
+                    throw new IllegalArgumentException("Elements in v are not assigned properly or there is an empty sub-array in v");
                 values[i][j] = new float[slice];
                 System.arraycopy(v[i][j],0,values[i][j],0,slice);
             }
@@ -389,7 +418,7 @@ public class Isosurface {
             v = null;
         v = new ArrayList<>();
 
-        //start from 1 because there are row-1 * column-1 * slice-1 unit cube
+        //Iteration starts from 1 because there are row-1 * column-1 * slice-1 unit cubes
         for (int i = 1; i < row; i++){
             for (int j = 1; j < column; j++){
                 for (int k = 1; k < slice; k++){
