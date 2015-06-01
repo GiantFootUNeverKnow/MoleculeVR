@@ -97,6 +97,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int idx;
     private int[] nAtoms;
     private int[] nBonds;
+    private int nTriangleInIso;
     private int switchSignalCounter;
     private int jigglingCounter;
 
@@ -311,6 +312,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
+        nTriangleInIso = I6.nTriang;
 
         //Create ByteBuffer of vertices' position and color based on the float array created by "World"
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
@@ -500,7 +502,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glVertexAttribPointer(mIsoPositionParam,COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,0,IsoSVertices);
         GLES20.glVertexAttribPointer(mIsoColorParam,4,GLES20.GL_FLOAT,false,0,IsoSColor);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,cIsosurface.length/3);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,nTriangleInIso);
 
         checkGLError("Drawing Molecule");
     }
