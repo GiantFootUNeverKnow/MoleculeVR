@@ -359,7 +359,7 @@ public class Isosurface {
 
     public Isosurface(float[][][] v, float isolevel, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
 
-        //Pararmeters checking
+        //Parameters checking
         if (x_max <= x_min)
             throw new IllegalArgumentException("x_max must be greater than x_min");
         if (y_max <= y_min)

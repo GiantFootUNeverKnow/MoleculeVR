@@ -294,6 +294,7 @@ This value is actually x^2 + y^2 + z^2
     -Added function MainActivity.drawIsosurface() that sends data to openGL program of Isosurface
     -Called MainActivity.drawIsosurface() in MainActivity.onDrawEye()
 4. Added a public variable nTriangle for Isosurface class just for convenience
+5. Renamed shader files
 
 TODOLIST:
 0.Solved 2 remaining concerns from 05/22/2015
@@ -309,3 +310,36 @@ Long term
 7.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
 8.Extract th method to process a geometric model
 
+06/01/2015
+1.Adjusted the frequency of jiggling.
+    -Instead of jiggling every frame, molecule jiggles for every JIGGLING_FREQUENCY newly created frames
+2.Adjusted looping time for receiving a switch signal, reducing it from 100 loops to 40 loops
+3.Assigned colors to isosurface with a dynamic "semi-random" scheme. We can still associate colors for isosurface to something that may be useful in future.
+    Right now the temporary scheme is quite sweet when displayed.
+4.Enabled alpha-blending, resulting in transparency of isosurface
+5.Get rid of bug "weird triangle", that is resulted from buffer overflow and misuse of variable
+6.Added error checking codes and improved codes quality and readability
+7.Changed access levels for variables in Sphere, Cylinder, Isosurface.
+    -For most non-interface, they are set to be private
+    -For class constant, they are set to be (no modifier) that could be accessed from the same package
+
+
+
+Parameters that maybe reconfigured later:
+Criteria for a switching: now is x>0.95, y <0.5, z <0.5
+Looping time: 40 times
+Size of frame of molecules: [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]
+Size of maximum frame of isosurface: [-1.0,1.0]*[-1.0,1.0]*[-1.0,1.0]
+Range of radii of atoms; [1.0,2.0]
+Brightness for isosurface: 0.8f
+Alpha value for isosurface: 0.5f
+RESIZING_FACTOR(Sphere): 20.0
+RESIZING_FACTOR(Cylinder): 75.0
+DEGREE_OF_REFINEMENT(Sphere): 2
+DEGREE_OF_REFINEMENT(Cylinder): 2
+JIGGLING_FREQUENCY: 5
+Distance from origin: now 0.0
+Background Color: now Black
+Initial Molecule: now 5
+Scale of oscillation: [-0.01,0.01]
+bonding_distance: 0.03f

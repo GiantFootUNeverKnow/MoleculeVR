@@ -162,18 +162,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         switchSignalCounter = 0;
         jigglingCounter = 0;
 
-        //testing interpolation
-//        float [] a = {2.0f,3.0f,4.0f,5.0f};
-//        float [] b = {0.0f,0.0f,0.0f,0.0f};
-//
-//        float [] c = {100.0f,100.0f,100.0f,100.0f};
-//        float [] d  = {0.0f,0.0f,0.0f,0.0f};
-//
-//        float [] v = {1.0f,1.0f,1.0f,1.0f};
-//
-//        float [] ret = util.interpolate(v,a,b,c,d);
-//        Log.i(TAG,ret[0] + " " + ret[1] + " " +ret[2] + " " + ret[3]);
-
     }
 
 
@@ -182,7 +170,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Log.i(TAG, "Surface Created");
 
         //set up background color
-       // GLES20.glClearColor(0.4f, 0.4f, 0.8f, 0.5f);
+        //GLES20.glClearColor(0.4f, 0.4f, 0.8f, 0.5f);
 
         int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.vertex);
         int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
@@ -214,14 +202,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             readers[i] = new BufferedReader(new InputStreamReader(inputStreams[i]));
         }
 
-        //enable depth test
+        //Enable depth test
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
         // Enable blending
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-        //build model and shader machine
+        //build models and shader machines
         for (int i = 0; i < NUM_MOLECULE; i++) {
 
             try {
@@ -239,7 +227,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             //Build Molecule Program
 
-            //Create ByteBuffer of vertices' position and color based on the float array created by "World"
+            //Create ByteBuffer of vertices' position and color based on the float array created by "Sphere"
             ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vMolecule[i].length * 4);
             ByteVertices.order(ByteOrder.nativeOrder());
             moleculeVertices[i] = ByteVertices.asFloatBuffer();
@@ -273,7 +261,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             //Build Bonding Program
 
-            //Create ByteBuffer of vertices' position and color based on the float array created by "World"
+            //Create ByteBuffer of vertices' position and color based on the float array created by "Cylinder"
             ByteBuffer ByteVertices2 = ByteBuffer.allocateDirect(vBondings[i].length * 4);
             ByteVertices2.order(ByteOrder.nativeOrder());
             bondingVertices[i] = ByteVertices2.asFloatBuffer();
@@ -367,14 +355,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     @Override
     public void onSurfaceChanged(int width, int height){ //temporarily useless
-       // Log.i(TAG,"onSurfaceChanged");
-
     }
 
     @Override
     public void onFinishFrame(Viewport viewport){ //temporarily useless
-        //mOverlay.show3DToast(debuggingStr);
-        //Log.i(TAG,"onFinishFrame");
     }
 
     /**
@@ -389,7 +373,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Apply the eye transformation to the camera.
         Matrix.multiplyMM(mView, 0, eye.getEyeView(), 0, mCamera, 0);
         /*eye.getEyeView() and mHeadView(the variable obtained by calling HeadTransform.getHeadView()) are almost the same
-        * on the documentation it is said that getEyeView() includes also position shift and interpupillary distance shift,
+        * on the documentation; it is said that getEyeView() includes also position shift and interpupillary distance shift,
         * which I didn't find noticeable trace of effect
         * */
         //Matrix.multiplyMM(mView, 0, mHeadView, 0, mCamera, 0);
@@ -541,7 +525,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
           When the phone is sitting on table, the third coordinate for upVector is near either 1 or -1
         * */
         switchSignalCounter++;
-        if (switchSignalCounter == 100) {
+        if (switchSignalCounter == 40) {
             if ((Math.abs(mHeadUpVector[0])  > 0.95)
                     && (Math.abs(mHeadUpVector[1])  < 0.5)
                     && (Math.abs(mHeadUpVector[2])  < 0.5)
