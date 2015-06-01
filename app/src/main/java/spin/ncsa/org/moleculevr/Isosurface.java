@@ -404,10 +404,10 @@ public class Isosurface {
         //convert ArrayList<Float> to float[]
         nTriang = v.size() /3;
         vertices = new float[v.size()];
-        int i = 0;
+        int q = 0;
 
         for (Float f : v) {
-            vertices[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
+            vertices[q++] = (f != null ? f : Float.NaN); // Or whatever default you want.
         }
 
         //initialise colors(a default color)
@@ -512,14 +512,7 @@ public class Isosurface {
             vertlist[11] =
                     util.interpolate(isolevel,vals[3], vals[7],coords[3], coords[7]);
 
-          /* Create the triangle */
-        /*ntriang = 0;
-        for (i=0;triTable[cubeindex][i]!=-1;i+=3) {
-            triangles[ntriang].p[0] = vertlist[triTable[cubeindex][i  ]];
-            triangles[ntriang].p[1] = vertlist[triTable[cubeindex][i+1]];
-            triangles[ntriang].p[2] = vertlist[triTable[cubeindex][i+2]];
-            ntriang++;
-        }*/
+
         for (int ii = 0; triTable[cubeindex][ii] != -1; ii++){
             v.add(vertlist[triTable[cubeindex][ii]][0]);
             v.add(vertlist[triTable[cubeindex][ii]][1]);

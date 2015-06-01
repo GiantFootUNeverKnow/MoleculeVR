@@ -230,6 +230,7 @@ Scale of oscillation: [-0.01,0.01]
         -Added a method TextParser.formBonds() that takes care of creating an array of Cylinder objects(containers)
         -Simplify interface methods outputBonds() and outputBondingColors(). Now they are more readable
         -Use GL.TRIANGLES to draw bonds instead of naive GL.LINES
+3. Concern5 above doesn't really matter for current setting
 
 TODOLIST: solve concerns described above.
 
@@ -281,3 +282,30 @@ TODOLIST:
 4.Write necessary codes for drawing isosurface out
 5.Clear out testing case and comments
 5.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
+6.Extract th method to process a geometric model
+
+05/31/2015
+1. Created a testing class s_functions. There is only one class function in this class: this function generates a 3-D array where each element has an associated value
+This value is actually x^2 + y^2 + z^2
+2. Tested Isosurface class and assigns a fixed color for Isosurface class, i.e., every object of Isosurface would have the same color
+3. Constructed infrastructure for Isosurface in MainActivity.
+    -Used s_function to prepare data for an example isosurface (named I6) that has no physical meaning with drawn molecules.
+    -Created an openGL program for isosurface and associative global variables(Caution: instead of declaring an array of such program, I just declare one for example)
+    -Added function MainActivity.drawIsosurface() that sends data to openGL program of Isosurface
+    -Called MainActivity.drawIsosurface() in MainActivity.onDrawEye()
+4. Added a public variable nTriangle for Isosurface class just for convenience
+
+TODOLIST:
+0.Solved 2 remaining concerns from 05/22/2015
+1.Think about the color assignment for isosurface
+2.Think about transparency of isosurface
+3.Get rid of the weird triangle that occurs when isosurface was drawn
+4.Clear out comments/bad codes as much as possible, add error checking codes
+5.Get better visualization effect for isosurfaces
+----------------------------------------------------
+Long term
+----------------------------------------------------
+6.Construct an array of isosurfaces(one for each molecule model)?
+7.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
+8.Extract th method to process a geometric model
+

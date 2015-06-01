@@ -293,14 +293,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             checkGLError("Bonding Program Params");
        }
 
-
+        //Isosurface example
         float [][][]s_values = s_functions.s();
         Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
 
         vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
 
-        //
         //Create ByteBuffer of vertices' position and color based on the float array created by "World"
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
         ByteVertices.order(ByteOrder.nativeOrder());
@@ -317,11 +316,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mIsoProgram = GLES20.glCreateProgram();
 
         GLES20.glAttachShader(mIsoProgram,vertexShader);
-
         GLES20.glAttachShader(mIsoProgram,passthroughShader);
-
         GLES20.glLinkProgram(mIsoProgram);
-
         GLES20.glUseProgram(mIsoProgram);
 
         mIsoPositionParam = GLES20.glGetAttribLocation(mIsoProgram,"a_Position");
@@ -332,13 +328,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         GLES20.glEnableVertexAttribArray(mIsoPositionParam);
         GLES20.glEnableVertexAttribArray(mIsoColorParam);
-
-        /*
-        Isosurface I1 = new Isosurface(s_values,0.1f);
-        Isosurface I0= new Isosurface(s_values,-1);
-
-        Isosurface I5 = new Isosurface(s_values,5);*/
-        //testing end
+        //end of Isosurface specs
 
         Matrix.setIdentityM(mModelMolecule, 0);
         Matrix.translateM(mModelMolecule, 0, 0, 0, -DistanceToScreen);
@@ -476,9 +466,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glUniformMatrix4fv(mBondingModelParam[index],1,false,mModelBonding,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mBondingModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
-        //adjust the positions to form random oscillation
-        //adjustVertices(index);
-
         GLES20.glVertexAttribPointer(mBondingPositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,bondingVertices[index]);
         GLES20.glVertexAttribPointer(mBondingColorParam[index],4, GLES20.GL_FLOAT, false,0,mBondingColor[index]);
 
@@ -495,9 +482,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         GLES20.glUniformMatrix4fv(mIsoModelParam,1,false,mModelIsosurface,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mIsoModelViewParam, 1, false, mModelView, 0);//set the modelView in the shader
-
-        //adjust the positions to form random oscillation
-       // adjustVertices(index);
 
         GLES20.glVertexAttribPointer(mIsoPositionParam,COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,0,IsoSVertices);
         GLES20.glVertexAttribPointer(mIsoColorParam,4,GLES20.GL_FLOAT,false,0,IsoSColor);
@@ -549,7 +533,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
             }
-            //debuggingStr = mHeadUpVetcor[0] + " " + mHeadUpVetcor[1] + " " + mHeadUpVetcor[2];
             timeCounter = 0;
         }
          /*
