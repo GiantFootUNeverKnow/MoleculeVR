@@ -50,10 +50,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private FloatBuffer[] bondingVertices;
     private FloatBuffer[] mBondingColor;
 
+    private FloatBuffer IsoSVertices;
+    private FloatBuffer IsoSColor;
+
     float[][] vMolecule;
     float[][] vBondings;
     float[][] cMolecule;
     float[][] cBondings;
+    float[] vIsosurface;
+    float[] cIsosurface;
+
 
     private int[] mMoleculeProgram;
     private int[] mMoleculePositionParam;
@@ -67,10 +73,18 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mBondingModelParam;
     private int[] mBondingModelViewParam;
 
+    private int mIsoProgram;
+    private int mIsoPositionParam;
+    private int mIsoColorParam;
+    private int mIsoModelParam;
+    private int mIsoModelViewParam;
+
     private float DistanceToScreen = (float)0.0;
 
     private float[] mModelMolecule;
     private float[] mModelBonding;
+    private float[] mModelIsosurface;
+
     private float[] mHeadView;
     private float[] mHeadUpVetcor;
     private float[] mCamera;
@@ -100,6 +114,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         mModelMolecule = new float[16];
         mModelBonding = new float[16];
+        mModelIsosurface = new float[16];
+
         mHeadView = new float[16];
         mHeadUpVetcor = new float[3];
         mCamera = new float[16];
@@ -277,11 +293,61 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             checkGLError("Bonding Program Params");
        }
 
+
+        float [][][]s_values = s_functions.s();
+        Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
+
+        vIsosurface = I6.vertices;
+        cIsosurface = I6.colors;
+
+        //
+        //Create ByteBuffer of vertices' position and color based on the float array created by "World"
+        ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
+        ByteVertices.order(ByteOrder.nativeOrder());
+        IsoSVertices = ByteVertices.asFloatBuffer();
+        IsoSVertices.put(vIsosurface);
+        IsoSVertices.position(0);
+
+        ByteBuffer ByteColors = ByteBuffer.allocateDirect(cIsosurface.length * 4);
+        ByteColors.order(ByteOrder.nativeOrder());
+        IsoSColor = ByteColors.asFloatBuffer();
+        IsoSColor.put(cIsosurface);
+        IsoSColor.position(0);
+
+        mIsoProgram = GLES20.glCreateProgram();
+
+        GLES20.glAttachShader(mIsoProgram,vertexShader);
+
+        GLES20.glAttachShader(mIsoProgram,passthroughShader);
+
+        GLES20.glLinkProgram(mIsoProgram);
+
+        GLES20.glUseProgram(mIsoProgram);
+
+        mIsoPositionParam = GLES20.glGetAttribLocation(mIsoProgram,"a_Position");
+        mIsoColorParam = GLES20.glGetAttribLocation(mIsoProgram,"a_Color");
+
+        mIsoModelParam = GLES20.glGetUniformLocation(mIsoProgram,"u_Model");
+        mIsoModelViewParam = GLES20.glGetUniformLocation(mIsoProgram, "u_MVMatrix");
+
+        GLES20.glEnableVertexAttribArray(mIsoPositionParam);
+        GLES20.glEnableVertexAttribArray(mIsoColorParam);
+
+        /*
+        Isosurface I1 = new Isosurface(s_values,0.1f);
+        Isosurface I0= new Isosurface(s_values,-1);
+
+        Isosurface I5 = new Isosurface(s_values,5);*/
+        //testing end
+
         Matrix.setIdentityM(mModelMolecule, 0);
         Matrix.translateM(mModelMolecule, 0, 0, 0, -DistanceToScreen);
 
         Matrix.setIdentityM(mModelBonding, 0);
         Matrix.translateM(mModelBonding, 0, 0, 0, -DistanceToScreen);
+
+        Matrix.setIdentityM(mModelIsosurface, 0);
+        Matrix.translateM(mModelIsosurface,0,0,0,-DistanceToScreen);
 
         checkGLError("onSurfaceCreated");
 
@@ -343,6 +409,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
         drawBondings(idx);
+
+         /*Draw Isosurface*/
+        // Build the ModelView and ModelViewProjection matrices
+        // for calculating cube position and light.
+        //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+        Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
+        //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+        drawIsosurface(idx);
 
         // Draw rest of the scene.
     }
@@ -413,6 +487,24 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
 
         checkGLError("Drawing Bondings");
+    }
+
+    //the function to draw the isosurface
+    public void drawIsosurface(int index){
+        GLES20.glUseProgram(mIsoProgram);
+
+        GLES20.glUniformMatrix4fv(mIsoModelParam,1,false,mModelIsosurface,0);//set the model in the shader
+        GLES20.glUniformMatrix4fv(mIsoModelViewParam, 1, false, mModelView, 0);//set the modelView in the shader
+
+        //adjust the positions to form random oscillation
+       // adjustVertices(index);
+
+        GLES20.glVertexAttribPointer(mIsoPositionParam,COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,0,IsoSVertices);
+        GLES20.glVertexAttribPointer(mIsoColorParam,4,GLES20.GL_FLOAT,false,0,IsoSColor);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,cIsosurface.length/3);
+
+        checkGLError("Drawing Molecule");
     }
 
     @Override

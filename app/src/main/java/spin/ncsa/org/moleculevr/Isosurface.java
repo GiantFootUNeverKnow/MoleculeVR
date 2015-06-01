@@ -1,3 +1,5 @@
+package spin.ncsa.org.moleculevr;
+
 import java.util.ArrayList;
 
 import spin.ncsa.org.moleculevr.util;
@@ -310,6 +312,8 @@ public class Isosurface {
     //Isosurface
     public float[] vertices;
     public float[] colors;
+    public int nTriang;
+
     private ArrayList<Float> v = null;
     //private ArrayList<Float> c = null;
 
@@ -336,7 +340,7 @@ public class Isosurface {
             values[i] = new float[column][];
             for (int j = 0;j < column; j++){
                 values[i][j] = new float[slice];
-                for (int k = 0; j < slice; k++){
+                for (int k = 0; k < slice; k++){
                     values[i][j][k] = v[i][j][k];
                 }
             }
@@ -345,7 +349,7 @@ public class Isosurface {
         builtIsosurface();
     }
 
-    public Isosurface(float[][][] v, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
+    public Isosurface(float[][][] v, float isolevel, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
         this.x_max = x_max;        this.y_max = y_max;        this.z_max = z_max;
         this.x_min = x_min;        this.y_min = y_min;        this.z_min = z_min;
         this.isolevel = isolevel;
@@ -360,7 +364,7 @@ public class Isosurface {
             values[i] = new float[column][];
             for (int j = 0;j < column; j++){
                 values[i][j] = new float[slice];
-                for (int k = 0; j < slice; k++){
+                for (int k = 0; k < slice; k++){
                     values[i][j][k] = v[i][j][k];
                 }
             }
@@ -398,11 +402,24 @@ public class Isosurface {
         }
 
         //convert ArrayList<Float> to float[]
+        nTriang = v.size() /3;
         vertices = new float[v.size()];
         int i = 0;
 
         for (Float f : v) {
             vertices[i++] = (f != null ? f : Float.NaN); // Or whatever default you want.
+        }
+
+        //initialise colors(a default color)
+        //later consider adding dynamic decided color
+        //length of colors and vertices should be accessed more easily
+        //there should be a function to return the number of triangles
+        colors = new float[nTriang * 4];
+        for (int p = 0; p < colors.length; p+= 4){
+            colors[p +0] = 0.3f;
+            colors[p +1] = 0.1f;
+            colors[p +2]= 0.8f;
+            colors[p +3] = 0.1f;
         }
     }
 
