@@ -323,7 +323,13 @@ Long term
     -For most non-interface, they are set to be private
     -For class constant, they are set to be (no modifier) that could be accessed from the same package
 
-
+TODOLIST:
+0.Solved 2 remaining concerns from 05/22/2015
+1.Add smooth lighting
+2.Add perspective transformation
+3.Construct an array of isosurfaces(one for each molecule model)?
+4.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
+5.Extract th method to process a geometric model
 
 Parameters that maybe reconfigured later:
 Criteria for a switching: now is x>0.95, y <0.5, z <0.5
