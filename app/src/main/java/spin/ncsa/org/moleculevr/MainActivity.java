@@ -44,6 +44,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private static final int COORDS_PER_VERTEX = 3;
 
+    //JIGGLING_FREQUENCY = x means that for x frames generated, 1 jiggling occurs
+    private static final int JIGGLING_FREQUENCY = 5;
+
     private FloatBuffer[] moleculeVertices ;
     private FloatBuffer[] mMoleculeColor ;
 
@@ -94,10 +97,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int idx;
     private int[] nAtoms;
     private int[] nBonds;
-    private int timeCounter;
+    private int switchSignalCounter;
 
     private int debugging;
     private String debuggingStr;
+    private int naiveCounter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,7 +157,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         debugging = 0;
-        timeCounter = 0;
+        switchSignalCounter = 0;
+        naiveCounter = 0;
 
         //testing interpolation
 //        float [] a = {2.0f,3.0f,4.0f,5.0f};
@@ -406,7 +411,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawIsosurface(idx);
+        //drawIsosurface(idx);
 
         // Draw rest of the scene.
     }
@@ -447,7 +452,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
         //adjust the positions to form random oscillation
-        adjustVertices(index);
+        if (naiveCounter == 0)
+            adjustVertices(index);
+        naiveCounter = (naiveCounter ++) % JIGGLING_FREQUENCY;
 
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
@@ -524,8 +531,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
           When the phone is portrait, the first cordinate for upVector is near either 1 or -1
           When the phone is sitting on table, the third coordinate for upVector is near either 1 or -1
         * */
-        timeCounter++;
-        if (timeCounter == 100) {
+        switchSignalCounter++;
+        if (switchSignalCounter == 100) {
             if ((Math.abs(mHeadUpVetcor[0])  > 0.95)
                     && (Math.abs(mHeadUpVetcor[1])  < 0.5)
                     && (Math.abs(mHeadUpVetcor[2])  < 0.5)
@@ -533,7 +540,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
             }
-            timeCounter = 0;
+            switchSignalCounter = 0;
         }
          /*
         debugging++;
