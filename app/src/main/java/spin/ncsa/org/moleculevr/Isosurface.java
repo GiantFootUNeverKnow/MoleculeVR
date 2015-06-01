@@ -359,6 +359,7 @@ public class Isosurface {
 
     public Isosurface(float[][][] v, float isolevel, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max){
 
+        //Pararmeters checking
         if (x_max <= x_min)
             throw new IllegalArgumentException("x_max must be greater than x_min");
         if (y_max <= y_min)
@@ -399,6 +400,7 @@ public class Isosurface {
         builtIsosurface();
     }
 
+    //Given an index of a unit cube, calculate its coordinates
     private float[] gridCoord(int i, int j, int k){
         float unit_length_x = (x_max - x_min) / (row - 1);
         float unit_length_y = (y_max - y_min) / (column - 1);
@@ -431,17 +433,17 @@ public class Isosurface {
         nTriang = v.size() /3;
         vertices = new float[v.size()];
         int q = 0;
-
         for (Float f : v) {
             vertices[q++] = (f != null ? f : Float.NaN); // Or whatever default you want.
         }
 
-        //initialise colors(a default color)
-        //later consider adding dynamic decided color
-        //length of colors and vertices should be accessed more easily
-        //there should be a function to return the number of triangles
+        //Clear colors array
         if (colors != null)
             colors = null;
+
+        //Colors for isosurface are decided randomly on HSV base
+        //We fix v(brightness) axis, randomly choose an h(Hue) value that would be applied to the whole isosurface,
+        //and for each vertex on the isosurface, randomly  choose a s(Saturation value)
         colors = new float[nTriang * 4];
         float v = 0.8f;
         float h = (float)Math.random() * 360;
@@ -451,9 +453,9 @@ public class Isosurface {
             hsv[1] = (float)Math.random();
             hsv[2] = v;
             int RGB = Color.HSVToColor(hsv);
-            colors[p] = Color.red(RGB) / 255.0f;
-            colors[p + 1] = Color.green(RGB) / 255.0f;
-            colors[p + 2] = Color.blue(RGB) / 255.0f;
+            colors[p] = Color.red(RGB) / 256.0f;
+            colors[p + 1] = Color.green(RGB) / 256.0f;
+            colors[p + 2] = Color.blue(RGB) / 256.0f;
             colors[p + 3] = 0.5f;
         }
     }
@@ -472,6 +474,8 @@ public class Isosurface {
      */
 
     private void marchingCube(int i, int j, int k){
+
+        //calculate coordinates of vertices on the unit cube
         float [][] coords = new float[8][3];
         coords[0] = gridCoord(i-1,j-1,k-1);
         coords[1] = gridCoord(i,j-1,k-1);
@@ -482,6 +486,7 @@ public class Isosurface {
         coords[6] = gridCoord(i,j,k);
         coords[7] = gridCoord(i-1,j,k);
 
+        //calculate values of vertices on the unit cube
         float [] vals = new float[8];
         vals[0] = values[i-1][j-1][k-1];
         vals[1] = values[i][j-1][k-1];
@@ -492,6 +497,7 @@ public class Isosurface {
         vals[6] = values[i][j][k];
         vals[7] = values[i-1][j][k];
 
+        //based on topological characteristics, index the unit cube
         int cubeindex = 0;
         if (vals[0] < isolevel) cubeindex |= 1;
         if (vals[1] < isolevel) cubeindex |= 2;
