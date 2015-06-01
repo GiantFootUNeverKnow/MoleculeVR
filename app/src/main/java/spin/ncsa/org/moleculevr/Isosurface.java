@@ -341,9 +341,7 @@ public class Isosurface {
             values[i] = new float[column][];
             for (int j = 0;j < column; j++){
                 values[i][j] = new float[slice];
-                for (int k = 0; k < slice; k++){
-                    values[i][j][k] = v[i][j][k];
-                }
+                System.arraycopy(v[i][j],0,values[i][j],0,slice);
             }
         }
 
@@ -365,9 +363,7 @@ public class Isosurface {
             values[i] = new float[column][];
             for (int j = 0;j < column; j++){
                 values[i][j] = new float[slice];
-                for (int k = 0; k < slice; k++){
-                    values[i][j][k] = v[i][j][k];
-                }
+                System.arraycopy(v[i][j],0,values[i][j],0,slice);
             }
         }
 
@@ -416,7 +412,7 @@ public class Isosurface {
         //length of colors and vertices should be accessed more easily
         //there should be a function to return the number of triangles
         colors = new float[nTriang * 4];
-        float v = (float)Math.random();
+        float v = 0.8f;
         float h = (float)Math.random() * 360;
         for (int p = 0; p < colors.length; p+= 4){
             float [] hsv = new float[3];
@@ -424,10 +420,10 @@ public class Isosurface {
             hsv[1] = (float)Math.random();
             hsv[2] = v;
             int RGB = Color.HSVToColor(hsv);
-            colors[p + 0] = Color.red(RGB) / 255.0f;
+            colors[p] = Color.red(RGB) / 255.0f;
             colors[p + 1] = Color.green(RGB) / 255.0f;
             colors[p + 2] = Color.blue(RGB) / 255.0f;
-            colors[p + 3] = 0.2f;
+            colors[p + 3] = 0.5f;
         }
     }
 

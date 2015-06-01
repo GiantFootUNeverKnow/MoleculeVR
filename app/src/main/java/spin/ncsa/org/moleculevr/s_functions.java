@@ -7,7 +7,7 @@ package spin.ncsa.org.moleculevr;
 //This class generates all kinds of temporary functions
     //s is a function for testing Isosurface class
 public class s_functions {
-    public static final float[][][] s(){
+    public static float[][][] s(){
         float x_i, y_i, z_i;
 
         float [][][] ret = new float[71][][];

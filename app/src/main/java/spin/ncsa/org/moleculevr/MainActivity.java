@@ -89,7 +89,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float[] mModelIsosurface;
 
     private float[] mHeadView;
-    private float[] mHeadUpVetcor;
+    private float[] mHeadUpVector;
     private float[] mCamera;
     private float[] mView;
     private float[] mModelView;
@@ -98,10 +98,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] nAtoms;
     private int[] nBonds;
     private int switchSignalCounter;
+    private int jigglingCounter;
 
     private int debugging;
     private String debuggingStr;
-    private int naiveCounter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mModelIsosurface = new float[16];
 
         mHeadView = new float[16];
-        mHeadUpVetcor = new float[3];
+        mHeadUpVector = new float[3];
         mCamera = new float[16];
         mModelView = new float[16];
         mView = new float[16];
@@ -158,7 +159,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         debugging = 0;
         switchSignalCounter = 0;
-        naiveCounter = 0;
+        jigglingCounter = 0;
 
         //testing interpolation
 //        float [] a = {2.0f,3.0f,4.0f,5.0f};
@@ -217,9 +218,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         // Enable blending
         GLES20.glEnable(GLES20.GL_BLEND);
-        //GLES20.glBlendFunc(GLES20.GL_DST_COLOR, GLES20.GL_ZERO);
-        //GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE);
-       GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         //build model and shader machine
         for (int i = 0; i < NUM_MOLECULE; i++) {
@@ -419,7 +418,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawIsosurface(idx);
+        drawIsosurface();
 
         // Draw rest of the scene.
     }
@@ -460,9 +459,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
         //adjust the positions to form random oscillation
-        if (naiveCounter == 0)
+        if (jigglingCounter == 0)
             adjustVertices(index);
-        naiveCounter = (naiveCounter ++) % JIGGLING_FREQUENCY;
+        jigglingCounter = (jigglingCounter ++) % JIGGLING_FREQUENCY;
 
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
@@ -492,7 +491,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     }
 
     //the function to draw the isosurface
-    public void drawIsosurface(int index){
+    public void drawIsosurface(){
         GLES20.glUseProgram(mIsoProgram);
 
         GLES20.glUniformMatrix4fv(mIsoModelParam,1,false,mModelIsosurface,0);//set the model in the shader
@@ -533,7 +532,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         headTransform.getHeadView(mHeadView,0);
 
-        headTransform.getUpVector(mHeadUpVetcor,0);
+        headTransform.getUpVector(mHeadUpVector,0);
 
         /*When the phone is landscape, the second coordinate for upVector is near either 1 or -1
           When the phone is portrait, the first cordinate for upVector is near either 1 or -1
@@ -541,9 +540,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * */
         switchSignalCounter++;
         if (switchSignalCounter == 100) {
-            if ((Math.abs(mHeadUpVetcor[0])  > 0.95)
-                    && (Math.abs(mHeadUpVetcor[1])  < 0.5)
-                    && (Math.abs(mHeadUpVetcor[2])  < 0.5)
+            if ((Math.abs(mHeadUpVector[0])  > 0.95)
+                    && (Math.abs(mHeadUpVector[1])  < 0.5)
+                    && (Math.abs(mHeadUpVector[2])  < 0.5)
                     ) {
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
