@@ -294,13 +294,21 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             checkGLError("Bonding Program Params");
        }
 
-        //Isosurface example
+        //2 Isosurface examples
         float [][][]s_values = s_functions.s();
-        Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
+        float [][][]n_values = s_functions.n();
 
-        vIsosurface = I6.vertices;
+        Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
+        Isosurface I7 = new Isosurface(n_values,0.03f);
+
+        /*vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
         nTriangleInIso = I6.nTriang;
+*/
+
+        vIsosurface = I7.vertices;
+        cIsosurface = I7.colors;
+        nTriangleInIso = I7.nTriang;
 
         //Create ByteBuffer of vertices' position and color based on the float array created by "World"
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
