@@ -349,3 +349,13 @@ Background Color: now Black
 Initial Molecule: now 5
 Scale of oscillation: [-0.01,0.01]
 bonding_distance: 0.03f
+
+2015/05/02
+1.Added interface for accessing normals for Sphere class, the same thing will be added for Isosurface and Cylinder later.
+    -Actually, normals are the same across all sphere so I am considering making normals a static variable for Sphere class, but due to
+     the generality across all geometries which may be added soon, this improvement should be postponed.
+2.Added another function for s_function class, namely n().
+    -This function generates a parabola in 3-d space, its variable used in MainActivity is named I7.
+    -It is just for testing
+
+
