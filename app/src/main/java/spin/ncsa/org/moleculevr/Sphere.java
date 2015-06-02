@@ -49,6 +49,7 @@ public class Sphere
         this.elem_name = name;
 
         buildSphere();
+        setNormal();
         setCoordinates();
     }
 
@@ -73,6 +74,8 @@ public class Sphere
     //sphere
     public float[] vertices = new float[NUMBER_OF_COORDS];
     public float[] colors = new float[NUMBER_OF_COLORS];
+    public float[] normals = new float[NUMBER_OF_COORDS];
+  // public float[][] normals = new float[NUMBER_OF_VERTICES][];//this variable could be static since it is the same across all sphere
 
     private float[][] vdata = new float[][]{
             {-X , 0.0f , Z }, {X , 0.0f, Z },
@@ -88,6 +91,16 @@ public class Sphere
             {3,10,7},{10,6,7},{6,11,7},{6,0,11},{6,1,0},
             {10,1,6},{11,0,9},{2,11,9},{5,2,9},{11,2,7}
     };
+
+    private void setNormal(){//calculate normals based on vertex's pointing direction
+      /*  for (int i = 0; i < NUMBER_OF_VERTICES; i++){
+            normals[i] = new float[3];
+            normals[i][0] = vertices[i*3];
+            normals[i][1] = vertices[i*3+1];
+            normals[i][2] = vertices[i*3+2];
+        }*/
+        System.arraycopy(vertices,0,normals,0,NUMBER_OF_COORDS);
+    }
 
     private void setCoordinates(){//move sphere from origin to the given coordinates
        for (int i = 0; i < NUMBER_OF_COORDS; i+=3){

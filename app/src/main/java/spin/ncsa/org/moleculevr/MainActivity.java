@@ -48,13 +48,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final int JIGGLING_FREQUENCY = 5;
 
     private FloatBuffer[] moleculeVertices ;
-    private FloatBuffer[] mMoleculeColor ;
+    private FloatBuffer[] mMoleculeColor;
+    private FloatBuffer[] mMoleculeNormals ;
 
     private FloatBuffer[] bondingVertices;
     private FloatBuffer[] mBondingColor;
+    private FloatBuffer[] mBondingNormals ;
 
     private FloatBuffer IsoSVertices;
     private FloatBuffer IsoSColor;
+    private FloatBuffer[] mIsoNormals ;
 
     float[][] vMolecule;
     float[][] vBondings;
@@ -66,12 +69,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private int[] mMoleculeProgram;
     private int[] mMoleculePositionParam;
+    private int[] mMoleculeNormalParam;
     private int[] mMoleculeColorParam;
     private int[] mMoleculeModelParam;
     private int[] mMoleculeModelViewParam;
 
     private int[] mBondingProgram;
     private int[] mBondingPositionParam;
+    private int[] mBondingNormalParam;
     private int[] mBondingColorParam;
     private int[] mBondingModelParam;
     private int[] mBondingModelViewParam;
@@ -79,6 +84,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int mIsoProgram;
     private int mIsoPositionParam;
     private int mIsoColorParam;
+    private int mIsoNormalParam;
     private int mIsoModelParam;
     private int mIsoModelViewParam;
 
