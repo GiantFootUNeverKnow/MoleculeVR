@@ -13,6 +13,7 @@ public class Sphere
     final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
     final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
+    final static int NUMBER_OF_NORMALS = NUMBER_OF_COORDS;
 
     private final static float RESIZING_FACTOR = 20.0f;//resize the ball by factor of 20
 
@@ -160,11 +161,11 @@ public class Sphere
         }
 
         for (int i = 0; i < NUMBER_OF_FACES; i++) { // for each face, we have 3 vertices, each needs 4 parameter to specify a color
-            colors[i * 12] = redColor + 0.05f;// Because we don't have shading/lighting yet, manually adjust the shades by adding +-0.05
+            colors[i * 12] = redColor ;
             colors[i * 12 + 1] = greenColor;
             colors[i * 12 + 2] = blueColor;
             colors[i * 12 + 3] = 1.0f;
-            colors[i * 12 + 4] = redColor -0.05f;
+            colors[i * 12 + 4] = redColor;
             colors[i * 12 + 5] = greenColor;
             colors[i * 12 + 6] = blueColor;
             colors[i * 12 + 7] = 1.0f;
