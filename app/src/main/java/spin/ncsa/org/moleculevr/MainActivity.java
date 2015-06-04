@@ -116,7 +116,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int debugging;
     private String debuggingStr;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -343,7 +342,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         /*vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
         nTriangleInIso = I6.nTriang;
-*/
+        */
 
         vIsosurface = I7.vertices;
         cIsosurface = I7.colors;
@@ -580,7 +579,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * */
         switchSignalCounter++;
         if (switchSignalCounter == 40) {
-            if ((Math.abs(mHeadUpVector[0])  > 0.95)
+            if ((Math.abs(mHeadUpVector[0])  > 0.85)
                     && (Math.abs(mHeadUpVector[1])  < 0.5)
                     && (Math.abs(mHeadUpVector[2])  < 0.5)
                     ) {

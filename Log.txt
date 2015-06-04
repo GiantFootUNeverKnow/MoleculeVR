@@ -350,7 +350,7 @@ Initial Molecule: now 5
 Scale of oscillation: [-0.01,0.01]
 bonding_distance: 0.03f
 
-2015/05/02
+2015/06/02
 1.Added interface for accessing normals for Sphere class, the same thing will be added for Isosurface and Cylinder later.
     -Actually, normals are the same across all sphere so I am considering making normals a static variable for Sphere class, but due to
      the generality across all geometries which may be added soon, this improvement should be postponed.
@@ -358,4 +358,64 @@ bonding_distance: 0.03f
     -This function generates a parabola in 3-d space, its variable used in MainActivity is named I7.
     -It is just for testing
 
+2015/06/04
+0.Previous concerns[2 && 3] resolved
+    -We will bond pairs of atoms in a specific range given by an informative file instead of simple nearest neighbors strategy
+1.Generated .apk for this app
+    -Keystore stored in D:\实习类\moleculeVR_keystore
+    -Password is "My assigned working room(4 Capital letter + 4 numbers)"
+2.Removed the gigantic molecule
+    -Performance increases strikingly
+3.Disabled fake shading
+4.Assembled new Google cardboard and tested the app on that with its magnet
+5.Added lighting to molecules' program and to bondings'
+    -The shader codes and the position of point lighting I used was modified from Google's demo app
+    -Only diffusive component was added, whereas specular component was not.
+    -Added outputNormals() and outputBondingNormals() to TextParser class
+    -Added constant NUMBER_OF_NORMALS to Sphere and Cylinder class
+    -Calculated shading/lighting in vertex.shader
+    -Since Isosurface has no normal vectors nor lighting information(There is no way they could make sense), it probably should use another shader file.
+     Right now, the mechanism by which it works is the program of Isosurface does not enable normal variables in its shader and then compile only very
+     small part of codes. It is an amazing feature of GLSL, for which the same shader codes could be compiled into different programs. However, I still
+     plan to separate these shader files later.
+     -Calculations of normals of Cylinder is not right now, which needs a formula of 3-Dimensional rotation that I am still working on
+     -The lighting could be improved/played in these few ways:
+        (*)Adjust ambient component
+        (*)Add specular component
+        (*)Change lower bound set for diffusion
+        (*)Adjust the position of the light source
+        (*)Use parallel light/ multiple light instead of single light source
+        (*)Change quality/intensity/color of lighting
+6.Lowered criteria for switching to >0.85, < 0.5, < 0.5
 
+TODOLIST:
+1.Extracted bonding information and rewrite bonding codes
+2.Parse density files and match it to its molecule
+3.Add sound track to the app
+----------Long Term---------------------------------------
+0.Calculate correct normals for bonding/ don't use shading on bondings
+1.Add perspective transformation
+2.Construct an array of isosurfaces(one for each molecule model)?
+3.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
+4.Extract th method to process a geometric model
+
+Parameters that maybe reconfigured later:
+Criteria for a switching: now is x>0.85, y <0.5, z <0.5
+Looping time: 40 times
+Size of frame of molecules: [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]
+Size of maximum frame of isosurface: [-1.0,1.0]*[-1.0,1.0]*[-1.0,1.0]
+Range of radii of atoms; [1.0,2.0]
+Brightness for isosurface: 0.8f
+Alpha value for isosurface: 0.5f
+RESIZING_FACTOR(Sphere): 20.0
+RESIZING_FACTOR(Cylinder): 75.0
+DEGREE_OF_REFINEMENT(Sphere): 2
+DEGREE_OF_REFINEMENT(Cylinder): 2
+JIGGLING_FREQUENCY: 5
+Lower bound of diffusion : 0.5
+Distance from origin: now 0.0
+Background Color: now Black
+Initial Molecule: now 4
+Scale of oscillation: [-0.01,0.01]
+bonding_distance: 0.03f
+Light source: 0.0f, 2.0f, 0.0f (Above the head)
