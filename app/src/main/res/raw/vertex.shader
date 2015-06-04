@@ -5,14 +5,26 @@ uniform vec3 u_LightPos;
 
 attribute vec4 a_Position;
 attribute vec4 a_Color;
-attribute vec4 a_Normal;
+attribute vec3 a_Normal;
 
 varying vec4 v_Color;
-varying vec4 v_Normal;
+varying vec3 v_Normal;
 
 void main() {
     v_Color = a_Color;
+    float alpha = a_Color.a;
     v_Normal = a_Normal;
+
+       vec3 modelViewVertex = vec3(u_MVMatrix * a_Position);
+       vec3 modelViewNormal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));
+
+       float distance = length(u_LightPos - modelViewVertex);
+       vec3 lightVector = normalize(u_LightPos - modelViewVertex);
+       float diffuse = max(dot(modelViewNormal, lightVector), 0.5);
+
+       diffuse = diffuse * (1.0 / (1.0 + (0.00001 * distance * distance)));
+       v_Color = a_Color * diffuse;
+       v_Color.a = alpha;
 
    gl_Position =  u_MVMatrix * a_Position;
 

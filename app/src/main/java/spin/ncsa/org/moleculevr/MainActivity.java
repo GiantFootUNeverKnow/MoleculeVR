@@ -272,7 +272,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mMoleculePositionParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Position");
             mMoleculeNormalParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i],"a_Normal");
-            Log.i(TAG,"Returned normal parameter is "+mMoleculeNormalParam[i]);
+            //Log.i(TAG,"Returned normal parameter is "+mMoleculeNormalParam[i]);
             mMoleculeColorParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Color");
 
             mMoleculeModelParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_Model");
