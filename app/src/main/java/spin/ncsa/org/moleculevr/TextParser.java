@@ -29,9 +29,10 @@ public class TextParser {
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
 
+    //output coordinates of atoms
     public float[] outputVertices(){
-        if (m.isEmpty()) return null;
-        float[] v = new float[Sphere.NUMBER_OF_COORDS * m.size()]; // we need (# atom ) * (# coords per atom) float
+        if (m==null || m.isEmpty()) return null;
+        float[] v = new float[Sphere.NUMBER_OF_COORDS * m.size()]; // we need (# atom ) * (# coords per atom) floats
         int i = 0;
         for (Sphere atom : m){
             for  (float k :atom.vertices){
@@ -42,9 +43,23 @@ public class TextParser {
         return v;
     }
 
+    public float[] outputNormals(){
+        if (m==null || m.isEmpty()) return null;
+        float[] n = new float[Sphere.NUMBER_OF_NORMALS * m.size()]; // we need (# of atoms) * (# of normals per atom) floats
+        int i= 0;
+        for (Sphere atom: m){
+            for (float k : atom.normals){
+                n[i] = k;
+                i++;
+            }
+        }
+        return n;
+    }
+
+    //output colors of atoms
     public float[] outputColors(){
-        if (m.isEmpty()) return null;
-        float[] c = new float[Sphere.NUMBER_OF_COLORS * m.size()];// we need (# atom ) * (# colors per atom) float
+        if (m == null || m.isEmpty()) return null;
+        float[] c = new float[Sphere.NUMBER_OF_COLORS * m.size()];// we need (# atom ) * (# colors per atom) floats
         int i = 0;
         for (Sphere atom : m){
             for  (float k :atom.colors){

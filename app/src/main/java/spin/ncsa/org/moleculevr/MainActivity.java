@@ -47,6 +47,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     //JIGGLING_FREQUENCY = x means that for x frames generated, 1 jiggling occurs
     private static final int JIGGLING_FREQUENCY = 5;
 
+    // We keep the light always position just above the user.
+    private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
+    private final float[] lightPosInEyeSpace = new float[4];
+
     private FloatBuffer[] moleculeVertices ;
     private FloatBuffer[] mMoleculeColor;
     private FloatBuffer[] mMoleculeNormals ;
@@ -66,6 +70,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     float[] vIsosurface;
     float[] cIsosurface;
 
+    float[][] nMolecule;
 
     private int[] mMoleculeProgram;
     private int[] mMoleculePositionParam;
@@ -73,6 +78,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mMoleculeColorParam;
     private int[] mMoleculeModelParam;
     private int[] mMoleculeModelViewParam;
+    private int mMoleculeLightPosParam;
 
     private int[] mBondingProgram;
     private int[] mBondingPositionParam;
@@ -136,6 +142,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         mMoleculeProgram = new int[NUM_MOLECULE];
         mMoleculePositionParam = new int[NUM_MOLECULE];
+        mMoleculeNormalParam = new int[NUM_MOLECULE];
         mMoleculeColorParam = new int[NUM_MOLECULE];
         mMoleculeModelParam = new int[NUM_MOLECULE];
         mMoleculeModelViewParam = new int[NUM_MOLECULE];
@@ -155,6 +162,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         vMolecule = new float[NUM_MOLECULE][];
         vBondings = new float[NUM_MOLECULE][];
+        nMolecule = new float[NUM_MOLECULE][];
         cMolecule = new float[NUM_MOLECULE][];
         cBondings = new float[NUM_MOLECULE][];
         nAtoms = new int[NUM_MOLECULE];
@@ -232,9 +240,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             nAtoms[i] = parser.outputNumOfAtoms();
             nBonds[i] = parser.outputNumOfBonds();
 
+            nMolecule[i] = parser.outputNormals();
             //Build Molecule Program
 
-            //Create ByteBuffer of vertices' position and color based on the float array created by "Sphere"
+            //Create ByteBuffer of vertices' position , normal vectors and color based on the float array created by "Sphere"
             ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vMolecule[i].length * 4);
             ByteVertices.order(ByteOrder.nativeOrder());
             moleculeVertices[i] = ByteVertices.asFloatBuffer();
@@ -247,6 +256,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             mMoleculeColor[i].put(cMolecule[i]);
             mMoleculeColor[i].position(0);
 
+            ByteBuffer ByteNormals = ByteBuffer.allocateDirect(nMolecule[i].length * 4);
+            ByteNormals.order(ByteOrder.nativeOrder());
+            mMoleculeNormals[i] = ByteNormals.asFloatBuffer();
+            mMoleculeNormals[i].put(nMolecule[i]);
+            mMoleculeNormals[i].position(0);
+
             mMoleculeProgram[i] = GLES20.glCreateProgram();
             GLES20.glAttachShader(mMoleculeProgram[i], vertexShader);
             GLES20.glAttachShader(mMoleculeProgram[i], passthroughShader);
@@ -256,12 +271,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             checkGLError("Create molecule program ");
 
             mMoleculePositionParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Position");
+            mMoleculeNormalParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i],"a_Normal");
+            Log.i(TAG,"Returned normal parameter is "+mMoleculeNormalParam[i]);
             mMoleculeColorParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Color");
 
             mMoleculeModelParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_Model");
             mMoleculeModelViewParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_MVMatrix");
+            mMoleculeLightPosParam = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_LightPos");
 
             GLES20.glEnableVertexAttribArray(mMoleculePositionParam[i]);
+            GLES20.glEnableVertexAttribArray(mMoleculeNormalParam[i]);
             GLES20.glEnableVertexAttribArray(mMoleculeColorParam[i]);
 
             checkGLError("Molecule Program Params");
@@ -395,7 +414,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
 
         // Set the position of the light
-       // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mView, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
+        Matrix.multiplyMV(lightPosInEyeSpace, 0, mView, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
 
         /*Draw Molecules*/
         // Build the ModelView and ModelViewProjection matrices
@@ -456,6 +475,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     public void drawMolecule(int index){
         GLES20.glUseProgram(mMoleculeProgram[index]);
 
+        GLES20.glUniform3fv(mMoleculeLightPosParam, 1, lightPosInEyeSpace, 0);
+
         GLES20.glUniformMatrix4fv(mMoleculeModelParam[index],1,false,mModelMolecule,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
@@ -464,6 +485,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             adjustVertices(index);
         jigglingCounter = (jigglingCounter ++) % JIGGLING_FREQUENCY;
 
+        // Set the normal positions of the cube, again for shading
+        GLES20.glVertexAttribPointer(mMoleculeNormalParam[index], 3, GLES20.GL_FLOAT, false, 0, mMoleculeNormals[index]);
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
 
