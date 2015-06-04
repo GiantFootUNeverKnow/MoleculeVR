@@ -40,7 +40,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private CardboardOverlayView mOverlay;
 
     //If you added molecules or deleted molecules, please change this variable
-    private static final int NUM_MOLECULE = 5;
+    private static final int NUM_MOLECULE = 4;
 
     private static final int COORDS_PER_VERTEX = 3;
 
@@ -53,11 +53,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private FloatBuffer[] bondingVertices;
     private FloatBuffer[] mBondingColor;
-    private FloatBuffer[] mBondingNormals ;
+    //private FloatBuffer[] mBondingNormals ;
 
     private FloatBuffer IsoSVertices;
     private FloatBuffer IsoSColor;
-    private FloatBuffer[] mIsoNormals ;
+    //private FloatBuffer[] mIsoNormals ;
 
     float[][] vMolecule;
     float[][] vBondings;
@@ -76,7 +76,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private int[] mBondingProgram;
     private int[] mBondingPositionParam;
-    private int[] mBondingNormalParam;
+    //private int[] mBondingNormalParam;
     private int[] mBondingColorParam;
     private int[] mBondingModelParam;
     private int[] mBondingModelViewParam;
@@ -84,7 +84,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int mIsoProgram;
     private int mIsoPositionParam;
     private int mIsoColorParam;
-    private int mIsoNormalParam;
+    //private int mIsoNormalParam;
     private int mIsoModelParam;
     private int mIsoModelViewParam;
 
@@ -148,6 +148,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         moleculeVertices = new FloatBuffer[NUM_MOLECULE];
         mMoleculeColor = new FloatBuffer[NUM_MOLECULE];
+        mMoleculeNormals = new FloatBuffer[NUM_MOLECULE];
 
         bondingVertices = new FloatBuffer[NUM_MOLECULE];
         mBondingColor = new FloatBuffer[NUM_MOLECULE];
