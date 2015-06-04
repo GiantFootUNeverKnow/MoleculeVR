@@ -72,7 +72,7 @@ public class TextParser {
 
     //return bonds stored in Nearest Neighbors in forms of coordinates
     public float[] outputBonds(){
-        if (l.isEmpty()) return null;
+        if (l == null || l.isEmpty()) return null;
         float[] v = new float[Cylinder.NUMBER_OF_COORDS * l.size()]; // we need (# atom ) * (# coords per atom) float
         int i = 0;
         for (Cylinder bond : l){
@@ -87,7 +87,7 @@ public class TextParser {
 
     //return colors of bonds
     public float[] outputBondingColors(){
-        if (l.isEmpty()) return null;
+        if (l == null || l.isEmpty()) return null;
         float[] c = new float[Cylinder.NUMBER_OF_COLORS * l.size()];// we need (# atom ) * (# colors per atom) float
         int i = 0;
         for (Cylinder bond : l){
@@ -97,6 +97,20 @@ public class TextParser {
             }
         }
         return c;
+    }
+
+    //return normals of bonds
+    public float[] outputBondingNormals(){
+        if (l == null || l.isEmpty()) return null;
+        float[] n = new float[Cylinder.NUMBER_OF_NORMALS * l.size()];// we need (# atom ) * (# normals per atom) float
+        int i = 0;
+        for (Cylinder bond : l){
+            for  (float k :bond.normals){
+                n[i] = k;
+                i++;
+            }
+        }
+        return n;
     }
 
 

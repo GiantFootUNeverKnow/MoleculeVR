@@ -14,6 +14,7 @@ public class Cylinder {
     final static int NUMBER_OF_VERTICES = NUMBER_OF_FACES * 3; //do only twice the refinement, 320 faces, each with 3 vertices
     final static int NUMBER_OF_COORDS = NUMBER_OF_VERTICES * 3; //do only twice the refinement, 960 vertices, each with 3 coords
     final static int NUMBER_OF_COLORS = NUMBER_OF_VERTICES * 4; //do only twice the refinement, 960 vertices, each with 4 colors
+    final static int NUMBER_OF_NORMALS = NUMBER_OF_COORDS;
 
     private float RESIZING_FACTOR = 75.0f;
 
@@ -35,7 +36,12 @@ public class Cylinder {
             blueColor2 = color_b[2];
 
             builtCylinder();
+            setNormal();
             setCoordinate();
+    }
+
+    private void setNormal(){//calculate normals based on vertex's pointing direction
+        System.arraycopy(vertices,0,normals,0,NUMBER_OF_NORMALS);
     }
 
     private void setCoordinate(){//move cylinder from origin to the given coordinates
@@ -84,6 +90,7 @@ public class Cylinder {
     //cylinder
     public float[] vertices = new float[NUMBER_OF_COORDS];
     public float[] colors = new float[NUMBER_OF_COLORS];
+    public float[] normals = new float[NUMBER_OF_COORDS];
 
     private void subdivide(float [] v1, float[] v2, int depth){
         float[] v11 = {0.0f,0.0f,0.0f};

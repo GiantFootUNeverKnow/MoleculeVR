@@ -57,11 +57,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private FloatBuffer[] bondingVertices;
     private FloatBuffer[] mBondingColor;
-    //private FloatBuffer[] mBondingNormals ;
+    private FloatBuffer[] mBondingNormals ;
 
     private FloatBuffer IsoSVertices;
     private FloatBuffer IsoSColor;
-    //private FloatBuffer[] mIsoNormals ;
 
     float[][] vMolecule;
     float[][] vBondings;
@@ -71,6 +70,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     float[] cIsosurface;
 
     float[][] nMolecule;
+    float[][] nBondings;
 
     private int[] mMoleculeProgram;
     private int[] mMoleculePositionParam;
@@ -82,7 +82,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     private int[] mBondingProgram;
     private int[] mBondingPositionParam;
-    //private int[] mBondingNormalParam;
+    private int[] mBondingNormalParam;
     private int[] mBondingColorParam;
     private int[] mBondingModelParam;
     private int[] mBondingModelViewParam;
@@ -149,6 +149,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         mBondingProgram = new int[NUM_MOLECULE];
         mBondingPositionParam = new int[NUM_MOLECULE];
+        mBondingNormalParam = new int[NUM_MOLECULE];
         mBondingColorParam = new int[NUM_MOLECULE];
         mBondingModelParam = new int[NUM_MOLECULE];
         mBondingModelViewParam = new int[NUM_MOLECULE];
@@ -159,12 +160,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         bondingVertices = new FloatBuffer[NUM_MOLECULE];
         mBondingColor = new FloatBuffer[NUM_MOLECULE];
+        mBondingNormals = new FloatBuffer[NUM_MOLECULE];
 
         vMolecule = new float[NUM_MOLECULE][];
         vBondings = new float[NUM_MOLECULE][];
-        nMolecule = new float[NUM_MOLECULE][];
         cMolecule = new float[NUM_MOLECULE][];
         cBondings = new float[NUM_MOLECULE][];
+        nMolecule = new float[NUM_MOLECULE][];
+        nBondings = new float[NUM_MOLECULE][];
         nAtoms = new int[NUM_MOLECULE];
         nBonds = new int[NUM_MOLECULE];
 
@@ -241,6 +244,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             nBonds[i] = parser.outputNumOfBonds();
 
             nMolecule[i] = parser.outputNormals();
+            nBondings[i] = parser.outputBondingNormals();
+
             //Build Molecule Program
 
             //Create ByteBuffer of vertices' position , normal vectors and color based on the float array created by "Sphere"
@@ -272,7 +277,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mMoleculePositionParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Position");
             mMoleculeNormalParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i],"a_Normal");
-            //Log.i(TAG,"Returned normal parameter is "+mMoleculeNormalParam[i]);
             mMoleculeColorParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Color");
 
             mMoleculeModelParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_Model");
@@ -300,6 +304,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             mBondingColor[i].put(cBondings[i]);
             mBondingColor[i].position(0);
 
+            ByteBuffer ByteNormals2 = ByteBuffer.allocateDirect(nBondings[i].length * 4);
+            ByteNormals2.order(ByteOrder.nativeOrder());
+            mBondingNormals[i] = ByteNormals2.asFloatBuffer();
+            mBondingNormals[i].put(nBondings[i]);
+            mBondingNormals[i].position(0);
+
             mBondingProgram[i] = GLES20.glCreateProgram();
             GLES20.glAttachShader(mBondingProgram[i], vertexShader);
             GLES20.glAttachShader(mBondingProgram[i], passthroughShader);
@@ -310,12 +320,15 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mBondingPositionParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Position");
             mBondingColorParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Color");
+            mBondingNormalParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Normal");
 
             mBondingModelParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_Model");
             mBondingModelViewParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_MVMatrix");
+            mMoleculeLightPosParam = GLES20.glGetUniformLocation(mBondingProgram[i],"u_LightPos");
 
             GLES20.glEnableVertexAttribArray(mBondingPositionParam[i]);
             GLES20.glEnableVertexAttribArray(mBondingColorParam[i]);
+            GLES20.glEnableVertexAttribArray(mBondingNormalParam[i]);
 
             checkGLError("Bonding Program Params");
        }
@@ -485,7 +498,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             adjustVertices(index);
         jigglingCounter = (jigglingCounter ++) % JIGGLING_FREQUENCY;
 
-        // Set the normal positions of the cube, again for shading
+        // Set the normal positions of atoms, again for shading
         GLES20.glVertexAttribPointer(mMoleculeNormalParam[index], 3, GLES20.GL_FLOAT, false, 0, mMoleculeNormals[index]);
         GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
@@ -501,9 +514,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     public void drawBondings(int index){
         GLES20.glUseProgram(mBondingProgram[index]);
 
+        GLES20.glUniform3fv(mMoleculeLightPosParam, 1, lightPosInEyeSpace, 0);
+
         GLES20.glUniformMatrix4fv(mBondingModelParam[index],1,false,mModelBonding,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mBondingModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
+        GLES20.glVertexAttribPointer(mBondingNormalParam[index],3,GLES20.GL_FLOAT,false,0,mBondingNormals[index]);
         GLES20.glVertexAttribPointer(mBondingPositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,bondingVertices[index]);
         GLES20.glVertexAttribPointer(mBondingColorParam[index],4, GLES20.GL_FLOAT, false,0,mBondingColor[index]);
 
@@ -573,15 +589,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             }
             switchSignalCounter = 0;
         }
-         /*
-        debugging++;
-        if (debugging == 100) {
-            String temp = mHeadUpVetcor[0] + " " + mHeadUpVetcor[1] + " " + mHeadUpVetcor[2];
-            //mOverlay.show3DToast(temp);
-            Log.i(TAG,temp);
-            debugging = 0;
-        }
-        */
 
         checkGLError("OnReadyToDraw");
     }
