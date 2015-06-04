@@ -12,8 +12,8 @@ varying vec3 v_Normal;
 
 void main() {
     v_Color = a_Color;
-    float alpha = a_Color.a;
-    v_Normal = a_Normal;
+
+       float alpha = a_Color.a;
 
        vec3 modelViewVertex = vec3(u_MVMatrix * a_Position);
        vec3 modelViewNormal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));
