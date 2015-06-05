@@ -459,7 +459,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawIsosurface();
+     //   drawIsosurface();
 
         // Draw rest of the scene.
     }

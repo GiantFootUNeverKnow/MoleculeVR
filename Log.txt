@@ -427,13 +427,12 @@ Light source: 0.0f, 2.0f, 0.0f (Above the head)
      -Added method parseBondingInfo() to parse files of bonding information
      -Modified method formBonds() to fit the new algorithm
 2. Adjusted access level for TextParser class
-3. Found another weird triangle and irregular coloring of the isosurface
+3. Temporarily shut down the isosurface
 
 
 TODOLIST:
-1.Debug "Weird Triangle"
-2.Parse density files and match it to its molecule
-3.Add sound track to the app
+1.Parse density files and match it to its molecule
+2.Add sound track to the app
 ----------Long Term---------------------------------------
 0.Calculate correct normals for bonding/ don't use shading on bondings
 1.Add perspective transformation

@@ -28,7 +28,7 @@ public class TextParser {
     //Hashtable elem_number takes a name of element to its atom_number
     private Hashtable<String, Integer> elem_atom_number = null;
 
-    private int num_bonds;
+    private int num_bonds = 0;
 
     private static final float bonding_tolerance = 0.03f;
 
@@ -350,6 +350,7 @@ public class TextParser {
             l = null;
             l = new ArrayList<>();
         }
+        num_bonds = 0;
 
        for (int i = 0; i < m.size(); i++){
            for (int j = i; j < m.size(); j++){
