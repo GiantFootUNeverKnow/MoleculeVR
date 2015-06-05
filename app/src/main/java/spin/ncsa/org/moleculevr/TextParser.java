@@ -4,9 +4,11 @@ package spin.ncsa.org.moleculevr;
  * Created by Radhir on 4/17/15.
  */
 import android.graphics.Color;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
@@ -17,12 +19,16 @@ public class TextParser {
     ArrayList<Sphere> m = new ArrayList<>();
     ArrayList<Cylinder> l = new ArrayList<>();
 
-    Hashtable<String,Integer> colorHashtable = null;
-    Hashtable<String, Float> massHashtable =  null;
+    private Hashtable<String,Integer> colorHashtable = null;
+    private Hashtable<String, Float> massHashtable =  null;
 
-    Hashtable<Sphere,ArrayList<Sphere>> NearestNeighbor = null;
+    private float bonding_UB[][];
+    private float bonding_LB[][];
 
-    int num_bonds;
+    //Hashtable elem_number takes a name of element to its atom_number
+    private Hashtable<String, Integer> elem_atom_number = null;
+
+    private int num_bonds;
 
     private static final float bonding_tolerance = 0.03f;
 
@@ -121,22 +127,28 @@ public class TextParser {
     public int outputNumOfBonds() { return num_bonds; }
 
     public void loadAtomMass(BufferedReader bf){
-        if (massHashtable != null)
+        //init
+        if (massHashtable != null || elem_atom_number != null)
             return;
         massHashtable = new Hashtable<>();
+        elem_atom_number = new Hashtable<>();
+
         Scanner s = new Scanner(bf);
 
         //each iteration the parser parses a line
         //I will try a different way to parse the string than the way I did with color, just for fun
         //all error checking are also just practice of usage of scanner
         while(s.hasNext()){
-            //skip the atomic number
+            //read the atomic number
+            int a_number = -1;
             if (s.hasNextInt())
-                s.next();
+                a_number = s.nextInt();
             //read atomic symbol
             String element = null ;
             if (s.hasNext())
                 element = s.next();
+            //fill in element_atom_number hashtable
+            elem_atom_number.put(element,a_number);
             //skip the name of element
             if (s.hasNext())
                 s.next();
@@ -176,18 +188,10 @@ public class TextParser {
 
         s.close();
 
-        //debugging
-//       Enumeration<String> keys = colorHashtable.keys();
-//      while(keys.hasMoreElements()) {
-//         String str = (String) keys.nextElement();
-//         int RGB = colorHashtable.get(str);
-//         Log.i(TAG,str + ": " +
-//                Color.red(RGB) +" " + Color.green(RGB)+ " " + Color.blue(RGB)         );
-//      }
-      //
     }
 
-    public void parse(BufferedReader bf) throws IOException {
+    //bf contains information of atoms' coordinates and bf2 contains information of bonding criteria
+    public void parse(BufferedReader bf, BufferedReader bf2) throws IOException {
         Scanner s = null;
         m = null;
         m = new ArrayList<>();
@@ -197,6 +201,8 @@ public class TextParser {
         ArrayList<Float> z_coords = new ArrayList<>();
         ArrayList<Float> masses = new ArrayList<>();
         ArrayList<String> elem_names = new ArrayList<>();
+
+        parseBondingInfo(bf2);
 
         try {
             s = new Scanner(bf);
@@ -250,6 +256,17 @@ public class TextParser {
             }
         }
 
+        //make a copy of x,y,z coordinates
+        //we need these value when formBonds() is called
+        float[] old_x_coords = new float[x_coords.size()];
+        float[] old_y_coords = new float[y_coords.size()];
+        float[] old_z_coords = new float[z_coords.size()];
+        for (int i = 0; i < x_coords.size(); i++){
+            old_x_coords[i] = x_coords.get(i);
+            old_y_coords[i] = y_coords.get(i);
+            old_z_coords[i] = z_coords.get(i);
+        }
+
         //normalize x,y,z coordinates and atommass separately
         //normalize coordinates using option a, normalize
         normalize(x_coords,'a');
@@ -269,72 +286,64 @@ public class TextParser {
             m.add(ball);
         }
 
-        //generate bonds based on nearest neighbor policy
-        createBonds();
-
-        //create an array of cylinder to represent bonds
-        formBonds();
-
+        formBonds(old_x_coords,old_y_coords,old_z_coords);
     }
 
-    /*
-    * Construct a Nearest Neighbors' hash table of a molecule specified in array m , which hashes an atom to its nearest neighbors,
-    * Note: this method would erase previous defined NN hashtable
-    * Note: if m is an empty array, this method exits immediately
-    * */
-    private void createBonds(){
-        //init
-        if (m == null)
-            return;
-        NearestNeighbor = null;
-        NearestNeighbor = new Hashtable<>();
-        num_bonds = 0;
+    /**What parseBondingInfo does is to
+     *construct a adjacency matrix to record the lowerbounds and upperbounds for two types of element to form a bond in the molecule
+     * If two atoms are in such distance, we bond them together in formBonds()
+     */
+     private void parseBondingInfo(BufferedReader bf){
 
-        //naive way:iterate all vertices
-        for (Sphere a: m){
-            float minDist = Float.MAX_VALUE;
-            ArrayList<Sphere> neighbors = new ArrayList<>();
+         //init these two matrices: the table of this app supports element up tp atomic number 114
+         bonding_UB = null;
+         bonding_LB = null;
+         bonding_LB = new float[114][];
+         bonding_UB = new float[114][];
+         for (int i = 0; i < 114; i++){
+             bonding_LB[i] = new float[114];
+             bonding_UB[i] = new float[114];
+             for (int j = 0; j < 114; j++){
+                 bonding_LB[i][j] = bonding_UB[i][j] = -1;
+             }
+         }
 
-            float[] a_coords = new float[3];
-            a_coords[0] = a.xCoord;
-            a_coords[1] = a.yCoord;
-            a_coords[2] = a.zCoord;
 
-            for (Sphere b :m){
+        //parse info file
+         Scanner s = null;
+         try {
+              s = new Scanner(bf);
 
-                //one's neighbor is not one itself
-                if (b.equals(a))
-                    continue;
+             while (s.hasNext()) {
+                 String elem1 = s.next();
+                 String elem2 = s.next();
+                 float lb = s.nextFloat();
+                 float ub = s.nextFloat();
+                 bonding_LB[elem_atom_number.get(elem1)][elem_atom_number.get(elem2)] =
+                         bonding_LB[elem_atom_number.get(elem2)][elem_atom_number.get(elem1)] = lb;
+                 bonding_UB[elem_atom_number.get(elem1)][elem_atom_number.get(elem2)] =
+                         bonding_UB[elem_atom_number.get(elem2)][elem_atom_number.get(elem1)] = ub;
+             }
+         }
+         catch (Exception e){
+             Log.e(TAG,"bonding information is invalid/corrupted");
+         }
+         finally {
+             if (s != null)
+                s.close();
+         }
 
-                float[] b_coords = new float[3];
-                b_coords[0] = b.xCoord;
-                b_coords[1] = b.yCoord;
-                b_coords[2] = b.zCoord;
 
-                //bonding_tolerance is defined at the beginning of this class
-                float newDist = util.EuclidDistance(a_coords,b_coords);
-                //distance graph: ______0__________[3]_____(minDist-tolerance)_____[1]__________minDist_______[2]__________(minDist+tolerance)_____[4]_______
-                if (Float.compare(newDist,minDist - bonding_tolerance) <= 0){//[3]
-                    neighbors.clear();
-                    neighbors.add(b);
-                    minDist = newDist;
-                }
-                else if(Float.compare(newDist,minDist) < 0){ //[1]
-                    neighbors.add(b);
-                    minDist = (minDist + newDist) / 2;
-                }
-                else if (Float.compare(newDist,minDist + bonding_tolerance) < 0){//[2]
-                    neighbors.add(b);
-                }
-                //[4] is omitted
-            }
+     }
 
-            NearestNeighbor.put(a,neighbors);
-            num_bonds += neighbors.size();
-        }
-    }
-
-    private void formBonds(){
+   /*Arguments to formBonds are unnormalized coordinates of center of atoms.
+     We need these data because our lowerbound and upperbound data are specified in the same way.
+     We have to compare distance between each pair of atoms with the lowerbound and upperbound to determine
+     if that bond is drawn.
+     However, the data we feed Cylinder's constructor should be normalized coordinates contained in arraylist m
+     because only normalized are in the range for rendering
+   */
+    private void formBonds(float[] xc, float[] yc, float[] zc){
 
         //memory clean up
         if (l != null){
@@ -342,36 +351,56 @@ public class TextParser {
             l = new ArrayList<>();
         }
 
+       for (int i = 0; i < m.size(); i++){
+           for (int j = i; j < m.size(); j++){
+                Sphere a = m.get(i);
+                Sphere b = m.get(j);
 
-        for (Sphere a:m){
-            ArrayList<Sphere> neighbors = NearestNeighbor.get(a);
-            for (Sphere b : neighbors){
-                float[] a_coord = new float[3];
-                float[] b_coord = new float[3];
-                float[] a_color = new float[3];
-                float[] b_color = new float[3];
+                    float lb = bonding_LB[ elem_atom_number.get(a.elem_name) ][elem_atom_number.get(b.elem_name) ];
+                    float ub = bonding_UB[elem_atom_number.get(a.elem_name)][elem_atom_number.get(b.elem_name)];
 
-                a_coord[0] = a.xCoord;
-                a_coord[1] = a.yCoord;
-                a_coord[2] = a.zCoord;
+                    float[] a_coord = new float[3];
+                    float[] b_coord = new float[3];
 
-                b_coord[0] = b.xCoord;
-                b_coord[1] = b.yCoord;
-                b_coord[2] = b.zCoord;
+                    a_coord[0] = xc[i];
+                    a_coord[1] = yc[i];
+                    a_coord[2] = zc[i];
+                    b_coord[0] = xc[j];
+                    b_coord[1] = yc[j];
+                    b_coord[2] = zc[j];
 
-                a_color[0] = a.redColor;
-                a_color[1] = a.greenColor;
-                a_color[2] = a.blueColor;
+                    float newDist = util.EuclidDistance(a_coord,b_coord);
+                    if ( (Float.compare(newDist,lb) > 0) && (Float.compare(newDist,ub) <= 0) ) {
 
-                b_color[0] = b.redColor;
-                b_color[1] = b.greenColor;
-                b_color[2] = b.blueColor;
+                        float[] a_color = new float[3];
+                        float[] b_color = new float[3];
 
-                Cylinder stick = new Cylinder(a_coord,b_coord,a_color,b_color);
-                l.add(stick);
+                        //need to change coordinates because they have been normalized
+                        a_coord[0] = a.xCoord;
+                        a_coord[1] = a.yCoord;
+                        a_coord[2] = a.zCoord;
+
+                        b_coord[0] = b.xCoord;
+                        b_coord[1] = b.yCoord;
+                        b_coord[2] = b.zCoord;
+
+                        a_color[0] = a.redColor;
+                        a_color[1] = a.greenColor;
+                        a_color[2] = a.blueColor;
+
+                        b_color[0] = b.redColor;
+                        b_color[1] = b.greenColor;
+                        b_color[2] = b.blueColor;
+
+                        Cylinder stick = new Cylinder(a_coord, b_coord, a_color, b_color);
+                        l.add(stick);
+                        num_bonds++;
+                    }
+                }
             }
         }
-    }
+
+
 
 
 

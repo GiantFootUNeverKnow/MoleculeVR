@@ -193,7 +193,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
 
         //set the index of molecule to be drawn to zero
-        idx = 0;
+        idx = 2;
 
         //init the textparser parser
         TextParser parser = new TextParser();
@@ -210,13 +210,22 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         //get the resources(vertices of molecules from files R.raw.xxx!
         InputStream[] inputStreams = new InputStream[NUM_MOLECULE];
-        BufferedReader[] readers = new BufferedReader[NUM_MOLECULE];
-        for (int i = 0; i <NUM_MOLECULE; i++){
+        BufferedReader[][] readers = new BufferedReader[NUM_MOLECULE][];
+
+        for (int i = 2; i <NUM_MOLECULE; i++){
+            readers[i] = new BufferedReader[2];
+
             String resourceName = "molecule" + i ;
             //open the resource by its resourceIdetifier which could be gained through the resourceName
             int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
             inputStreams[i] = getResources().openRawResource(iD);
-            readers[i] = new BufferedReader(new InputStreamReader(inputStreams[i]));
+            readers[i][0] = new BufferedReader(new InputStreamReader(inputStreams[i]));
+
+            resourceName = "bonding" + i ;
+            //open the resource by its resourceIdetifier which could be gained through the resourceName
+            iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
+            inputStreams[i] = getResources().openRawResource(iD);
+            readers[i][1] = new BufferedReader(new InputStreamReader(inputStreams[i]));
         }
 
         //Enable depth test
@@ -227,10 +236,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         //build models and shader machines
-        for (int i = 0; i < NUM_MOLECULE; i++) {
+        for (int i = 2; i < NUM_MOLECULE; i++) {
 
             try {
-                parser.parse(readers[i]);
+                parser.parse(readers[i][0],readers[i][1]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
