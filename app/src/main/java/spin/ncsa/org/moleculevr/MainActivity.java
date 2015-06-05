@@ -193,7 +193,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
 
         //set the index of molecule to be drawn to zero
-        idx = 2;
+        idx = 0;
 
         //init the textparser parser
         TextParser parser = new TextParser();
@@ -212,7 +212,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         InputStream[] inputStreams = new InputStream[NUM_MOLECULE];
         BufferedReader[][] readers = new BufferedReader[NUM_MOLECULE][];
 
-        for (int i = 2; i <NUM_MOLECULE; i++){
+        for (int i = 0; i <NUM_MOLECULE; i++){
             readers[i] = new BufferedReader[2];
 
             String resourceName = "molecule" + i ;
@@ -236,7 +236,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         //build models and shader machines
-        for (int i = 2; i < NUM_MOLECULE; i++) {
+        for (int i = 0; i < NUM_MOLECULE; i++) {
 
             try {
                 parser.parse(readers[i][0],readers[i][1]);

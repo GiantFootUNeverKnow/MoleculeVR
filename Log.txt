@@ -388,16 +388,6 @@ bonding_distance: 0.03f
         (*)Change quality/intensity/color of lighting
 6.Lowered criteria for switching to >0.85, < 0.5, < 0.5
 
-TODOLIST:
-1.Extracted bonding information and rewrite bonding codes
-2.Parse density files and match it to its molecule
-3.Add sound track to the app
-----------Long Term---------------------------------------
-0.Calculate correct normals for bonding/ don't use shading on bondings
-1.Add perspective transformation
-2.Construct an array of isosurfaces(one for each molecule model)?
-3.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
-4.Extract th method to process a geometric model
 
 Parameters that maybe reconfigured later:
 Criteria for a switching: now is x>0.85, y <0.5, z <0.5
@@ -419,3 +409,34 @@ Initial Molecule: now 4
 Scale of oscillation: [-0.01,0.01]
 bonding_distance: 0.03f
 Light source: 0.0f, 2.0f, 0.0f (Above the head)
+
+06/05/2015
+1. Changed how bondings are chosen
+    -Introduced a new hash table elem_atom_number that hashes a string of element symbol to its atomic number.
+    This table is initialized along with atommass table in TextParser.loadAtomMass()
+    -Added an argument for TextParser.parse() that is a buffer for bonding information of the molecule
+    -Created files bonding*.txt that has information for bondings. Added necessary codes in MainActivity to load such files.
+    -Created two matrices bonding_UB and bonding_LB for storing bonding information in class TextParser
+        -They are reset and updated when a new molecule is loaded
+        -For any pair of atoms within a molecule, there is a lowerbound and an upperbound;
+        -A bond is only created when distance between two atoms is less than their lowerbound and not greater than their upperbound
+        -Both bonding_UB and bonding_LB are read directly from bonding*.txt, and measured in the same scale as vertices' coordinates in molecule*.txt
+        -The algorithm determines whether a bond is created by the scale used by bonding_UB and bonding_LB, and if it should be created, draw the
+         bond using the normalized coordinates.
+     -Deleted Nearest Neighbors hashtable and method createBonds().
+     -Added method parseBondingInfo() to parse files of bonding information
+     -Modified method formBonds() to fit the new algorithm
+2. Adjusted access level for TextParser class
+3. Found another weird triangle and irregular coloring of the isosurface
+
+
+TODOLIST:
+1.Debug "Weird Triangle"
+2.Parse density files and match it to its molecule
+3.Add sound track to the app
+----------Long Term---------------------------------------
+0.Calculate correct normals for bonding/ don't use shading on bondings
+1.Add perspective transformation
+2.Construct an array of isosurfaces(one for each molecule model)?
+3.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
+4.Extract th method to process a geometric model
