@@ -190,7 +190,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //GLES20.glClearColor(0.4f, 0.4f, 0.8f, 0.5f);
 
         int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.vertex);
-        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
+        int fragShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
+        int passthroughShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.passthrough);
 
         //set the index of molecule to be drawn to zero
         idx = 0;
@@ -277,7 +278,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mMoleculeProgram[i] = GLES20.glCreateProgram();
             GLES20.glAttachShader(mMoleculeProgram[i], vertexShader);
-            GLES20.glAttachShader(mMoleculeProgram[i], passthroughShader);
+            GLES20.glAttachShader(mMoleculeProgram[i], fragShader);
             GLES20.glLinkProgram(mMoleculeProgram[i]);
             GLES20.glUseProgram(mMoleculeProgram[i]);
 
@@ -320,7 +321,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mBondingProgram[i] = GLES20.glCreateProgram();
             GLES20.glAttachShader(mBondingProgram[i], vertexShader);
-            GLES20.glAttachShader(mBondingProgram[i], passthroughShader);
+            GLES20.glAttachShader(mBondingProgram[i], fragShader);
             GLES20.glLinkProgram(mBondingProgram[i]);
             GLES20.glUseProgram(mBondingProgram[i]);
 
@@ -372,8 +373,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         mIsoProgram = GLES20.glCreateProgram();
 
-        GLES20.glAttachShader(mIsoProgram,vertexShader);
         GLES20.glAttachShader(mIsoProgram,passthroughShader);
+        GLES20.glAttachShader(mIsoProgram,fragShader);
         GLES20.glLinkProgram(mIsoProgram);
         GLES20.glUseProgram(mIsoProgram);
 
@@ -459,7 +460,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-     //   drawIsosurface();
+        drawIsosurface();
 
         // Draw rest of the scene.
     }
