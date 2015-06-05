@@ -30,8 +30,6 @@ public class TextParser {
 
     private int num_bonds = 0;
 
-    private static final float bonding_tolerance = 0.03f;
-
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
 
@@ -307,7 +305,6 @@ public class TextParser {
                  bonding_LB[i][j] = bonding_UB[i][j] = -1;
              }
          }
-
 
         //parse info file
          Scanner s = null;
