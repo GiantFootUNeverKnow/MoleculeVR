@@ -445,7 +445,7 @@ public class Isosurface {
         //We fix v(brightness) axis, randomly choose an h(Hue) value that would be applied to the whole isosurface,
         //and for each vertex on the isosurface, randomly  choose a s(Saturation value)
         colors = new float[nTriang * 4];
-        float v = 0.8f;
+        float v = 0.5f;
         float h = (float)Math.random() * 360;
         for (int p = 0; p < colors.length; p+= 4){
             float [] hsv = new float[3];
@@ -456,7 +456,7 @@ public class Isosurface {
             colors[p] = Color.red(RGB) / 256.0f;
             colors[p + 1] = Color.green(RGB) / 256.0f;
             colors[p + 2] = Color.blue(RGB) / 256.0f;
-            colors[p + 3] = 0.5f;
+            colors[p + 3] = 0.35f;
         }
     }
 

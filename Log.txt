@@ -395,8 +395,8 @@ Looping time: 40 times
 Size of frame of molecules: [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]
 Size of maximum frame of isosurface: [-1.0,1.0]*[-1.0,1.0]*[-1.0,1.0]
 Range of radii of atoms; [1.0,2.0]
-Brightness for isosurface: 0.8f
-Alpha value for isosurface: 0.5f
+Brightness for isosurface: 0.5f
+Alpha value for isosurface: 0.35f
 RESIZING_FACTOR(Sphere): 20.0
 RESIZING_FACTOR(Cylinder): 75.0
 DEGREE_OF_REFINEMENT(Sphere): 2
@@ -427,7 +427,8 @@ Light source: 0.0f, 2.0f, 0.0f (Above the head)
      -Modified method formBonds() to fit the new algorithm
 2. Adjusted access level for TextParser class
 3. Temporarily shut down the isosurface
-
+4. Added a passthrough shader to be the vertex shader of isosurface so that it separates shader for molecules from shader from isosurface
+5. Adjusted brightness and transparency of the isosurface
 
 TODOLIST:
 1.Parse density files and match it to its molecule
