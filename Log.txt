@@ -439,3 +439,21 @@ TODOLIST:
 2.Construct an array of isosurfaces(one for each molecule model)?
 3.Define an abstract class Geometry as base class of Sphere,Cylinder and Isosurface
 4.Extract the method to process a geometric model
+
+06/11/2015
+1.Added a naive parsing function to parse the density file, TextParser.loadDensity().
+    -Same as loadColor(), loadAtomMass(), it takes a bufferedReader as argument, but return type of loadDensity() is a 3-dimensional array of floats
+    -There are always data missing during parsing, and then the parsing couldn't finish its job with java.util.NoSuchElementException being raised.
+    -So I added a "safety catch" that sets coordinates to be 0.0f when there is no such coordinate
+    -I think this is not safe at all but I don't have any idea why data are missing and no ideas how to handle the problem nicely
+2.Added Isosurface I8 in the last part of MainActivity.onSurfaceCreated()
+    -I8 is different than I6 and I7 in that I8 is a collection of density data read from a specific file instead of calculating density based on
+    math formula
+    -Some parts of codes about I8 are still commented
+    -Right now the app could still display only one isosurface, not depending on what molecule is displayed
+    -Switch on I6,I7 and I8 can't be done on the runtime. Instead, they could be easily switched if you edited the codes.
+3.The format of a well-written density file:
+    -Start with 3 integers a,b,c, representing how many scalars in x,y,z dimensions, respectively
+    -Followed by a*b*c floating numbers, preferably with 3-4 significant digits
+    -For loading the data efficiently, a, b ,c are supposed to be less than 35.
+     e.g. A file in dimension 35*35*35 takes about 7 seconds' overhead to read in.
