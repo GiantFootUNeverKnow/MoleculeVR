@@ -457,3 +457,4 @@ TODOLIST:
     -Followed by a*b*c floating numbers, preferably with 3-4 significant digits
     -For loading the data efficiently, a, b ,c are supposed to be less than 35.
      e.g. A file in dimension 35*35*35 takes about 7 seconds' overhead to read in.
+4.Changed some parsing codes
