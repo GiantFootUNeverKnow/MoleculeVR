@@ -176,9 +176,12 @@ public class TextParser {
 
             Scanner ss = new Scanner(line);
             String element = ss.next();
+
+
             int R = ss.nextInt();
             int G = ss.nextInt();
             int B = ss.nextInt();
+
             int RGB = Color.rgb(R, G, B);
             colorHashtable.put(element, RGB);
 
@@ -259,9 +262,9 @@ public class TextParser {
                         float _mass = massHashtable.get(elementName );
                         masses.add(_mass);
                         //parse the coordinates of that atom
-                        float xCoord = (float)Double.parseDouble(line.substring(20,28));
-                        float yCoord = (float)Double.parseDouble(line.substring(31,39));
-                        float zCoord = (float)Double.parseDouble(line.substring(42,50));
+                        float xCoord = Float.parseFloat(line.substring(20,28));
+                        float yCoord = Float.parseFloat(line.substring(31,39));
+                        float zCoord = Float.parseFloat(line.substring(42,50));
                         //put coordinates and name of elements into arrays
                         x_coords.add(xCoord);
                         y_coords.add(yCoord);
@@ -339,8 +342,10 @@ public class TextParser {
              while (s.hasNext()) {
                  String elem1 = s.next();
                  String elem2 = s.next();
+
                  float lb = s.nextFloat();
                  float ub = s.nextFloat();
+
                  bonding_LB[elem_atom_number.get(elem1)][elem_atom_number.get(elem2)] =
                          bonding_LB[elem_atom_number.get(elem2)][elem_atom_number.get(elem1)] = lb;
                  bonding_UB[elem_atom_number.get(elem1)][elem_atom_number.get(elem2)] =

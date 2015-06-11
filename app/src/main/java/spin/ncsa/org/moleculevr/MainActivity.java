@@ -352,9 +352,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             checkGLError("Bonding Program Params");
        }
 
-        //2 Isosurface examples
-        float [][][]s_values = s_functions.s();
-        float [][][]n_values = s_functions.n();
 
         //one real density file
         /*String resourceName = "density2";
@@ -363,18 +360,25 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         float [][][]l_values = parser.loadDensity(reader);
 */
+        //2 Isosurface examples
+
+        float [][][]s_values = s_functions.s();
+        //float [][][]n_values = s_functions.n();
+
         Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
-        Isosurface I7 = new Isosurface(n_values,0.03f);
+        //Isosurface I7 = new Isosurface(n_values,0.03f);
    //     Isosurface I8 = new Isosurface(l_values,180.0f);
 
 
-       /* vIsosurface = I6.vertices;
+        vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
-        nTriangleInIso = I6.nTriang;*/
+        nTriangleInIso = I6.nTriang;
 
+        /*
         vIsosurface = I7.vertices;
         cIsosurface = I7.colors;
         nTriangleInIso = I7.nTriang;
+        */
 
         /*
         vIsosurface = I8.vertices;
@@ -382,6 +386,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         nTriangleInIso = I8.nTriang;
 */
         //Create ByteBuffer of vertices' position and color based on the float array created by "World"
+
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
         ByteVertices.order(ByteOrder.nativeOrder());
         IsoSVertices = ByteVertices.asFloatBuffer();
@@ -409,6 +414,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         GLES20.glEnableVertexAttribArray(mIsoPositionParam);
         GLES20.glEnableVertexAttribArray(mIsoColorParam);
+
         //end of Isosurface specs
 
         Matrix.setIdentityM(mModelMolecule, 0);
