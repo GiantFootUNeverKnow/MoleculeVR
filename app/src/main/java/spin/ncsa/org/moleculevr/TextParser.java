@@ -188,6 +188,31 @@ public class TextParser {
 
     }
 
+    public float[][][] loadDensity(BufferedReader bf){
+        Scanner s = null;
+        s = new Scanner(bf);
+        int a = s.nextInt();
+        int b = s.nextInt();
+        int c = s.nextInt();
+        s.next();
+
+        float ret[][][] = new float[a][b][c];
+
+        for (int i = 0; i < a; i++)
+            for (int j = 0; j < b; j++)
+                for (int k = 0; k < c; k++) {
+                    //sometimes data get lost, so it should provide dummy data if such missing happens
+                    //however, this way to solve the problem might not be correct, since it is drawing different geometry than the real one
+                    //not sure how to perfectly solve the problem
+                    if (s.hasNext())
+                        ret[i][j][k] = Float.parseFloat(s.next());
+                    else
+                        ret[i][j][k] = 0.0f;
+                }
+        s.close();
+        return ret;
+    }
+
     //bf contains information of atoms' coordinates and bf2 contains information of bonding criteria
     public void parse(BufferedReader bf, BufferedReader bf2) throws IOException {
         Scanner s = null;

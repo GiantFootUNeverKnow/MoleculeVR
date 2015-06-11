@@ -199,6 +199,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //init the textparser parser
         TextParser parser = new TextParser();
 
+        //testing
+        /*
+        String resourceNamep = "hyperbola50_50_50";
+        int iDp = getResources().getIdentifier(resourceNamep, "raw", getPackageName());
+        InputStream inputStream = getResources().openRawResource(iDp);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        float [][][]n_values = parser.loadDensity(reader);
+*/
+        //testing end
+
         //load the predefined colors for each element from file R.raw.xxx
         InputStream iS = getResources().openRawResource(R.raw.cpk_coloring);
         BufferedReader readColor = new BufferedReader(new InputStreamReader(iS));
@@ -346,17 +356,30 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         float [][][]s_values = s_functions.s();
         float [][][]n_values = s_functions.n();
 
+        //one real density file
+        /*String resourceName = "density2";
+        int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
+        InputStream inputStream = getResources().openRawResource(iD);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        float [][][]l_values = parser.loadDensity(reader);
+*/
         Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
         Isosurface I7 = new Isosurface(n_values,0.03f);
+   //     Isosurface I8 = new Isosurface(l_values,180.0f);
 
-        vIsosurface = I6.vertices;
+
+       /* vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
-        nTriangleInIso = I6.nTriang;
+        nTriangleInIso = I6.nTriang;*/
 
-/*
         vIsosurface = I7.vertices;
         cIsosurface = I7.colors;
         nTriangleInIso = I7.nTriang;
+
+        /*
+        vIsosurface = I8.vertices;
+        cIsosurface = I8.colors;
+        nTriangleInIso = I8.nTriang;
 */
         //Create ByteBuffer of vertices' position and color based on the float array created by "World"
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
