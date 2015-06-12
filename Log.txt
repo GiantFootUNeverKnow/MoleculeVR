@@ -458,3 +458,23 @@ TODOLIST:
     -For loading the data efficiently, a, b ,c are supposed to be less than 35.
      e.g. A file in dimension 35*35*35 takes about 7 seconds' overhead to read in.
 4.Changed some parsing codes
+5. Loading Time Issue:
+Calculating electronic density based on the formula takes 3-5 seconds for one instance for 50*50*50.
+Loading data from file takes 7 seconds for one isosurface instance of size 35* 35 * 35
+Loading data from file takes 1 seconds for one isosurface instance of size less than 20* 20 * 20
+Loading data from file takes 2.5 seconds for one isosurface instance of size 25 * 25 * 25
+Loading data from file takes 5 seconds for one isosurface instance of size 30 * 30 * 30
+
+06/12/2015
+1.Temporarily turn off rendering of molecules and bondings.
+2.Succeeded in drawing out isosurfaces in density2.txt and found the right isolevels to draw: 4888 and 8960
+3.Changed from drawing just one isosurface instance to drawing NUM_OF_MOLECULE isosurfaces
+    -Declare global variables in the same format as those for molecules
+    -Wrote setup codes in a separate for loop after setup codes for molecules
+    -Currently it's only drawing two isosurfaces from one file simultaneously
+    -When data for the rest isosurfaces are available, draw one isosurface for each molecule
+    -Again,  when data for other isosurfaces are ready, organize setup codes including I8, I9, s_value,
+     n_value into for loop that should systematically set up all preparation for rendering isosurfaces
+4.Wrote locally a python script that could reformat given density file into an ideal textfile
+
+
