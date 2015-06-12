@@ -2,6 +2,7 @@ package spin.ncsa.org.moleculevr;
 /*
     Created by Xusheng on 04/14/2015
  */
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -116,6 +118,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int debugging;
     private String debuggingStr;
 
+    private MediaPlayer mPlayer;
+    private int[] bgmResID;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,6 +196,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         switchSignalCounter = 0;
         jigglingCounter = 0;
 
+        mPlayer = null;
+        bgmResID = new int[NUM_MOLECULE];
     }
 
 
@@ -249,6 +256,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
             inputStreams[i] = getResources().openRawResource(iD);
             readers[i][1] = new BufferedReader(new InputStreamReader(inputStreams[i]));
+
+            resourceName = "bgm" + i;
+            bgmResID[i] = getResources().getIdentifier(resourceName, "raw", getPackageName());
         }
 
         //Enable depth test
@@ -401,35 +411,41 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         vIsosurface[0] = I8.vertices;
         cIsosurface[0] = I8.colors;
         nTriangleInIso[0] = I8.nTriang;
+        
+        vIsosurface[1] = I9.vertices;
+        cIsosurface[1] = I9.colors;
+        nTriangleInIso[1] = I9.nTriang;
 
-        ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface[0].length * 4);
-        ByteVertices.order(ByteOrder.nativeOrder());
-        IsoSVertices[0] = ByteVertices.asFloatBuffer();
-        IsoSVertices[0].put(vIsosurface[0]);
-        IsoSVertices[0].position(0);
+        for (int i = 0; i < 2; i++) {
 
-        ByteBuffer ByteColors = ByteBuffer.allocateDirect(cIsosurface[0].length * 4);
-        ByteColors.order(ByteOrder.nativeOrder());
-        IsoSColor[0] = ByteColors.asFloatBuffer();
-        IsoSColor[0].put(cIsosurface[0]);
-        IsoSColor[0].position(0);
+            ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface[i].length * 4);
+            ByteVertices.order(ByteOrder.nativeOrder());
+            IsoSVertices[i] = ByteVertices.asFloatBuffer();
+            IsoSVertices[i].put(vIsosurface[i]);
+            IsoSVertices[i].position(0);
 
-        mIsoProgram[0] = GLES20.glCreateProgram();
+            ByteBuffer ByteColors = ByteBuffer.allocateDirect(cIsosurface[i].length * 4);
+            ByteColors.order(ByteOrder.nativeOrder());
+            IsoSColor[i] = ByteColors.asFloatBuffer();
+            IsoSColor[i].put(cIsosurface[i]);
+            IsoSColor[i].position(0);
 
-        GLES20.glAttachShader(mIsoProgram[0],passthroughShader);
-        GLES20.glAttachShader(mIsoProgram[0],fragShader);
-        GLES20.glLinkProgram(mIsoProgram[0]);
-        GLES20.glUseProgram(mIsoProgram[0]);
+            mIsoProgram[i] = GLES20.glCreateProgram();
 
-        mIsoPositionParam[0] = GLES20.glGetAttribLocation(mIsoProgram[0],"a_Position");
-        mIsoColorParam[0] = GLES20.glGetAttribLocation(mIsoProgram[0],"a_Color");
+            GLES20.glAttachShader(mIsoProgram[i], passthroughShader);
+            GLES20.glAttachShader(mIsoProgram[i], fragShader);
+            GLES20.glLinkProgram(mIsoProgram[i]);
+            GLES20.glUseProgram(mIsoProgram[i]);
 
-        mIsoModelParam[0] = GLES20.glGetUniformLocation(mIsoProgram[0],"u_Model");
-        mIsoModelViewParam[0] = GLES20.glGetUniformLocation(mIsoProgram[0], "u_MVMatrix");
+            mIsoPositionParam[i] = GLES20.glGetAttribLocation(mIsoProgram[i], "a_Position");
+            mIsoColorParam[i] = GLES20.glGetAttribLocation(mIsoProgram[i], "a_Color");
 
-        GLES20.glEnableVertexAttribArray(mIsoPositionParam[0]);
-        GLES20.glEnableVertexAttribArray(mIsoColorParam[0]);
+            mIsoModelParam[i] = GLES20.glGetUniformLocation(mIsoProgram[i], "u_Model");
+            mIsoModelViewParam[i] = GLES20.glGetUniformLocation(mIsoProgram[i], "u_MVMatrix");
 
+            GLES20.glEnableVertexAttribArray(mIsoPositionParam[i]);
+            GLES20.glEnableVertexAttribArray(mIsoColorParam[i]);
+        }
         //end of Isosurface specs
 
         Matrix.setIdentityM(mModelMolecule, 0);
@@ -443,9 +459,33 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         checkGLError("onSurfaceCreated");
 
+        //play sound
+        mPlayer = MediaPlayer.create(this,bgmResID[0]);
+        mPlayer.start();
+        mPlayer.setLooping(true);
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mPlayer != null)
+            mPlayer.start();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mPlayer != null)
+            mPlayer.pause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mPlayer != null)
+            mPlayer.release();
+    }
 
     @Override
     public void onRendererShutdown(){ //temporarily useless
@@ -488,7 +528,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        //drawMolecule(idx);
+        drawMolecule(idx);
 
         /*Draw Bondings*/
         // Build the ModelView and ModelViewProjection matrices
@@ -496,7 +536,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        //drawBondings(idx);
+        drawBondings(idx);
 
          /*Draw Isosurface*/
         // Build the ModelView and ModelViewProjection matrices
@@ -504,8 +544,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawIsosurface(0);
-
+        //drawIsosurface(0);
+        //drawIsosurface(1);
         // Draw rest of the scene.
     }
 
@@ -610,9 +650,27 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Always give user feedback
         vibrator.vibrate(50);
         idx = (idx + 1) % NUM_MOLECULE;
+        switchBGM(idx);
         mOverlay.show3DToast("Switched to "+idx +"-th molecule" );
     }
 
+    private void MediaStopPlaying(){
+        if (mPlayer != null){
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
+
+    private void switchBGM(int index){
+        Log.i(TAG," " + index);
+        MediaStopPlaying();
+        mPlayer = MediaPlayer.create(getApplicationContext(),bgmResID[index]);
+        if (mPlayer != null){
+            mPlayer.start();
+            mPlayer.setLooping(true);
+        }
+    }
 
     /**
      * Prepares OpenGL ES before we draw a frame.
@@ -639,6 +697,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                     ) {
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
+                switchBGM(idx);
             }
             switchSignalCounter = 0;
         }

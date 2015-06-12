@@ -476,5 +476,9 @@ Loading data from file takes 5 seconds for one isosurface instance of size 30 * 
     -Again,  when data for other isosurfaces are ready, organize setup codes including I8, I9, s_value,
      n_value into for loop that should systematically set up all preparation for rendering isosurfaces
 4.Wrote locally a python script that could reformat given density file into an ideal textfile
+5.Added mediaplayer to play music that is switched along with molecule
+    -For each molecule, there is one music
+    -All music are named by "bgmx.txt", where x is its index
+
 
 
