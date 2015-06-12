@@ -59,15 +59,15 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private FloatBuffer[] mBondingColor;
     private FloatBuffer[] mBondingNormals ;
 
-    private FloatBuffer IsoSVertices;
-    private FloatBuffer IsoSColor;
+    private FloatBuffer[] IsoSVertices;
+    private FloatBuffer[] IsoSColor;
 
     float[][] vMolecule;
     float[][] vBondings;
     float[][] cMolecule;
     float[][] cBondings;
-    float[] vIsosurface;
-    float[] cIsosurface;
+    float[][] vIsosurface;
+    float[][] cIsosurface;
 
     float[][] nMolecule;
     float[][] nBondings;
@@ -87,12 +87,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mBondingModelParam;
     private int[] mBondingModelViewParam;
 
-    private int mIsoProgram;
-    private int mIsoPositionParam;
-    private int mIsoColorParam;
+    private int[] mIsoProgram;
+    private int[] mIsoPositionParam;
+    private int[] mIsoColorParam;
     //private int mIsoNormalParam;
-    private int mIsoModelParam;
-    private int mIsoModelViewParam;
+    private int[] mIsoModelParam;
+    private int[] mIsoModelViewParam;
 
     private float DistanceToScreen = (float)0.0;
 
@@ -109,7 +109,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int idx;
     private int[] nAtoms;
     private int[] nBonds;
-    private int nTriangleInIso;
+    private int[] nTriangleInIso;
     private int switchSignalCounter;
     private int jigglingCounter;
 
@@ -153,6 +153,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mBondingModelParam = new int[NUM_MOLECULE];
         mBondingModelViewParam = new int[NUM_MOLECULE];
 
+        mIsoProgram = new int[NUM_MOLECULE];
+        mIsoPositionParam = new int[NUM_MOLECULE];
+        mIsoColorParam = new int[NUM_MOLECULE];
+        mIsoModelParam = new int[NUM_MOLECULE];
+        mIsoModelViewParam = new int[NUM_MOLECULE];
+
         moleculeVertices = new FloatBuffer[NUM_MOLECULE];
         mMoleculeColor = new FloatBuffer[NUM_MOLECULE];
         mMoleculeNormals = new FloatBuffer[NUM_MOLECULE];
@@ -161,14 +167,20 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mBondingColor = new FloatBuffer[NUM_MOLECULE];
         mBondingNormals = new FloatBuffer[NUM_MOLECULE];
 
+        IsoSVertices = new FloatBuffer[NUM_MOLECULE];
+        IsoSColor = new FloatBuffer[NUM_MOLECULE];
+
         vMolecule = new float[NUM_MOLECULE][];
         vBondings = new float[NUM_MOLECULE][];
+        vIsosurface = new float[NUM_MOLECULE][];
         cMolecule = new float[NUM_MOLECULE][];
         cBondings = new float[NUM_MOLECULE][];
+        cIsosurface = new float[NUM_MOLECULE][];
         nMolecule = new float[NUM_MOLECULE][];
         nBondings = new float[NUM_MOLECULE][];
         nAtoms = new int[NUM_MOLECULE];
         nBonds = new int[NUM_MOLECULE];
+        nTriangleInIso = new int[NUM_MOLECULE];
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
@@ -372,6 +384,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
         //Isosurface I7 = new Isosurface(n_values,0.03f);
         Isosurface I8 = new Isosurface(l_values,8960.0f);
+        Isosurface I9 = new Isosurface(l_values,4888.0f);
 
         /*
         vIsosurface = I6.vertices;
@@ -385,40 +398,37 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         nTriangleInIso = I7.nTriang;
         */
 
+        vIsosurface[0] = I8.vertices;
+        cIsosurface[0] = I8.colors;
+        nTriangleInIso[0] = I8.nTriang;
 
-        vIsosurface = I8.vertices;
-        cIsosurface = I8.colors;
-        nTriangleInIso = I8.nTriang;
-
-        //Create ByteBuffer of vertices' position and color based on the float array created by "World"
-
-        ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
+        ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface[0].length * 4);
         ByteVertices.order(ByteOrder.nativeOrder());
-        IsoSVertices = ByteVertices.asFloatBuffer();
-        IsoSVertices.put(vIsosurface);
-        IsoSVertices.position(0);
+        IsoSVertices[0] = ByteVertices.asFloatBuffer();
+        IsoSVertices[0].put(vIsosurface[0]);
+        IsoSVertices[0].position(0);
 
-        ByteBuffer ByteColors = ByteBuffer.allocateDirect(cIsosurface.length * 4);
+        ByteBuffer ByteColors = ByteBuffer.allocateDirect(cIsosurface[0].length * 4);
         ByteColors.order(ByteOrder.nativeOrder());
-        IsoSColor = ByteColors.asFloatBuffer();
-        IsoSColor.put(cIsosurface);
-        IsoSColor.position(0);
+        IsoSColor[0] = ByteColors.asFloatBuffer();
+        IsoSColor[0].put(cIsosurface[0]);
+        IsoSColor[0].position(0);
 
-        mIsoProgram = GLES20.glCreateProgram();
+        mIsoProgram[0] = GLES20.glCreateProgram();
 
-        GLES20.glAttachShader(mIsoProgram,passthroughShader);
-        GLES20.glAttachShader(mIsoProgram,fragShader);
-        GLES20.glLinkProgram(mIsoProgram);
-        GLES20.glUseProgram(mIsoProgram);
+        GLES20.glAttachShader(mIsoProgram[0],passthroughShader);
+        GLES20.glAttachShader(mIsoProgram[0],fragShader);
+        GLES20.glLinkProgram(mIsoProgram[0]);
+        GLES20.glUseProgram(mIsoProgram[0]);
 
-        mIsoPositionParam = GLES20.glGetAttribLocation(mIsoProgram,"a_Position");
-        mIsoColorParam = GLES20.glGetAttribLocation(mIsoProgram,"a_Color");
+        mIsoPositionParam[0] = GLES20.glGetAttribLocation(mIsoProgram[0],"a_Position");
+        mIsoColorParam[0] = GLES20.glGetAttribLocation(mIsoProgram[0],"a_Color");
 
-        mIsoModelParam = GLES20.glGetUniformLocation(mIsoProgram,"u_Model");
-        mIsoModelViewParam = GLES20.glGetUniformLocation(mIsoProgram, "u_MVMatrix");
+        mIsoModelParam[0] = GLES20.glGetUniformLocation(mIsoProgram[0],"u_Model");
+        mIsoModelViewParam[0] = GLES20.glGetUniformLocation(mIsoProgram[0], "u_MVMatrix");
 
-        GLES20.glEnableVertexAttribArray(mIsoPositionParam);
-        GLES20.glEnableVertexAttribArray(mIsoColorParam);
+        GLES20.glEnableVertexAttribArray(mIsoPositionParam[0]);
+        GLES20.glEnableVertexAttribArray(mIsoColorParam[0]);
 
         //end of Isosurface specs
 
@@ -494,7 +504,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawIsosurface();
+        drawIsosurface(0);
 
         // Draw rest of the scene.
     }
@@ -574,16 +584,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     }
 
     //the function to draw the isosurface
-    public void drawIsosurface(){
-        GLES20.glUseProgram(mIsoProgram);
+    public void drawIsosurface(int index){
+        GLES20.glUseProgram(mIsoProgram[index]);
 
-        GLES20.glUniformMatrix4fv(mIsoModelParam,1,false,mModelIsosurface,0);//set the model in the shader
-        GLES20.glUniformMatrix4fv(mIsoModelViewParam, 1, false, mModelView, 0);//set the modelView in the shader
+        GLES20.glUniformMatrix4fv(mIsoModelParam[index],1,false,mModelIsosurface,0);//set the model in the shader
+        GLES20.glUniformMatrix4fv(mIsoModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
 
-        GLES20.glVertexAttribPointer(mIsoPositionParam,COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,0,IsoSVertices);
-        GLES20.glVertexAttribPointer(mIsoColorParam,4,GLES20.GL_FLOAT,false,0,IsoSColor);
+        GLES20.glVertexAttribPointer(mIsoPositionParam[index],COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,0,IsoSVertices[index]);
+        GLES20.glVertexAttribPointer(mIsoColorParam[index],4,GLES20.GL_FLOAT,false,0,IsoSColor[index]);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,nTriangleInIso);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,nTriangleInIso[index]);
 
         checkGLError("Drawing Molecule");
     }
