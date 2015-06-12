@@ -246,6 +246,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
+        //Enable both faces cull
+        //GLES20.glCullFace(GLES20.GL_FRONT_AND_BACK);
+        //GLES20.glEnable(GLES20.GL_CULL_FACE);
+
         //build models and shader machines
         for (int i = 0; i < NUM_MOLECULE; i++) {
 
@@ -354,25 +358,26 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
 
         //one real density file
-        /*String resourceName = "density2";
+        String resourceName = "density2";
         int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
         InputStream inputStream = getResources().openRawResource(iD);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         float [][][]l_values = parser.loadDensity(reader);
-*/
+
         //2 Isosurface examples
 
-        float [][][]s_values = s_functions.s();
+       // float [][][]s_values = s_functions.s();
         //float [][][]n_values = s_functions.n();
 
-        Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
+        //Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
         //Isosurface I7 = new Isosurface(n_values,0.03f);
-   //     Isosurface I8 = new Isosurface(l_values,180.0f);
+        Isosurface I8 = new Isosurface(l_values,8960.0f);
 
-
+        /*
         vIsosurface = I6.vertices;
         cIsosurface = I6.colors;
-        nTriangleInIso = I6.nTriang;
+        nTriangleInIso = I6.nTriang;x
+        */
 
         /*
         vIsosurface = I7.vertices;
@@ -380,11 +385,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         nTriangleInIso = I7.nTriang;
         */
 
-        /*
+
         vIsosurface = I8.vertices;
         cIsosurface = I8.colors;
         nTriangleInIso = I8.nTriang;
-*/
+
         //Create ByteBuffer of vertices' position and color based on the float array created by "World"
 
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface.length * 4);
@@ -473,7 +478,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawMolecule(idx);
+        //drawMolecule(idx);
 
         /*Draw Bondings*/
         // Build the ModelView and ModelViewProjection matrices
@@ -481,7 +486,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawBondings(idx);
+        //drawBondings(idx);
 
          /*Draw Isosurface*/
         // Build the ModelView and ModelViewProjection matrices
