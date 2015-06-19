@@ -480,5 +480,11 @@ Loading data from file takes 5 seconds for one isosurface instance of size 30 * 
     -For each molecule, there is one music
     -All music are named by "bgmx.txt", where x is its index
 
-
+06/18/2015
+1.Added projection matrix to the molecules, but it does not look good
+    -The bonding disappeared totally
+    -Some atoms looked gigantic but the others looked tiny
+    -Molecules don't rotate as the phone spins
+    -I decided to comment this projection
+2.Fixed the indexing of molecule when switching
 

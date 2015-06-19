@@ -41,6 +41,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private Vibrator vibrator;
     private CardboardOverlayView mOverlay;
 
+    //private static final float Z_NEAR = 0.1f;
+    //private static final float Z_FAR = 20.0f;
     //If you added molecules or deleted molecules, please change this variable
     private static final int NUM_MOLECULE = 4;
 
@@ -80,6 +82,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mMoleculeColorParam;
     private int[] mMoleculeModelParam;
     private int[] mMoleculeModelViewParam;
+ //   private int[] mMoleculeModelViewProjectionParam;
     private int mMoleculeLightPosParam;
 
     private int[] mBondingProgram;
@@ -88,6 +91,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mBondingColorParam;
     private int[] mBondingModelParam;
     private int[] mBondingModelViewParam;
+ //   private int[] mBondingModelViewProjectionParam;
 
     private int[] mIsoProgram;
     private int[] mIsoPositionParam;
@@ -96,7 +100,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private int[] mIsoModelParam;
     private int[] mIsoModelViewParam;
 
-    private float DistanceToScreen = (float)0.0;
+    private float DistanceToScreen = 0f;
 
     private float[] mModelMolecule;
     private float[] mModelBonding;
@@ -107,6 +111,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float[] mCamera;
     private float[] mView;
     private float[] mModelView;
+    //private float[] mModelViewProjection;
 
     private int idx;
     private int[] nAtoms;
@@ -141,8 +146,9 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mHeadView = new float[16];
         mHeadUpVector = new float[3];
         mCamera = new float[16];
-        mModelView = new float[16];
         mView = new float[16];
+        mModelView = new float[16];
+      //  mModelViewProjection = new float[16];
 
         mMoleculeProgram = new int[NUM_MOLECULE];
         mMoleculePositionParam = new int[NUM_MOLECULE];
@@ -150,6 +156,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mMoleculeColorParam = new int[NUM_MOLECULE];
         mMoleculeModelParam = new int[NUM_MOLECULE];
         mMoleculeModelViewParam = new int[NUM_MOLECULE];
+//        mMoleculeModelViewProjectionParam = new int[NUM_MOLECULE];
 
         mBondingProgram = new int[NUM_MOLECULE];
         mBondingPositionParam = new int[NUM_MOLECULE];
@@ -157,6 +164,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mBondingColorParam = new int[NUM_MOLECULE];
         mBondingModelParam = new int[NUM_MOLECULE];
         mBondingModelViewParam = new int[NUM_MOLECULE];
+  //      mBondingModelViewProjectionParam = new int[NUM_MOLECULE];
 
         mIsoProgram = new int[NUM_MOLECULE];
         mIsoPositionParam = new int[NUM_MOLECULE];
@@ -326,6 +334,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mMoleculeModelParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_Model");
             mMoleculeModelViewParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_MVMatrix");
+//            mMoleculeModelViewProjectionParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_MVPMatrix");
             mMoleculeLightPosParam = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_LightPos");
 
             GLES20.glEnableVertexAttribArray(mMoleculePositionParam[i]);
@@ -349,11 +358,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             mBondingColor[i].put(cBondings[i]);
             mBondingColor[i].position(0);
 
+
             ByteBuffer ByteNormals2 = ByteBuffer.allocateDirect(nBondings[i].length * 4);
             ByteNormals2.order(ByteOrder.nativeOrder());
             mBondingNormals[i] = ByteNormals2.asFloatBuffer();
             mBondingNormals[i].put(nBondings[i]);
             mBondingNormals[i].position(0);
+
 
             mBondingProgram[i] = GLES20.glCreateProgram();
             GLES20.glAttachShader(mBondingProgram[i], vertexShader);
@@ -369,6 +380,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             mBondingModelParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_Model");
             mBondingModelViewParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_MVMatrix");
+  //          mBondingModelViewProjectionParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"uMVPMatrix");
             mMoleculeLightPosParam = GLES20.glGetUniformLocation(mBondingProgram[i],"u_LightPos");
 
             GLES20.glEnableVertexAttribArray(mBondingPositionParam[i]);
@@ -508,6 +520,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
      */
     @Override
     public void onDrawEye(Eye eye) {
+        //Enable depth test
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // Apply the eye transformation to the camera.
@@ -525,15 +539,14 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         /*Draw Molecules*/
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
-        //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+    //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
-        //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+      //  Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
         drawMolecule(idx);
 
         /*Draw Bondings*/
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
-        //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
         drawBondings(idx);
@@ -585,6 +598,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         GLES20.glUniformMatrix4fv(mMoleculeModelParam[index],1,false,mModelMolecule,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
+        //GLES20.glUniformMatrix4fv(mMoleculeModelViewProjectionParam[index], 1, false, mModelViewProjection,0);  // Set the ModelViewProjection matrix in the shader.
 
         //adjust the positions to form random oscillation
         if (jigglingCounter == 0)
@@ -611,6 +625,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         GLES20.glUniformMatrix4fv(mBondingModelParam[index],1,false,mModelBonding,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(mBondingModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
+        //GLES20.glUniformMatrix4fv(mBondingModelViewProjectionParam[index],1,false, mModelViewProjection,0);  // Set the ModelViewProjection matrix in the shader.
 
         GLES20.glVertexAttribPointer(mBondingNormalParam[index],3,GLES20.GL_FLOAT,false,0,mBondingNormals[index]);
         GLES20.glVertexAttribPointer(mBondingPositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,bondingVertices[index]);
@@ -651,7 +666,20 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         vibrator.vibrate(50);
         idx = (idx + 1) % NUM_MOLECULE;
         switchBGM(idx);
-        mOverlay.show3DToast("Switched to "+idx +"-th molecule" );
+        switch (idx){
+            case 0:
+                mOverlay.show3DToast("Switched to the first molecule" );
+                break;
+            case 1:
+                mOverlay.show3DToast("Switched to the second molecule" );
+                break;
+            case 2:
+                mOverlay.show3DToast("Switched to the third molecule" );
+                break;
+            default:
+                mOverlay.show3DToast("Switched to the "+(idx+1) +"-th molecule" );
+                break;
+        }
     }
 
     private void MediaStopPlaying(){
