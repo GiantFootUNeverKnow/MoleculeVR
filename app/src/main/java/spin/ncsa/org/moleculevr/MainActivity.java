@@ -55,43 +55,15 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
     private final float[] lightPosInEyeSpace = new float[4];
 
-    private FloatBuffer[] moleculeVertices ;
-    private FloatBuffer[] mMoleculeColor;
-    private FloatBuffer[] mMoleculeNormals ;
-
-    private FloatBuffer[] bondingVertices;
-    private FloatBuffer[] mBondingColor;
-    private FloatBuffer[] mBondingNormals ;
+    //molecule objects and bonding objects
+    Drawable molecules[] = new Drawable[4];
+    Drawable bondings[] = new Drawable[4];
 
     private FloatBuffer[] IsoSVertices;
     private FloatBuffer[] IsoSColor;
 
-    float[][] vMolecule;
-    float[][] vBondings;
-    float[][] cMolecule;
-    float[][] cBondings;
     float[][] vIsosurface;
     float[][] cIsosurface;
-
-    float[][] nMolecule;
-    float[][] nBondings;
-
-    private int[] mMoleculeProgram;
-    private int[] mMoleculePositionParam;
-    private int[] mMoleculeNormalParam;
-    private int[] mMoleculeColorParam;
-    private int[] mMoleculeModelParam;
-    private int[] mMoleculeModelViewParam;
- //   private int[] mMoleculeModelViewProjectionParam;
-    private int mMoleculeLightPosParam;
-
-    private int[] mBondingProgram;
-    private int[] mBondingPositionParam;
-    private int[] mBondingNormalParam;
-    private int[] mBondingColorParam;
-    private int[] mBondingModelParam;
-    private int[] mBondingModelViewParam;
- //   private int[] mBondingModelViewProjectionParam;
 
     private int[] mIsoProgram;
     private int[] mIsoPositionParam;
@@ -114,14 +86,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     //private float[] mModelViewProjection;
 
     private int idx;
-    private int[] nAtoms;
-    private int[] nBonds;
     private int[] nTriangleInIso;
     private int switchSignalCounter;
     private int jigglingCounter;
 
     private int debugging;
     private String debuggingStr;
+
 
     private MediaPlayer mPlayer;
     private int[] bgmResID;
@@ -150,49 +121,17 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mModelView = new float[16];
       //  mModelViewProjection = new float[16];
 
-        mMoleculeProgram = new int[NUM_MOLECULE];
-        mMoleculePositionParam = new int[NUM_MOLECULE];
-        mMoleculeNormalParam = new int[NUM_MOLECULE];
-        mMoleculeColorParam = new int[NUM_MOLECULE];
-        mMoleculeModelParam = new int[NUM_MOLECULE];
-        mMoleculeModelViewParam = new int[NUM_MOLECULE];
-//        mMoleculeModelViewProjectionParam = new int[NUM_MOLECULE];
-
-        mBondingProgram = new int[NUM_MOLECULE];
-        mBondingPositionParam = new int[NUM_MOLECULE];
-        mBondingNormalParam = new int[NUM_MOLECULE];
-        mBondingColorParam = new int[NUM_MOLECULE];
-        mBondingModelParam = new int[NUM_MOLECULE];
-        mBondingModelViewParam = new int[NUM_MOLECULE];
-  //      mBondingModelViewProjectionParam = new int[NUM_MOLECULE];
-
         mIsoProgram = new int[NUM_MOLECULE];
         mIsoPositionParam = new int[NUM_MOLECULE];
         mIsoColorParam = new int[NUM_MOLECULE];
         mIsoModelParam = new int[NUM_MOLECULE];
         mIsoModelViewParam = new int[NUM_MOLECULE];
 
-        moleculeVertices = new FloatBuffer[NUM_MOLECULE];
-        mMoleculeColor = new FloatBuffer[NUM_MOLECULE];
-        mMoleculeNormals = new FloatBuffer[NUM_MOLECULE];
-
-        bondingVertices = new FloatBuffer[NUM_MOLECULE];
-        mBondingColor = new FloatBuffer[NUM_MOLECULE];
-        mBondingNormals = new FloatBuffer[NUM_MOLECULE];
-
         IsoSVertices = new FloatBuffer[NUM_MOLECULE];
         IsoSColor = new FloatBuffer[NUM_MOLECULE];
 
-        vMolecule = new float[NUM_MOLECULE][];
-        vBondings = new float[NUM_MOLECULE][];
         vIsosurface = new float[NUM_MOLECULE][];
-        cMolecule = new float[NUM_MOLECULE][];
-        cBondings = new float[NUM_MOLECULE][];
         cIsosurface = new float[NUM_MOLECULE][];
-        nMolecule = new float[NUM_MOLECULE][];
-        nBondings = new float[NUM_MOLECULE][];
-        nAtoms = new int[NUM_MOLECULE];
-        nBonds = new int[NUM_MOLECULE];
         nTriangleInIso = new int[NUM_MOLECULE];
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
@@ -225,16 +164,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         //init the textparser parser
         TextParser parser = new TextParser();
-
-        //testing
-        /*
-        String resourceNamep = "hyperbola50_50_50";
-        int iDp = getResources().getIdentifier(resourceNamep, "raw", getPackageName());
-        InputStream inputStream = getResources().openRawResource(iDp);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        float [][][]n_values = parser.loadDensity(reader);
-*/
-        //testing end
 
         //load the predefined colors for each element from file R.raw.xxx
         InputStream iS = getResources().openRawResource(R.raw.cpk_coloring);
@@ -280,116 +209,26 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //GLES20.glCullFace(GLES20.GL_FRONT_AND_BACK);
         //GLES20.glEnable(GLES20.GL_CULL_FACE);
 
-        //build models and shader machines
+        //constructing molecule objects
         for (int i = 0; i < NUM_MOLECULE; i++) {
-
             try {
                 parser.parse(readers[i][0],readers[i][1]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            vMolecule[i] = parser.outputVertices();
-            vBondings[i] = parser.outputBonds();
-            cMolecule[i] = parser.outputColors();
-            cBondings[i] = parser.outputBondingColors();
-            nAtoms[i] = parser.outputNumOfAtoms();
-            nBonds[i] = parser.outputNumOfBonds();
+            float[] vMolecule = parser.outputVertices();
+            float[] vBondings = parser.outputBonds();
+            float[] cMolecule = parser.outputColors();
+            float[] cBondings = parser.outputBondingColors();
+            int nAtoms = parser.outputNumOfAtoms();
+            int nBonds = parser.outputNumOfBonds();
 
-            nMolecule[i] = parser.outputNormals();
-            nBondings[i] = parser.outputBondingNormals();
-
-            //Build Molecule Program
-
-            //Create ByteBuffer of vertices' position , normal vectors and color based on the float array created by "Sphere"
-            ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vMolecule[i].length * 4);
-            ByteVertices.order(ByteOrder.nativeOrder());
-            moleculeVertices[i] = ByteVertices.asFloatBuffer();
-            moleculeVertices[i].put(vMolecule[i]);
-            moleculeVertices[i].position(0);
-
-            ByteBuffer ByteColors = ByteBuffer.allocateDirect(cMolecule[i].length * 4);
-            ByteColors.order(ByteOrder.nativeOrder());
-            mMoleculeColor[i] = ByteColors.asFloatBuffer();
-            mMoleculeColor[i].put(cMolecule[i]);
-            mMoleculeColor[i].position(0);
-
-            ByteBuffer ByteNormals = ByteBuffer.allocateDirect(nMolecule[i].length * 4);
-            ByteNormals.order(ByteOrder.nativeOrder());
-            mMoleculeNormals[i] = ByteNormals.asFloatBuffer();
-            mMoleculeNormals[i].put(nMolecule[i]);
-            mMoleculeNormals[i].position(0);
-
-            mMoleculeProgram[i] = GLES20.glCreateProgram();
-            GLES20.glAttachShader(mMoleculeProgram[i], vertexShader);
-            GLES20.glAttachShader(mMoleculeProgram[i], fragShader);
-            GLES20.glLinkProgram(mMoleculeProgram[i]);
-            GLES20.glUseProgram(mMoleculeProgram[i]);
-
-            checkGLError("Create molecule program ");
-
-            mMoleculePositionParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Position");
-            mMoleculeNormalParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i],"a_Normal");
-            mMoleculeColorParam[i] = GLES20.glGetAttribLocation(mMoleculeProgram[i], "a_Color");
-
-            mMoleculeModelParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_Model");
-            mMoleculeModelViewParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_MVMatrix");
-//            mMoleculeModelViewProjectionParam[i] = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_MVPMatrix");
-            mMoleculeLightPosParam = GLES20.glGetUniformLocation(mMoleculeProgram[i],"u_LightPos");
-
-            GLES20.glEnableVertexAttribArray(mMoleculePositionParam[i]);
-            GLES20.glEnableVertexAttribArray(mMoleculeNormalParam[i]);
-            GLES20.glEnableVertexAttribArray(mMoleculeColorParam[i]);
-
-            checkGLError("Molecule Program Params");
-
-            //Build Bonding Program
-
-            //Create ByteBuffer of vertices' position and color based on the float array created by "Cylinder"
-            ByteBuffer ByteVertices2 = ByteBuffer.allocateDirect(vBondings[i].length * 4);
-            ByteVertices2.order(ByteOrder.nativeOrder());
-            bondingVertices[i] = ByteVertices2.asFloatBuffer();
-            bondingVertices[i].put(vBondings[i]);
-            bondingVertices[i].position(0);
-
-            ByteBuffer ByteColors2 = ByteBuffer.allocateDirect(cBondings[i].length * 4);
-            ByteColors2.order(ByteOrder.nativeOrder());
-            mBondingColor[i] = ByteColors2.asFloatBuffer();
-            mBondingColor[i].put(cBondings[i]);
-            mBondingColor[i].position(0);
-
-
-            ByteBuffer ByteNormals2 = ByteBuffer.allocateDirect(nBondings[i].length * 4);
-            ByteNormals2.order(ByteOrder.nativeOrder());
-            mBondingNormals[i] = ByteNormals2.asFloatBuffer();
-            mBondingNormals[i].put(nBondings[i]);
-            mBondingNormals[i].position(0);
-
-
-            mBondingProgram[i] = GLES20.glCreateProgram();
-            GLES20.glAttachShader(mBondingProgram[i], vertexShader);
-            GLES20.glAttachShader(mBondingProgram[i], fragShader);
-            GLES20.glLinkProgram(mBondingProgram[i]);
-            GLES20.glUseProgram(mBondingProgram[i]);
-
-            checkGLError("Create bondings program ");
-
-            mBondingPositionParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Position");
-            mBondingColorParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Color");
-            mBondingNormalParam[i] = GLES20.glGetAttribLocation(mBondingProgram[i], "a_Normal");
-
-            mBondingModelParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_Model");
-            mBondingModelViewParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"u_MVMatrix");
-  //          mBondingModelViewProjectionParam[i] = GLES20.glGetUniformLocation(mBondingProgram[i],"uMVPMatrix");
-            mMoleculeLightPosParam = GLES20.glGetUniformLocation(mBondingProgram[i],"u_LightPos");
-
-            GLES20.glEnableVertexAttribArray(mBondingPositionParam[i]);
-            GLES20.glEnableVertexAttribArray(mBondingColorParam[i]);
-            GLES20.glEnableVertexAttribArray(mBondingNormalParam[i]);
-
-            checkGLError("Bonding Program Params");
-       }
-
+            float[] nMolecule = parser.outputNormals();
+            float[] nBondings = parser.outputBondingNormals();
+            molecules[i] = new Drawable(vMolecule, cMolecule, nMolecule, vertexShader, fragShader, nAtoms, "Molecule "+ i);
+            bondings[i] = new Drawable(vBondings,cBondings, nBondings, vertexShader, fragShader, nBonds, "Bonding " + i);
+        }
 
         //one real density file
         String resourceName = "density2";
@@ -471,6 +310,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         checkGLError("onSurfaceCreated");
 
+
         //play sound
         mPlayer = MediaPlayer.create(this,bgmResID[0]);
         mPlayer.start();
@@ -539,17 +379,17 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         /*Draw Molecules*/
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
-    //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+         //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
       //  Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawMolecule(idx);
+        molecules[idx].draw(lightPosInEyeSpace, mModelMolecule, mModelView, Sphere.NUMBER_OF_VERTICES);
 
         /*Draw Bondings*/
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        drawBondings(idx);
+        bondings[idx].draw(lightPosInEyeSpace,mModelBonding,mModelView,Cylinder.NUMBER_OF_VERTICES);
 
          /*Draw Isosurface*/
         // Build the ModelView and ModelViewProjection matrices
@@ -560,9 +400,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //drawIsosurface(0);
         //drawIsosurface(1);
         // Draw rest of the scene.
+
+
     }
 
     //adjust vertices to fit oscillation, which randomly move to any direction in scale +-0.01
+    /*
     private void adjustVertices(int index){
 
         moleculeVertices[index].clear();//clear out vertices in this buffer
@@ -588,9 +431,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         moleculeVertices[index].put(temp);
         moleculeVertices[index].position(0);
 
-    }
+    }*/
 
     //the function to draw the i-th molecule
+    /*
     public void drawMolecule(int index){
         GLES20.glUseProgram(mMoleculeProgram[index]);
 
@@ -615,9 +459,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
 
         checkGLError("Drawing Molecule");
-    }
+    }*/
 
     //the function to draw bondings of the i-th molecule
+    /*
     public void drawBondings(int index){
         GLES20.glUseProgram(mBondingProgram[index]);
 
@@ -636,7 +481,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
 
         checkGLError("Drawing Bondings");
-    }
+    }*/
 
     //the function to draw the isosurface
     public void drawIsosurface(int index){

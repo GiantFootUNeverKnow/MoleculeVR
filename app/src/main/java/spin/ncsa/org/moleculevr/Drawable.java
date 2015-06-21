@@ -100,20 +100,13 @@ public class Drawable {
 
         // Set the normal positions of atoms, again for shading
         GLES20.glVertexAttribPointer(GLnormalParam,3,GLES20.GL_FLOAT,false,0,mNormals);
-        //GLES20.glVertexAttribPointer(mMoleculeNormalParam[index], 3, GLES20.GL_FLOAT, false, 0, mMoleculeNormals[index]);
         GLES20.glVertexAttribPointer(GLpositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, mCoordinates);
-        //GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
         GLES20.glVertexAttribPointer(GLcolorParam,4,GLES20.GL_FLOAT,false,0,mColors);
-        //GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
 
         for (int i = 0; i < numOfSubItem; i++){
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES, i*numOfVertices, numOfVertices);
         }
-        /*
-        for  (int i = 0; i < nAtoms[index]; i++){
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES,i*Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
-        }
-        */
+
         checkGLError("Drawing Shape of " + drawableName);
     }
 
