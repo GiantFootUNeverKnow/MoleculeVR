@@ -34,6 +34,7 @@ public class Drawable {
 
         private static final int COORDS_PER_VERTEX = 3;
 
+    //constructor that accepts an array of normals
     public Drawable(  float[] coordinates,float[] colors, float[] normals, int vertexShader, int fragShader, int NI, String name) {
 
         //init two basic attributes of the drawable: its name and number of items it has to draw
@@ -84,10 +85,59 @@ public class Drawable {
 
     }
 
+    //constructor that omits normals and lightPosition
+    public Drawable(  float[] coordinates,float[] colors, int vertexShader, int fragShader, int NI, String name) {
+
+        //init two basic attributes of the drawable: its name and number of items it has to draw
+        drawableName = name;
+        numOfSubItem = NI;
+
+        //Create ByteBuffer of vertices' position , normal vectors and color based on the float array created by "Sphere"
+        ByteBuffer ByteVertices = ByteBuffer.allocateDirect(coordinates.length * 4);
+        ByteVertices.order(ByteOrder.nativeOrder());
+        mCoordinates = ByteVertices.asFloatBuffer();
+        mCoordinates.put(coordinates);
+        mCoordinates.position(0);
+
+        ByteBuffer ByteColors = ByteBuffer.allocateDirect(colors.length * 4);
+        ByteColors.order(ByteOrder.nativeOrder());
+        mColors = ByteColors.asFloatBuffer();
+        mColors.put(colors);
+        mColors.position(0);
+
+        mNormals = null;
+
+        GLprogram = GLES20.glCreateProgram();
+        GLES20.glAttachShader(GLprogram, vertexShader);
+        GLES20.glAttachShader(GLprogram, fragShader);
+        GLES20.glLinkProgram(GLprogram);
+        GLES20.glUseProgram(GLprogram);
+
+        //we can add a name variable for each drawable
+        checkGLError("Create a program of " + name);
+
+        GLpositionParam = GLES20.glGetAttribLocation(GLprogram, "a_Position");
+        GLcolorParam = GLES20.glGetAttribLocation(GLprogram, "a_Color");
+        GLmodelParam = GLES20.glGetUniformLocation(GLprogram,"u_Model");
+        GLmodelViewParam = GLES20.glGetUniformLocation(GLprogram,"u_MVMatrix");
+        //GLmodelViewProjectionParam = GLES20.glGetUniformLocation(GLprogram,"u_MVPMatrix");
+
+        GLES20.glEnableVertexAttribArray(GLpositionParam);
+        GLES20.glEnableVertexAttribArray(GLnormalParam);
+        GLES20.glEnableVertexAttribArray(GLcolorParam);
+
+        checkGLError("Program of " + name + " has params Set");
+
+    }
+
+
+
+
     public void draw(float[] lightPosInEyeSpace, float[] mModel, float[] mModelView, int numOfVertices ){
         GLES20.glUseProgram(GLprogram);
 
-        GLES20.glUniform3fv(GLlightPosParam,1,lightPosInEyeSpace,0);
+        if (lightPosInEyeSpace != null)
+            GLES20.glUniform3fv(GLlightPosParam,1,lightPosInEyeSpace,0);
         GLES20.glUniformMatrix4fv(GLmodelParam,1,false,mModel,0);//set the model in the shader
         GLES20.glUniformMatrix4fv(GLmodelViewParam,1,false,mModelView,0);//set the modelView in the shader
         //GLES20.glUniformMatrix4fv(mMoleculeModelViewProjectionParam[index], 1, false, mModelViewProjection,0);  // Set the ModelViewProjection matrix in the shader.
@@ -99,7 +149,8 @@ public class Drawable {
         jigglingCounter = (jigglingCounter ++) % JIGGLING_FREQUENCY;*/
 
         // Set the normal positions of atoms, again for shading
-        GLES20.glVertexAttribPointer(GLnormalParam,3,GLES20.GL_FLOAT,false,0,mNormals);
+        if (lightPosInEyeSpace != null)
+            GLES20.glVertexAttribPointer(GLnormalParam,3,GLES20.GL_FLOAT,false,0,mNormals);
         GLES20.glVertexAttribPointer(GLpositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, mCoordinates);
         GLES20.glVertexAttribPointer(GLcolorParam,4,GLES20.GL_FLOAT,false,0,mColors);
 

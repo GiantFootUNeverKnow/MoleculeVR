@@ -58,6 +58,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     //molecule objects and bonding objects
     Drawable molecules[] = new Drawable[4];
     Drawable bondings[] = new Drawable[4];
+    Drawable isosurface[] = new Drawable[4];
 
     private FloatBuffer[] IsoSVertices;
     private FloatBuffer[] IsoSColor;
@@ -267,8 +268,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         cIsosurface[1] = I9.colors;
         nTriangleInIso[1] = I9.nTriang;
 
+
+
         for (int i = 0; i < 2; i++) {
 
+            isosurface[i] =
+                    new Drawable(vIsosurface[i],cIsosurface[i],passthroughShader,fragShader,1,"Isosurface "+i);
+            /*
             ByteBuffer ByteVertices = ByteBuffer.allocateDirect(vIsosurface[i].length * 4);
             ByteVertices.order(ByteOrder.nativeOrder());
             IsoSVertices[i] = ByteVertices.asFloatBuffer();
@@ -296,6 +302,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             GLES20.glEnableVertexAttribArray(mIsoPositionParam[i]);
             GLES20.glEnableVertexAttribArray(mIsoColorParam[i]);
+            */
         }
         //end of Isosurface specs
 
@@ -397,6 +404,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+        isosurface[0].draw(null,mModelIsosurface,mModelView,nTriangleInIso[0]);
         //drawIsosurface(0);
         //drawIsosurface(1);
         // Draw rest of the scene.
