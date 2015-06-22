@@ -488,3 +488,30 @@ Loading data from file takes 5 seconds for one isosurface instance of size 30 * 
     -I decided to comment this projection
 2.Fixed the indexing of molecule when switching
 
+06/21/2015
+1.Added class Drawable, a class that handles all details of openGL rendering such as creating openGL program, passing uniform variables for openGL progam.
+    -Planned to transfer all codes for openGL rendering from MainActivity to Drawables. Codes to render atoms and bonding has been transferred and work well.
+    -Some auxiliary functions such as effect of jiggling will be added to Drawables in a form of helper function called when optional parameters are passed in
+    -The process to add a model is then simplified as a two steps operation in regard of codes in MainActivity class:
+        (i)Create a new Drawable object with necessary arguments: array of positions, array of colors, vertex shader, fragment shader, name of object, number of sub-items...
+        (ii)Call draw() for the object when necessary, with arguments: lightPosition, modelMatrix, modelViewMatrix, number of vertices
+    -The interface of Drawable could be improved depending on future's needs
+    -Error message within Drawable class would be displayed with TAG="Drawable" and message content containing name of the object that raises exceptions.
+2. Cleaned codes in MainActivity
+    -Replaced intimidating codes of openGL calls by function calls of Drawable class
+    -Removed pages of declarations and initialization
+    -Removed drawing functions for every kinds of objects
+    -Refined codes as much as I could
+
+06/22/2015
+1.Moved adjustVertices() to Drawable class
+    -When calling draw(), an object that needs jiggling has to set jiggle=true
+2.Succeeded in rendering Isosurface by using Drawable class.
+    -When calling draw(), an object that has no associated normals has to set lightPoInEyeSpace=null
+3.Reorganized codes of MaincActivity
+    -Deleted old drawMolecule(), drawBonding(), and drawIsosurface()
+    -Replaced codes of openGL for creating openGL program for isosurface by function calls of Drawable class
+    -Created new drawMolecule(), drawBonding(), and drawIsosurface(). They are merely a wrapper of function call Drawable.draw()
+    with different parameters.
+    -Beautified onDrawEye() function
+    -Deleted unrevelant declarations of global variables

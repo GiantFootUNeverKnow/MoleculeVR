@@ -15,16 +15,12 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import java.lang.Math;
 
@@ -41,8 +37,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private Vibrator vibrator;
     private CardboardOverlayView mOverlay;
 
-    //private static final float Z_NEAR = 0.1f;
-    //private static final float Z_FAR = 20.0f;
     //If you added molecules or deleted molecules, please change this variable
     private static final int NUM_MOLECULE = 4;
 
@@ -57,6 +51,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     float[][] vIsosurface;
     float[][] cIsosurface;
+    private int[] nTriangleInIso;
 
     private float DistanceToScreen = 0f;
 
@@ -72,12 +67,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     //private float[] mModelViewProjection;
 
     private int idx;
-    private int[] nTriangleInIso;
     private int switchSignalCounter;
 
     private int debugging;
     private String debuggingStr;
-
 
     private MediaPlayer mPlayer;
     private int[] bgmResID;
@@ -292,7 +285,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     @Override
     public void onRendererShutdown(){ //temporarily useless
-        Log.i(TAG,"onRenderShutdown");
+        Log.i(TAG, "onRenderShutdown");
     }
 
 
@@ -323,134 +316,46 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * */
         //Matrix.multiplyMM(mView, 0, mHeadView, 0, mCamera, 0);
 
-
         // Set the position of the light
         Matrix.multiplyMV(lightPosInEyeSpace, 0, mView, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
 
-        /*Draw Molecules*/
+        drawMolecule(idx);
+
+        drawBonding(idx);
+
+        drawIsosurface(0);
+
+        // Draw rest of the scene.
+    }
+
+    /*Draw Molecules*/
+    public void drawMolecule(int index){
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
-         //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+        //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
-      //  Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        molecules[idx].draw(lightPosInEyeSpace, mModelMolecule, mModelView, Sphere.NUMBER_OF_VERTICES,true);
+        //  Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+        molecules[index].draw(lightPosInEyeSpace, mModelMolecule, mModelView, Sphere.NUMBER_OF_VERTICES,true);
+    }
 
-        /*Draw Bondings*/
+    /*Draw Bondings*/
+    public void drawBonding(int index){
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        bondings[idx].draw(lightPosInEyeSpace,mModelBonding,mModelView,Cylinder.NUMBER_OF_VERTICES,false);
+        bondings[index].draw(lightPosInEyeSpace, mModelBonding, mModelView, Cylinder.NUMBER_OF_VERTICES,false);
+    }
 
-         /*Draw Isosurface*/
+    /*Draw Isosurface*/
+    public void drawIsosurface(int index){
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
         //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        isosurface[0].draw(null,mModelIsosurface,mModelView,nTriangleInIso[0],false);
-        //drawIsosurface(0);
-        //drawIsosurface(1);
-        // Draw rest of the scene.
-
-
+        isosurface[index].draw(null, mModelIsosurface, mModelView,nTriangleInIso[0],false);
     }
-
-    //adjust vertices to fit oscillation, which randomly move to any direction in scale +-0.01
-    /*
-    private void adjustVertices(int index){
-
-        moleculeVertices[index].clear();//clear out vertices in this buffer
-        float [] temp = vMolecule[index].clone();//make a local copy of the molecules
-        float SCALE = 0.01f;
-
-        for (int i = 0; i < nAtoms[index]; i++){
-            //generate a random vector of size 3 in scale of +-0.01 for each atom
-            float incre_x = (float)(Math.random() - 0.5f) * SCALE;
-            float incre_y = (float)(Math.random() - 0.5f) * SCALE;
-            float incre_z = (float)(Math.random() - 0.5f) * SCALE;
-                        //add the increment_vector to each vertices of the atom
-                        for (int j = 0; j < Sphere.NUMBER_OF_VERTICES; j++){
-                            //access the x-axis coordinate of the j-th vertex on the i-th atom, that for y-axis and that for z-axis following
-                            int x_index = i * Sphere.NUMBER_OF_COORDS + COORDS_PER_VERTEX * j + 0;
-                            int y_index = x_index + 1;
-                            int z_index = x_index + 2;
-                            temp[x_index] += incre_x;
-                            temp[y_index] += incre_y;
-                            temp[z_index] += incre_z;
-                        }
-        }
-        moleculeVertices[index].put(temp);
-        moleculeVertices[index].position(0);
-
-    }*/
-
-    //the function to draw the i-th molecule
-    /*
-    public void drawMolecule(int index){
-        GLES20.glUseProgram(mMoleculeProgram[index]);
-
-        GLES20.glUniform3fv(mMoleculeLightPosParam, 1, lightPosInEyeSpace, 0);
-
-        GLES20.glUniformMatrix4fv(mMoleculeModelParam[index],1,false,mModelMolecule,0);//set the model in the shader
-        GLES20.glUniformMatrix4fv(mMoleculeModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
-        //GLES20.glUniformMatrix4fv(mMoleculeModelViewProjectionParam[index], 1, false, mModelViewProjection,0);  // Set the ModelViewProjection matrix in the shader.
-
-        //adjust the positions to form random oscillation
-        if (jigglingCounter == 0)
-            adjustVertices(index);
-        jigglingCounter = (jigglingCounter ++) % JIGGLING_FREQUENCY;
-
-        // Set the normal positions of atoms, again for shading
-        GLES20.glVertexAttribPointer(mMoleculeNormalParam[index], 3, GLES20.GL_FLOAT, false, 0, mMoleculeNormals[index]);
-        GLES20.glVertexAttribPointer(mMoleculePositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,moleculeVertices[index]);
-        GLES20.glVertexAttribPointer(mMoleculeColorParam[index],4, GLES20.GL_FLOAT, false,0,mMoleculeColor[index]);
-
-        for  (int i = 0; i < nAtoms[index]; i++){
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES,i*Sphere.NUMBER_OF_VERTICES, Sphere.NUMBER_OF_VERTICES);
-        }
-
-        checkGLError("Drawing Molecule");
-    }*/
-
-    //the function to draw bondings of the i-th molecule
-    /*
-    public void drawBondings(int index){
-        GLES20.glUseProgram(mBondingProgram[index]);
-
-        GLES20.glUniform3fv(mMoleculeLightPosParam, 1, lightPosInEyeSpace, 0);
-
-        GLES20.glUniformMatrix4fv(mBondingModelParam[index],1,false,mModelBonding,0);//set the model in the shader
-        GLES20.glUniformMatrix4fv(mBondingModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
-        //GLES20.glUniformMatrix4fv(mBondingModelViewProjectionParam[index],1,false, mModelViewProjection,0);  // Set the ModelViewProjection matrix in the shader.
-
-        GLES20.glVertexAttribPointer(mBondingNormalParam[index],3,GLES20.GL_FLOAT,false,0,mBondingNormals[index]);
-        GLES20.glVertexAttribPointer(mBondingPositionParam[index], COORDS_PER_VERTEX, GLES20.GL_FLOAT,false,0,bondingVertices[index]);
-        GLES20.glVertexAttribPointer(mBondingColorParam[index],4, GLES20.GL_FLOAT, false,0,mBondingColor[index]);
-
-        for  (int i = 0; i < nBonds[index]; i++){
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES,i*Cylinder.NUMBER_OF_VERTICES, Cylinder.NUMBER_OF_VERTICES);
-        }
-
-        checkGLError("Drawing Bondings");
-    }*/
-
-    //the function to draw the isosurface
-    /*
-    public void drawIsosurface(int index){
-        GLES20.glUseProgram(mIsoProgram[index]);
-
-        GLES20.glUniformMatrix4fv(mIsoModelParam[index],1,false,mModelIsosurface,0);//set the model in the shader
-        GLES20.glUniformMatrix4fv(mIsoModelViewParam[index], 1, false, mModelView, 0);//set the modelView in the shader
-
-        GLES20.glVertexAttribPointer(mIsoPositionParam[index],COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,0,IsoSVertices[index]);
-        GLES20.glVertexAttribPointer(mIsoColorParam[index],4,GLES20.GL_FLOAT,false,0,IsoSColor[index]);
-
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,nTriangleInIso[index]);
-
-        checkGLError("Drawing Molecule");
-    }
-    */
 
     @Override
     public void onCardboardTrigger() {

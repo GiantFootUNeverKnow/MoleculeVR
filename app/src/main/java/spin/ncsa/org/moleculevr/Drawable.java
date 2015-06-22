@@ -39,6 +39,8 @@ public class Drawable {
         private static final int COORDS_PER_VERTEX = 3;
         //JIGGLING_FREQUENCY = x means that for x frames generated, 1 jiggling occurs
         private static final int JIGGLING_FREQUENCY = 5;
+        //private static final float Z_NEAR = 0.1f;
+        //private static final float Z_FAR = 20.0f;
 
         private int jigglingCounter = 0;
 
@@ -174,6 +176,7 @@ public class Drawable {
         checkGLError("Drawing Shape of " + drawableName);
     }
 
+
     //adjust vertices to fit oscillation, which randomly move to any direction in scale +-0.01
     private void adjustVertices(){
 
@@ -181,7 +184,8 @@ public class Drawable {
         float [] temp = coords.clone();//make a local copy of the molecules
         float SCALE = 0.01f;
 
-        for (int i = 0; i < numOfSubItem; i++){
+        int i;
+        for (i = 0; i < numOfSubItem; i++){
             //generate a random vector of size 3 in scale of +-0.01 for each atom
             float incre_x = (float)(Math.random() - 0.5f) * SCALE;
             float incre_y = (float)(Math.random() - 0.5f) * SCALE;
@@ -189,7 +193,7 @@ public class Drawable {
                         //add the increment_vector to each vertices of the atom
                         for (int j = 0; j < Sphere.NUMBER_OF_VERTICES; j++){
                             //access the x-axis coordinate of the j-th vertex on the i-th atom, that for y-axis and that for z-axis following
-                            int x_index = i * Sphere.NUMBER_OF_COORDS + COORDS_PER_VERTEX * j + 0;
+                            int x_index = i * Sphere.NUMBER_OF_COORDS + COORDS_PER_VERTEX * j;
                             int y_index = x_index + 1;
                             int z_index = x_index + 2;
                             temp[x_index] += incre_x;
