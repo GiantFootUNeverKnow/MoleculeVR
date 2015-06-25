@@ -38,20 +38,18 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private CardboardOverlayView mOverlay;
 
     //If you added molecules or deleted molecules, please change this variable
-    private static final int NUM_MOLECULE = 4;
+    private static final int NUM_MOLECULE = 5;
 
     // We keep the light always position just above the user.
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
     private final float[] lightPosInEyeSpace = new float[4];
 
     //molecule objects and bonding objects
-    Drawable molecules[] = new Drawable[4];
-    Drawable bondings[] = new Drawable[4];
-    Drawable isosurface[] = new Drawable[2];
+    Drawable molecules[] = new Drawable[NUM_MOLECULE];
+    Drawable bondings[] = new Drawable[NUM_MOLECULE];
+    Drawable isosurface[][] = new Drawable[NUM_MOLECULE][2];
 
-    float[][] vIsosurface;
-    float[][] cIsosurface;
-    private int[] nTriangleInIso;
+    private int[][] nTriangleInIso;
 
     private float DistanceToScreen = 0f;
 
@@ -99,12 +97,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mModelView = new float[16];
       //  mModelViewProjection = new float[16];
 
-        vIsosurface = new float[NUM_MOLECULE][];
-        cIsosurface = new float[NUM_MOLECULE][];
-        nTriangleInIso = new int[NUM_MOLECULE];
+        nTriangleInIso = new int[NUM_MOLECULE][2];
+
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
+        mOverlay.show3DToast("Xusheng Zhang, SPIN@NCSA \n https://github.com/GiantFootUNeverKnow/MoleculeVR");
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -198,13 +196,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             bondings[i] = new Drawable(vBondings,cBondings, nBondings, vertexShader, fragShader, nBonds, "Bonding " + i);
         }
 
-        //one real density file
-        String resourceName = "density2";
-        int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
-        InputStream inputStream = getResources().openRawResource(iD);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        float [][][]l_values = parser.loadDensity(reader);
-
         //2 Isosurface examples
 
        // float [][][]s_values = s_functions.s();
@@ -225,23 +216,48 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         nTriangleInIso = I7.nTriang;
         */
 
+/*  The density for molecule #3
         Isosurface I8 = new Isosurface(l_values,8960.0f);
         Isosurface I9 = new Isosurface(l_values,4888.0f);
+*/
+        //one real density file
+        for (int j = 0; j < NUM_MOLECULE; j++) {
+            String resourceName = "density" + j;
+            int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
+            if (iD != 0) {
 
+                InputStream inputStream = getResources().openRawResource(iD);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                float[][][] l_values = parser.loadDensity(reader);
 
-        vIsosurface[0] = I8.vertices;
-        cIsosurface[0] = I8.colors;
-        nTriangleInIso[0] = I8.nTriang;
-        
-        vIsosurface[1] = I9.vertices;
-        cIsosurface[1] = I9.colors;
-        nTriangleInIso[1] = I9.nTriang;
+                Isosurface I8 = new Isosurface(l_values, parser.primaryLevel);
+                Isosurface I9 = new Isosurface(l_values, parser.secondaryLevel);
 
-        for (int i = 0; i < 2; i++) {
-            isosurface[i] =
-                    new Drawable(vIsosurface[i],cIsosurface[i],passthroughShader,fragShader,1,"Isosurface "+i);
+                float vIsosurface[][] = new float[2][];
+                float cIsosurface[][] = new float[2][];
+                //int nTriangleInIso[] = new int[2];
+
+                vIsosurface[0] = I8.vertices;
+                cIsosurface[0] = I8.colors;
+                nTriangleInIso[j][0] = I8.nTriang;
+
+                vIsosurface[1] = I9.vertices;
+                cIsosurface[1] = I9.colors;
+                nTriangleInIso[j][1] = I9.nTriang;
+
+                for (int i = 0; i < 2; i++) {
+                    isosurface[j][i] =
+                            new Drawable(vIsosurface[i], cIsosurface[i], passthroughShader, fragShader, 1,
+                                    "Isosurface " + j + "-" + i);
+                }
+                //end of Isosurface specs
+            }
+            else {
+                isosurface[j][0] = null;
+                isosurface[j][1] = null;
+            }
         }
-        //end of Isosurface specs
+
 
         Matrix.setIdentityM(mModelMolecule, 0);
         Matrix.translateM(mModelMolecule, 0, 0, 0, -DistanceToScreen);
@@ -323,7 +339,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
         drawBonding(idx);
 
-        drawIsosurface(0);
+        drawIsosurface(idx,0);
 
         // Draw rest of the scene.
     }
@@ -348,13 +364,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     }
 
     /*Draw Isosurface*/
-    public void drawIsosurface(int index){
-        // Build the ModelView and ModelViewProjection matrices
-        // for calculating cube position and light.
-        //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
-        Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
-        //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        isosurface[index].draw(null, mModelIsosurface, mModelView,nTriangleInIso[0],false);
+    public void drawIsosurface(int index, int subindex){
+        //if density exists
+        if (isosurface[index][subindex] != null) {
+            // Build the ModelView and ModelViewProjection matrices
+            // for calculating cube position and light.
+            //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+            Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
+            //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+            isosurface[index][subindex].draw(null, mModelIsosurface, mModelView, nTriangleInIso[index][subindex], false);
+        }
     }
 
     @Override

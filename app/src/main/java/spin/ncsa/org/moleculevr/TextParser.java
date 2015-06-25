@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
@@ -27,8 +28,11 @@ public class TextParser {
 
     //Hashtable elem_number takes a name of element to its atom_number
     private Hashtable<String, Integer> elem_atom_number = null;
-
     private int num_bonds = 0;
+
+    //isolevel, initialized in loadDensity()
+    float primaryLevel;
+    float secondaryLevel;
 
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
@@ -197,8 +201,10 @@ public class TextParser {
         int a = s.nextInt();
         int b = s.nextInt();
         int c = s.nextInt();
+        primaryLevel = Float.parseFloat(s.next());
+        secondaryLevel = Float.parseFloat(s.next());
         s.next();
-
+/*
         float ret[][][] = new float[a][b][c];
 
         for (int i = 0; i < a; i++)
@@ -212,6 +218,24 @@ public class TextParser {
                     else
                         ret[i][j][k] = 0.0f;
                 }
+*/
+        //among abc, bac, acb, bca, cab, cba
+        //bca and cba are optimal
+
+        float ret[][][] = new float[b][c][a];
+
+        for (int i = 0; i < a; i++)
+            for (int j = 0; j < b; j++)
+                for (int k = 0; k < c; k++) {
+                    //sometimes data get lost, so it should provide dummy data if such missing happens
+                    //however, this way to solve the problem might not be correct, since it is drawing different geometry than the real one
+                    //not sure how to perfectly solve the problem
+                    if (s.hasNext())
+                        ret[j][k][i] = Float.parseFloat(s.next());
+                    else
+                        ret[j][k][i] = 0.0f;
+                }
+
         s.close();
         return ret;
     }

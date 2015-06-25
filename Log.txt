@@ -515,3 +515,20 @@ Loading data from file takes 5 seconds for one isosurface instance of size 30 * 
     with different parameters.
     -Beautified onDrawEye() function
     -Deleted unrevelant declarations of global variables
+
+06/22/2015
+1.Generated density2.txt that is the density isosurface file for molecule2. Also renamed the original density2.txt
+    to density3.txt
+  Generated density4.txt that is the density isosurface file for molecule4.
+2.Wrote a title on the screen when initialization, replacing debugging message "Succeeded in creating this!"
+3.Standardized rendering of isosurface
+    -An object of isosurface would only be created if there is a associated file in folder, otherwise the reference would be assigned to null
+    -Rendering of isosurface would only be created if its reference is non-null
+    -Two isosurfaces are available for each molecule, whose isolevels are read from file densityx.txt through Textparser
+    -Now only the primary isolevel would be shown on screen
+4.Adjusted the reading order of coordiantes for density file to an optimal order for matching molecules, though mismatch sill exists
+    -The outermost loop is y_coordinate
+    -Medium loop is z_coordinate
+    -The innermost loop is x_coordinate
+5.Added the fifth molecule MgO, along with its density, which seems to be opposite from expected, but its shape makes sense
+
