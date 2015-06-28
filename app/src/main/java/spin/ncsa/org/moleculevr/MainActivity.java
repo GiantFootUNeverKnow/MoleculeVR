@@ -279,7 +279,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mPlayer.start();
         mPlayer.setLooping(true);
 
-        showTitle(0);
+        showTitle();
     }
 
     @Override
@@ -393,9 +393,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         vibrator.vibrate(50);
         idx = (idx + 1) % NUM_MOLECULE;
         switchBGM(idx);
+        /*
         switch (idx){
             case 0:
-                mOverlay.show3DToast("Switched to the first molecule" );
+                mOverlay.show3DToast(titles );
                 break;
             case 1:
                 mOverlay.show3DToast("Switched to the second molecule" );
@@ -406,7 +407,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             default:
                 mOverlay.show3DToast("Switched to the "+(idx+1) +"-th molecule" );
                 break;
-        }
+        }*/
+        mOverlay.show3DToast(titles[idx]);
     }
 
     private void MediaStopPlaying(){
@@ -427,10 +429,19 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
     }
 
-    //a method to display on screen the title of molecule
-    private void showTitle(int index){
-        mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
-        mOverlay.show3DToast(titles[index]);
+    //a method, calling UIthread to display on screen the title of molecule
+    private void showTitle(){
+        MainActivity.this.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (titles[idx] != null)
+                            mOverlay.show3DToast(titles[idx]);
+                        else
+                            mOverlay.show3DToast("unknown molecule");
+                    }
+                }
+        );
     }
 
     /**
@@ -459,7 +470,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
                 switchBGM(idx);
-              //  showTitle(idx);
+                //show title for idx-th molecule
+                showTitle();
             }
             switchSignalCounter = 0;
         }
