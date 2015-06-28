@@ -42,6 +42,10 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
     // We keep the light always position just above the user.
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
+
+    //names of molecule
+    private String titles[] = {null,null,"Polyvinyl alcohol+boric acid", "Polyvinyl alcohol+boric acid", "magnesium oxide "};
+
     private final float[] lightPosInEyeSpace = new float[4];
 
     //molecule objects and bonding objects
@@ -98,7 +102,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
       //  mModelViewProjection = new float[16];
 
         nTriangleInIso = new int[NUM_MOLECULE][2];
-
 
         mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
         mOverlay.show3DToast("Succeeded in creating this!");
@@ -276,6 +279,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mPlayer.start();
         mPlayer.setLooping(true);
 
+        showTitle(0);
     }
 
     @Override
@@ -423,6 +427,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         }
     }
 
+    //a method to display on screen the title of molecule
+    private void showTitle(int index){
+        mOverlay = (CardboardOverlayView) findViewById(R.id.overlay);
+        mOverlay.show3DToast(titles[index]);
+    }
+
     /**
      * Prepares OpenGL ES before we draw a frame.
      * @param headTransform The head transformation in the new frame.
@@ -449,6 +459,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 vibrator.vibrate(50);
                 idx = (idx + 1) % NUM_MOLECULE;
                 switchBGM(idx);
+              //  showTitle(idx);
             }
             switchSignalCounter = 0;
         }
