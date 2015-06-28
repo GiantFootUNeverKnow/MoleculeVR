@@ -355,7 +355,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
         //  Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
-        molecules[index].draw(lightPosInEyeSpace, mModelMolecule, mModelView, Sphere.NUMBER_OF_VERTICES,true);
+        molecules[index].draw(lightPosInEyeSpace, mModelMolecule, mModelView, Sphere.NUMBER_OF_VERTICES, true);
     }
 
     /*Draw Bondings*/
@@ -408,7 +408,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 mOverlay.show3DToast("Switched to the "+(idx+1) +"-th molecule" );
                 break;
         }*/
-        mOverlay.show3DToast(titles[idx]);
+
+        if (titles[idx] != null)
+            mOverlay.show3DToast(titles[idx]);
+        else
+            mOverlay.show3DToast("unknown molecule");
     }
 
     private void MediaStopPlaying(){

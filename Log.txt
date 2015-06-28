@@ -532,3 +532,8 @@ Loading data from file takes 5 seconds for one isosurface instance of size 30 * 
     -The innermost loop is x_coordinate
 5.Added the fifth molecule MgO, along with its density, which seems to be opposite from expected, but its shape makes sense
 
+06/26/2015
+1.Added titles of molecule, appearing when molecules are switched.
+2.Fixed disappearing bgm of molecule 4
+3.Generated APK version 1.4, in which there are 5 molecules and three density.
+
