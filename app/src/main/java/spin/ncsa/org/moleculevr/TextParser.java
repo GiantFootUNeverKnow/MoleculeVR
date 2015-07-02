@@ -240,7 +240,7 @@ public class TextParser {
         return ret;
     }
 
-    //bf contains information of atoms' coordinates and bf2 contains information of bonding criteria
+    //bf should contain information of atoms' coordinates and bf2 should contain information of bonding criteria
     public void parse(BufferedReader bf, BufferedReader bf2) throws IOException {
         Scanner s = null;
         m = null;

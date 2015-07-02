@@ -38,7 +38,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private CardboardOverlayView mOverlay;
 
     //If you added molecules or deleted molecules, please change this variable
-    private static final int NUM_MOLECULE = 5;
+    private static final int NUM_MOLECULE = 3;
 
     // We keep the light always position just above the user.
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
@@ -233,8 +233,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 float[][][] l_values = parser.loadDensity(reader);
 
-                Isosurface I8 = new Isosurface(l_values, parser.primaryLevel);
-                Isosurface I9 = new Isosurface(l_values, parser.secondaryLevel);
+                Isosurface I8 = new Isosurface(l_values, parser.primaryLevel, -0.65f,0.65f,-0.65f,0.65f,-0.65f,0.65f);
+                Isosurface I9 = new Isosurface(l_values, parser.secondaryLevel, -0.65f,0.65f,-0.65f,0.65f,-0.65f,0.65f);
 
                 float vIsosurface[][] = new float[2][];
                 float cIsosurface[][] = new float[2][];
@@ -344,6 +344,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         drawBonding(idx);
 
         drawIsosurface(idx,0);
+       // drawIsosurface(idx,1);
 
         // Draw rest of the scene.
     }
