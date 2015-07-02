@@ -537,3 +537,52 @@ Loading data from file takes 5 seconds for one isosurface instance of size 30 * 
 2.Fixed disappearing bgm of molecule 4
 3.Generated APK version 1.4, in which there are 5 molecules and three density.
 
+06/30/2015
+1.Removed the first molecule, which was designed for testing
+2.Modified the format of file that describes a molecule:
+    TITLE
+    [OPTIONAL ATTRIBUTE]
+    CELL x_size y_size z_size
+    [OPTIONAL ATTRIBUTE]
+    ATOMS
+    NAME X Y Z
+    {element1 name} {x coordinate} {y coordinate} {z coordinate}
+    {element2 name} {x coordinate} {y coordinate} {z coordinate}
+    {element3 name} {x coordinate} {y coordinate} {z coordinate}
+        ...
+    {element[x] name} {x coordinate} {y coordinate} {z coordinate}
+    EOF
+
+    For instance:
+TITLE C5 H11 B O3
+CELL
+ 14.303000  13.119000   7.702000  90.000000  90.000000  90.000000
+SYMMETRY NUMBER 1
+SYMMETRY LABEL  P1
+ATOMS
+NAME         X           Y           Z
+O            0.901300   0.402400   0.452800
+O            0.906000   0.579700   0.460400
+O            0.765800   0.488800   0.399300
+C            0.908200   0.754700   0.473000
+C            0.714700   0.582700   0.377400
+C            0.759600   0.665500   0.454600
+C            0.858800   0.678300   0.450000
+C            0.616000   0.565200   0.400000
+B            0.857800   0.492600   0.438900
+H            0.939100   0.777200   0.371100
+H            0.869100   0.807600   0.515900
+H            0.953400   0.737600   0.559100
+H            0.720600   0.597800   0.257200
+H            0.747300   0.656500   0.574800
+H            0.731500   0.727100   0.415900
+H            0.860900   0.683100   0.327100
+H            0.601200   0.574600   0.519200
+H            0.578600   0.609500   0.331400
+H            0.603900   0.496600   0.368000
+H            0.953000   0.407000   0.470000
+EO
+
+3.Changed function in TextParser.parse() to fit the new format of files
+
+
