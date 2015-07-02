@@ -254,7 +254,53 @@ public class TextParser {
 
         parseBondingInfo(bf2);
 
+        float x_size,y_size, z_size;
+        x_size = 1; y_size = 1; z_size = 1;
+
+        String title;
         try {
+
+            s = new Scanner(bf);
+
+            //read the first line of a molecule file that is the title
+            title = s.nextLine();
+
+            //read the size in three dimensions
+            if (s.next().compareTo("CELL") == 0){
+                x_size = s.nextFloat();
+                y_size = s.nextFloat();
+                z_size = s.nextFloat();
+            }
+
+            //Get through the file until there is "ATOM"
+            while(s.next().compareTo("ATOMS") != 0){
+            }
+
+            //pass two lines
+            s.nextLine();
+            s.nextLine();
+
+            //read coordinates
+            while(s.hasNext()){
+                String elementName = s.next();
+
+                if (elementName.compareTo("EOF") == 0)
+                    break;
+                //calculate atommass for the atom
+                float _mass = massHashtable.get(elementName);
+                masses.add(_mass);
+                //parse the coordinates of that atom
+                float xCoord = Float.parseFloat(s.next());
+                float yCoord = Float.parseFloat(s.next());
+                float zCoord = Float.parseFloat(s.next());
+                //put coordinates and name of elements into arrays
+                x_coords.add(xCoord);
+                y_coords.add(yCoord);
+                z_coords.add(zCoord);
+                elem_names.add(elementName);
+            }
+
+            /*
             s = new Scanner(bf);
 
             boolean reachedCoordinates = false;
@@ -298,6 +344,9 @@ public class TextParser {
 
                 }
             }
+            */
+
+
         } finally {
 
             //close scanner and end parsing
@@ -306,15 +355,16 @@ public class TextParser {
             }
         }
 
+
         //make a copy of x,y,z coordinates
         //we need these value when formBonds() is called
         float[] old_x_coords = new float[x_coords.size()];
         float[] old_y_coords = new float[y_coords.size()];
         float[] old_z_coords = new float[z_coords.size()];
         for (int i = 0; i < x_coords.size(); i++){
-            old_x_coords[i] = x_coords.get(i);
-            old_y_coords[i] = y_coords.get(i);
-            old_z_coords[i] = z_coords.get(i);
+            old_x_coords[i] = x_coords.get(i) * x_size;
+            old_y_coords[i] = y_coords.get(i) * y_size;
+            old_z_coords[i] = z_coords.get(i) * z_size;
         }
 
         //normalize x,y,z coordinates and atommass separately
