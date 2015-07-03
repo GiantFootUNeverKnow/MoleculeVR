@@ -24,12 +24,14 @@ public class Sphere
     public Sphere(String name,float x, float y, float z, float red, float green, float blue,float radius)
     {
         //argument checking
+        /*
         if ( Float.compare(x, 0.8f) > 0 || Float.compare(x, -0.8f) < 0 )
             throw new IllegalArgumentException(" x is out of range ");
         if ( Float.compare(y , 0.8f) > 0 || Float.compare(y,  -0.8f) < 0 )
             throw new IllegalArgumentException("y is out of range ");
         if ( Float.compare(z, 0.8f) > 0 || Float.compare(z,  -0.8f) < 0  )
             throw new IllegalArgumentException("z is out of range ");
+            */
         if ( Float.compare(red, 1.0f) > 0 || Float.compare(red , 0.0f) < 0 ||
                 Float.compare(green, 1.0f) > 0 || Float.compare(green, 0.0f) < 0 ||
                 Float.compare(blue, 1.0f) > 0 || Float.compare(blue , 0.0f) < 0  )
