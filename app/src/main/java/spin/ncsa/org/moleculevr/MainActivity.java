@@ -44,7 +44,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
 
     //names of molecule
-    private String titles[] = {null,null,"Polyvinyl alcohol+boric acid", "Polyvinyl alcohol+boric acid", "magnesium oxide "};
+    private String titles[] = {null,"Polyvinyl alcohol+boric acid", "magnesium oxide "};
 
     private final float[] lightPosInEyeSpace = new float[4];
 
@@ -197,35 +197,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
             float[] nBondings = parser.outputBondingNormals();
             molecules[i] = new Drawable(vMolecule, cMolecule, nMolecule, vertexShader, fragShader, nAtoms, "Molecule "+ i);
             bondings[i] = new Drawable(vBondings,cBondings, nBondings, vertexShader, fragShader, nBonds, "Bonding " + i);
-        }
 
-        //2 Isosurface examples
-
-       // float [][][]s_values = s_functions.s();
-        //float [][][]n_values = s_functions.n();
-
-        //Isosurface I6 = new Isosurface(s_values,0.15f,-0.7f,0.7f,-0.7f,0.7f,-0.3f,0.3f);
-        //Isosurface I7 = new Isosurface(n_values,0.03f);
-
-        /*
-        vIsosurface = I6.vertices;
-        cIsosurface = I6.colors;
-        nTriangleInIso = I6.nTriang;x
-        */
-
-        /*
-        vIsosurface = I7.vertices;
-        cIsosurface = I7.colors;
-        nTriangleInIso = I7.nTriang;
-        */
-
-/*  The density for molecule #3
-        Isosurface I8 = new Isosurface(l_values,8960.0f);
-        Isosurface I9 = new Isosurface(l_values,4888.0f);
-*/
-        //one real density file
-        for (int j = 0; j < NUM_MOLECULE; j++) {
-            String resourceName = "density" + j;
+            String resourceName = "density" + i;
             int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
             if (iD != 0) {
 
@@ -242,26 +215,26 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
                 vIsosurface[0] = I8.vertices;
                 cIsosurface[0] = I8.colors;
-                nTriangleInIso[j][0] = I8.nTriang;
+                nTriangleInIso[i][0] = I8.nTriang;
 
                 vIsosurface[1] = I9.vertices;
                 cIsosurface[1] = I9.colors;
-                nTriangleInIso[j][1] = I9.nTriang;
+                nTriangleInIso[i][1] = I9.nTriang;
 
-                for (int i = 0; i < 2; i++) {
-                    isosurface[j][i] =
-                            new Drawable(vIsosurface[i], cIsosurface[i], passthroughShader, fragShader, 1,
-                                    "Isosurface " + j + "-" + i);
+                for (int j = 0; j < 2; j++) {
+                    isosurface[i][j] =
+                            new Drawable(vIsosurface[j], cIsosurface[j], passthroughShader, fragShader, 1,
+                                    "Isosurface " + i + "-" + j);
                 }
                 //end of Isosurface specs
             }
             else {
-                isosurface[j][0] = null;
-                isosurface[j][1] = null;
+                isosurface[i][0] = null;
+                isosurface[i][1] = null;
             }
         }
 
-
+        // Matrix Initialization
         Matrix.setIdentityM(mModelMolecule, 0);
         Matrix.translateM(mModelMolecule, 0, 0, 0, -DistanceToScreen);
 
