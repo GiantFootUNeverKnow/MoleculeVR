@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Scanner;
 
@@ -33,6 +35,11 @@ public class TextParser {
     //isolevel, initialized in loadDensity()
     float primaryLevel;
     float secondaryLevel;
+
+    //The size of surrouding cell that molecule resides in, an array of three elements, x_size, y_size, z_size
+    float box_size[];
+    //The size of room that is minimum to describe such molecule, 6 elements, x_min, x_max, y_min, y_max, z_min, z_max
+    float room_size[];
 
     //A TAG for debugging display messages
     static final String TAG = "TextParser";
@@ -127,6 +134,8 @@ public class TextParser {
     }
 
     public int outputNumOfBonds() { return num_bonds; }
+
+    public float[] outputRoomSize(){return room_size;}
 
     public void loadAtomMass(BufferedReader bf){
         //init
@@ -242,6 +251,8 @@ public class TextParser {
 
     //bf should contain information of atoms' coordinates and bf2 should contain information of bonding criteria
     public void parse(BufferedReader bf, BufferedReader bf2) throws IOException {
+
+        //initialization of private data fields, avoiding memory leak or misuse of previous stored data
         Scanner s = null;
         m = null;
         m = new ArrayList<>();
@@ -254,9 +265,15 @@ public class TextParser {
 
         parseBondingInfo(bf2);
 
-        float x_size,y_size, z_size;
-        x_size = 1; y_size = 1; z_size = 1;
+        box_size = null;
+        box_size = new float[3];
+        box_size[0] = 1; box_size[1] = 1; box_size[2] = 1;
 
+        room_size = null;
+        room_size = new float[6];
+     //   room_size[0] = 1; room_size[1] = 1; room_size[2] = 1;
+
+        //start parsing
         String title;
         try {
 
@@ -267,9 +284,9 @@ public class TextParser {
 
             //read the size in three dimensions
             if (s.next().compareTo("CELL") == 0){
-                x_size = s.nextFloat();
-                y_size = s.nextFloat();
-                z_size = s.nextFloat();
+                box_size[0] = s.nextFloat();
+                box_size[1] = s.nextFloat();
+                box_size[2] = s.nextFloat();
             }
 
             //Get through the file until there is "ATOM"
@@ -300,53 +317,6 @@ public class TextParser {
                 elem_names.add(elementName);
             }
 
-            /*
-            s = new Scanner(bf);
-
-            boolean reachedCoordinates = false;
-            while (s.hasNext())
-            {
-                String line = s.nextLine();
-
-                //check that parser is reading relevant data
-                boolean check = line.contains("x") && line.contains("y") && line.contains("z") && line.contains("Occ.");
-                if (check) {
-                    reachedCoordinates = true;
-                    continue;
-                }
-
-                //parser reached the end of relevant data
-                boolean reachEnd = line.contains("===");
-                if (reachedCoordinates && reachEnd)
-                    break;
-
-                if(reachedCoordinates)
-                {
-                    String temp = line;
-                    temp = temp.trim();
-                    if(!temp.isEmpty())
-                    {
-                        //parse the name of element
-                        String elementName = line.split("\\s+")[2];
-                        //calculate atommass for the atom
-                        float _mass = massHashtable.get(elementName );
-                        masses.add(_mass);
-                        //parse the coordinates of that atom
-                        float xCoord = Float.parseFloat(line.substring(20,28));
-                        float yCoord = Float.parseFloat(line.substring(31,39));
-                        float zCoord = Float.parseFloat(line.substring(42,50));
-                        //put coordinates and name of elements into arrays
-                        x_coords.add(xCoord);
-                        y_coords.add(yCoord);
-                        z_coords.add(zCoord);
-                        elem_names.add(elementName);
-                    }
-
-                }
-            }
-            */
-
-
         } finally {
 
             //close scanner and end parsing
@@ -355,6 +325,14 @@ public class TextParser {
             }
         }
 
+        //record the range of coordinates for the room to describe the molecule
+        room_size[0] = Collections.min(x_coords);
+        room_size[1] = Collections.max(x_coords);
+        room_size[2] = Collections.min(y_coords);
+        room_size[3] = Collections.max(y_coords);
+        room_size[4] = Collections.min(z_coords);
+        room_size[5] = Collections.max(z_coords);
+
 
         //make a copy of x,y,z coordinates
         //we need these value when formBonds() is called
@@ -362,9 +340,9 @@ public class TextParser {
         float[] old_y_coords = new float[y_coords.size()];
         float[] old_z_coords = new float[z_coords.size()];
         for (int i = 0; i < x_coords.size(); i++){
-            old_x_coords[i] = x_coords.get(i) * x_size;
-            old_y_coords[i] = y_coords.get(i) * y_size;
-            old_z_coords[i] = z_coords.get(i) * z_size;
+            old_x_coords[i] = x_coords.get(i) * box_size[0];
+            old_y_coords[i] = y_coords.get(i) * box_size[1];
+            old_z_coords[i] = z_coords.get(i) * box_size[2];
         }
 
         //normalize x,y,z coordinates and atommass separately
