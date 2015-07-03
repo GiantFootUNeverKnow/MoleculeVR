@@ -87,6 +87,12 @@ public final class util {
         return max;
     }
 
+    public static float max(float a, float b){
+        if (Float.compare(a,b) >0)
+            return a;
+        else return b;
+    }
+
     public static float min(float[] values) {
         float min = Character.MAX_VALUE;
         for(float value : values) {
@@ -96,6 +102,11 @@ public final class util {
         return min;
     }
 
+    public static float min(float a, float b){
+        if (Float.compare(a,b) < 0)
+            return a;
+        else return b;
+    }
     /*Six sets of max and min functions defined for all primitives
         Credited to http://pastebin.com/f57ae8d47
         However, there is no such function for float...I still have to write it myself
