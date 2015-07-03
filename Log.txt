@@ -585,4 +585,12 @@ EO
 
 3.Changed function in TextParser.parse() to fit the new format of files
 
+07/01/2015
+How it works to generate a molecule data in the new format:
+(i)Obtain a molecule file in VESTA format
+(ii)Open this file by VESTA
+(iii)Click "File"->"Export Data"
+(iv)Choose "Saving Type" to be Fractional Coordinate(.xtl)
+(v)Click "Save"
+
 
