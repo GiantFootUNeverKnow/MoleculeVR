@@ -231,6 +231,7 @@ public class TextParser {
         //among abc, bac, acb, bca, cab, cba
         //bca and cba are optimal
 
+        /*
         float ret[][][] = new float[b][c][a];
 
         for (int i = 0; i < a; i++)
@@ -244,6 +245,33 @@ public class TextParser {
                     else
                         ret[j][k][i] = 0.0f;
                 }
+        */
+        float retTemp[][][] = new float[b][c][a];
+
+        for (int i = 0; i < a; i++)
+            for (int j = 0; j < b; j++)
+                for (int k = 0; k < c; k++) {
+                    //sometimes data get lost, so it should provide dummy data if such missing happens
+                    //however, this way to solve the problem might not be correct, since it is drawing different geometry than the real one
+                    //not sure how to perfectly solve the problem
+                    if (s.hasNext())
+                        retTemp[j][k][i] = Float.parseFloat(s.next());
+                    else
+                        retTemp[j][k][i] = 0.0f;
+                }
+
+        int x_l = (int)(b * room_size[0]);
+        int x_r = (int)(b * room_size[1]);
+        int y_l = (int)(c * room_size[2]);
+        int y_r = (int)(c * room_size[3]);
+        int z_l = (int)(a * room_size[4]);
+        int z_r = (int)(a * room_size[5]);
+
+        float ret[][][] = new float[x_r - x_l][y_r - y_l][z_r - z_l];
+        for (int i = x_l; i < x_r; i++)
+            for (int j = y_l; j < y_r; j++)
+                for (int k = z_l; k < z_r; k++)
+                    ret[i-x_l][j-y_l][k-z_l] = retTemp[i][j][k];
 
         s.close();
         return ret;
