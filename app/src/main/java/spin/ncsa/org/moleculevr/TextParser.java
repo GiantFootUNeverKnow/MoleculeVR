@@ -135,7 +135,7 @@ public class TextParser {
 
     public int outputNumOfBonds() { return num_bonds; }
 
-    public float[] outputRoomSize(){return room_size;}
+  //  public float[] outputRoomSize(){return room_size;}
 
     public void loadAtomMass(BufferedReader bf){
         //init

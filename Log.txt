@@ -594,3 +594,24 @@ How it works to generate a molecule data in the new format:
 (v)Click "Save"
 
 
+07/02/2015
+1.Added full set of max/min functions into util.java
+2.Combined & reorganized codes in MainActivity.onSurfaceCreated() to make it look tidy
+3.Rewrited TextParser.normalize()
+    -Avoided potential errors caused by "max == min"
+    -Enforced thresholds onto max and min, 0.0 <= min < max <= 1.0
+4.Stored max/min coordinates for each dimension into room_size
+    -room_size is a global variable representing the minimum room inhabiting a molecule
+    -room_size consists of six values: x_min, x_max, y_min, y_max, z_min and z_max, in this order
+    -room_size has the same shresholds used in TextParser.normalize() such that 0.0 <= [x/y/z]min < [x/y/z]max <= 1.0
+    -Atoms with raw coordinates outside of interval [0.0,1.0] would not be shown on display, and they are not in the space
+        that room_size describes
+5.Commented argument checking codes in Sphere constructor that used to limit coordinates for a sphere can only be
+    within [-0.8,0.8], which no longer holds. Molecules with these exorbitant coordinates have been allowed to appear, except
+     not actually being shown on screen
+6.In TextParser.loadDensity(), after parser finishes parsing all density values, it selects to use only values in the space
+    described by TextParser.room_size. Then the molecule and the isosurface are actually describing the same content within the
+    same place.
+7.Finally, the selected part of isosurface is interpolated onto space [-0.8,0.8]*[-0.8,0.8]*[-0.8,0.8]. This scaling policy
+ should match what we have done for scaling molecules.
+
