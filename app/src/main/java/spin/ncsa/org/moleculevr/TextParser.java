@@ -325,13 +325,13 @@ public class TextParser {
             }
         }
 
-        //record the range of coordinates for the room to describe the molecule
-        room_size[0] = Collections.min(x_coords);
-        room_size[1] = Collections.max(x_coords);
-        room_size[2] = Collections.min(y_coords);
-        room_size[3] = Collections.max(y_coords);
-        room_size[4] = Collections.min(z_coords);
-        room_size[5] = Collections.max(z_coords);
+        //record the range of coordinates for the room to describe the molecule, which should not be out of [0.0,1.0]
+        room_size[0] = util.max(0.0f, Collections.min(x_coords));
+        room_size[1] = util.min(1.0f, Collections.max(x_coords));
+        room_size[2] = util.max(0.0f, Collections.min(y_coords));
+        room_size[3] = util.min(1.0f, Collections.max(y_coords));
+        room_size[4] = util.max(0.0f, Collections.min(z_coords));
+        room_size[5] = util.min(1.0f, Collections.max(z_coords));
 
 
         //make a copy of x,y,z coordinates
@@ -492,22 +492,35 @@ public class TextParser {
     //Normalization formula: z_i = ( (x_i - min)/(max - min) + 1 ), where max&&min are the maximum && minimum of the array
     //precondition: The type of arr has to be Float
     private void normalize(ArrayList<Float> arr,char opt){
+
             float max,min;
-            max = Float.MIN_VALUE;
-            min = Float.MAX_VALUE;
-            for (float f: arr){
-                if (f > max)
-                    max = f;
-                if (f < min)
-                    min = f;
+            max = Collections.max(arr);
+            min = Collections.min(arr);
+
+            if (opt == 'a'){
+                min = util.max(0.0f,min);
+                max = util.min(1.0f,max);
+
+                //In case min == max, prevent returning NaN
+                if ((min/max)>0.99999) {
+                    max = (float) (1.0001 * min);
+                }
+                for (int i = 0; i < arr.size(); i++)
+                    arr.set(i,
+                            (float)( 1.6 * ( (arr.get(i) - min)/(max - min) - 0.5) ) );
             }
-            for (int i = 0; i < arr.size(); i++){
-            if (opt == 'a')
-                arr.set(i,
-                        (float)( 1.6 * ( (arr.get(i) - min)/(max - min) - 0.5) ) );
-            else if (opt == 'b')
-                arr.set(i,
-                        (arr.get(i) - min)/(max - min) + 1);
+
+            else if (opt == 'b') {
+
+                //In case min == max, prevent returning NaN
+                if ((min/max)>0.99999) {
+                    max = (float) (1.0001 * min);
+                }
+
+                for (int i = 0; i < arr.size(); i++)
+                    arr.set(i,
+                            (arr.get(i) - min) / (max - min) + 1);
             }
     }
+
 }
