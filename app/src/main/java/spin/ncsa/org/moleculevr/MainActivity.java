@@ -178,14 +178,16 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //GLES20.glCullFace(GLES20.GL_FRONT_AND_BACK);
         //GLES20.glEnable(GLES20.GL_CULL_FACE);
 
-        //constructing molecule objects
+        //constructing molecule objects, bonding objects and isosurface objects if available
         for (int i = 0; i < NUM_MOLECULE; i++) {
+            //molecule[i].txt and bonding[i].txt are read ib
             try {
                 parser.parse(readers[i][0],readers[i][1]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            //obtained meaningful resultes from TextParser
             float[] vMolecule = parser.outputVertices();
             float[] vBondings = parser.outputBonds();
             float[] cMolecule = parser.outputColors();
@@ -195,9 +197,12 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
 
             float[] nMolecule = parser.outputNormals();
             float[] nBondings = parser.outputBondingNormals();
+
+            //constructed molecules and bonding objects using data obtained from TextParser
             molecules[i] = new Drawable(vMolecule, cMolecule, nMolecule, vertexShader, fragShader, nAtoms, "Molecule "+ i);
             bondings[i] = new Drawable(vBondings,cBondings, nBondings, vertexShader, fragShader, nBonds, "Bonding " + i);
 
+            //Read, parse, and construct two isosurfaces if density[i].txt exists
             String resourceName = "density" + i;
             int iD = getResources().getIdentifier(resourceName, "raw", getPackageName());
             if (iD != 0) {
@@ -206,8 +211,8 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 float[][][] l_values = parser.loadDensity(reader);
 
-                Isosurface I8 = new Isosurface(l_values, parser.primaryLevel, -0.65f,0.65f,-0.65f,0.65f,-0.65f,0.65f);
-                Isosurface I9 = new Isosurface(l_values, parser.secondaryLevel, -0.65f,0.65f,-0.65f,0.65f,-0.65f,0.65f);
+                Isosurface I8 = new Isosurface(l_values, parser.primaryLevel, -0.8f,0.8f,-0.8f,0.8f,-0.8f,0.8f);
+                Isosurface I9 = new Isosurface(l_values, parser.secondaryLevel, -0.8f,0.8f,-0.8f,0.8f,-0.8f,0.8f);
 
                 float vIsosurface[][] = new float[2][];
                 float cIsosurface[][] = new float[2][];
@@ -317,7 +322,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         drawBonding(idx);
 
         drawIsosurface(idx,0);
-       // drawIsosurface(idx,1);
+        drawIsosurface(idx,1);
 
         // Draw rest of the scene.
     }
