@@ -82,8 +82,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
-        setContentView(R.layout.activity_main);
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
         cardboardView.setRenderer(this);
         setCardboardView(cardboardView);
