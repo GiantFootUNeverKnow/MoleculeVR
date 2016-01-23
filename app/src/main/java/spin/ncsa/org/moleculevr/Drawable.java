@@ -13,6 +13,12 @@ import java.nio.FloatBuffer;
 /**
  * Created by Xusheng on 19/06/2015.
  *
+ * Drawable is an abstract of everything required for OPENGL to render an object.
+ * Anything modelled and rendered through OPENGL ES could be regarded as a drawable
+ * and be created by using this class, though it has only the most straightforward
+ * usage of shaders.
+ * It contains easy methods for interfacing JAVA codes and OPENGL codes so that
+ * coders working on JAVA don't need to worry about technical details in OPENGL.
  *
  */
 
