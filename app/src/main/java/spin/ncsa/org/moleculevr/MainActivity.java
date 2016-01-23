@@ -1,5 +1,9 @@
 /*
     Created by Xusheng on 04/14/2015
+
+    MainActivity is a VR-oriented scene where almost all interactive rendering happens.
+    Every object should be rendered within this activity.
+    Any controls should also register in this activity. E.g. BGM switching.
  */
 package spin.ncsa.org.moleculevr;
 
