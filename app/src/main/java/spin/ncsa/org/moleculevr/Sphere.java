@@ -2,6 +2,8 @@ package spin.ncsa.org.moleculevr;
 
 /**
  * Created by Radhir on 4/14/15.
+ *
+ * 3D primitive object -- Sphere
  */
 import android.util.Log;
 public class Sphere

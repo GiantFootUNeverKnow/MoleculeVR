@@ -2,6 +2,9 @@ package spin.ncsa.org.moleculevr;
 
 /**
  * Created by Radhir on 4/17/15.
+ *
+ * This class contains all methods concerning with file I/O and provides methods to obtain desired
+ * format of data.
  */
 import android.graphics.Color;
 import android.util.Log;
@@ -205,7 +208,7 @@ public class TextParser {
     }
 
     public float[][][] loadDensity(BufferedReader bf){
-        Scanner s = null;
+        Scanner s ;
         s = new Scanner(bf);
         int a = s.nextInt();
         int b = s.nextInt();
@@ -213,39 +216,6 @@ public class TextParser {
         primaryLevel = Float.parseFloat(s.next());
         secondaryLevel = Float.parseFloat(s.next());
         s.next();
-/*
-        float ret[][][] = new float[a][b][c];
-
-        for (int i = 0; i < a; i++)
-            for (int j = 0; j < b; j++)
-                for (int k = 0; k < c; k++) {
-                    //sometimes data get lost, so it should provide dummy data if such missing happens
-                    //however, this way to solve the problem might not be correct, since it is drawing different geometry than the real one
-                    //not sure how to perfectly solve the problem
-                    if (s.hasNext())
-                        ret[i][j][k] = Float.parseFloat(s.next());
-                    else
-                        ret[i][j][k] = 0.0f;
-                }
-*/
-        //among abc, bac, acb, bca, cab, cba
-        //bca and cba are optimal
-
-        /*
-        float ret[][][] = new float[b][c][a];
-
-        for (int i = 0; i < a; i++)
-            for (int j = 0; j < b; j++)
-                for (int k = 0; k < c; k++) {
-                    //sometimes data get lost, so it should provide dummy data if such missing happens
-                    //however, this way to solve the problem might not be correct, since it is drawing different geometry than the real one
-                    //not sure how to perfectly solve the problem
-                    if (s.hasNext())
-                        ret[j][k][i] = Float.parseFloat(s.next());
-                    else
-                        ret[j][k][i] = 0.0f;
-                }
-        */
         float retTemp[][][] = new float[b][c][a];
 
         for (int i = 0; i < a; i++)
@@ -299,7 +269,6 @@ public class TextParser {
 
         room_size = null;
         room_size = new float[6];
-     //   room_size[0] = 1; room_size[1] = 1; room_size[2] = 1;
 
         //start parsing
         String title;

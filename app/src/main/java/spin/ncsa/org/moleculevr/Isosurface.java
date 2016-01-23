@@ -1,3 +1,9 @@
+/**
+ * Created by Xusheng on 30/05/2015.
+ *
+ * 3D primitive object -- Isosurface
+ */
+
 package spin.ncsa.org.moleculevr;
 
 import java.util.ArrayList;
@@ -5,9 +11,6 @@ import android.graphics.Color;
 
 import spin.ncsa.org.moleculevr.util;
 
-/**
- * Created by Xusheng on 30/05/2015.
- */
 
 /*
 The algorithm used to model an isosurface is the classical marching-cube algorithm

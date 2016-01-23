@@ -1,8 +1,9 @@
-package spin.ncsa.org.moleculevr;
 
 /**
  * Created by Xusheng on 22/05/2015.
  */
+package spin.ncsa.org.moleculevr;
+
 public final class util {
     //calculate Euclidean distance between two n-dimensional points
     public static float EuclidDistance(float[] a, float[] b){

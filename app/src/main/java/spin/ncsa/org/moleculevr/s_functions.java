@@ -2,9 +2,11 @@ package spin.ncsa.org.moleculevr;
 
 /**
  * Created by Xusheng on 31/05/2015.
+ *
+ * This class generates all kinds of temporary functions
  */
 
-//This class generates all kinds of temporary functions
+
     //s is a function for testing Isosurface class
 public class s_functions {
     public static float[][][] s(){
