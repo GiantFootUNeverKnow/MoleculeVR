@@ -1,7 +1,8 @@
-package spin.ncsa.org.moleculevr;
 /*
     Created by Xusheng on 04/14/2015
  */
+package spin.ncsa.org.moleculevr;
+
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import com.google.vrtoolkit.cardboard.Viewport;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.os.Debug;
 import android.os.Vibrator;
 import android.util.Log;
 
@@ -49,6 +51,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private final float[] lightPosInEyeSpace = new float[4];
 
     //molecule objects and bonding objects
+
     Drawable molecules[] = new Drawable[NUM_MOLECULE];
     Drawable bondings[] = new Drawable[NUM_MOLECULE];
     Drawable isosurface[][] = new Drawable[NUM_MOLECULE][2];
@@ -66,7 +69,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     private float[] mCamera;
     private float[] mView;
     private float[] mModelView;
-    //private float[] mModelViewProjection;
+    private float[] mModelViewProjection;
 
     private int idx;
     private int switchSignalCounter;
@@ -97,7 +100,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         mCamera = new float[16];
         mView = new float[16];
         mModelView = new float[16];
-      //  mModelViewProjection = new float[16];
+        mModelViewProjection = new float[16];
 
         nTriangleInIso = new int[NUM_MOLECULE][2];
 
@@ -120,7 +123,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         Log.i(TAG, "Surface Created");
 
         //set up background color
-        //GLES20.glClearColor(0.4f, 0.4f, 0.8f, 0.5f);
+        GLES20.glClearColor(0.4f, 0.4f, 0.8f, 0.5f);
 
         int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.vertex);
         int fragShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.frag);
@@ -138,11 +141,13 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         parser.loadColor(readColor);
 
         //load table of atom mass from file R.raw.atommass
+
         iS = getResources().openRawResource(R.raw.atommass);
         BufferedReader readAtomMass = new BufferedReader(new InputStreamReader(iS));
         parser.loadAtomMass(readAtomMass);
 
         //get the resources(vertices of molecules from files R.raw.xxx!
+
         InputStream[] inputStreams = new InputStream[NUM_MOLECULE];
         BufferedReader[][] readers = new BufferedReader[NUM_MOLECULE][];
 
@@ -175,6 +180,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         //Enable both faces cull
         //GLES20.glCullFace(GLES20.GL_FRONT_AND_BACK);
         //GLES20.glEnable(GLES20.GL_CULL_FACE);
+
 
         //constructing molecule objects, bonding objects and isosurface objects if available
         for (int i = 0; i < NUM_MOLECULE; i++) {
@@ -310,7 +316,7 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         * on the documentation; it is said that getEyeView() includes also position shift and interpupillary distance shift,
         * which I didn't find noticeable trace of effect
         * */
-        //Matrix.multiplyMM(mView, 0, mHeadView, 0, mCamera, 0);
+        Matrix.multiplyMM(mView, 0, mHeadView, 0, mCamera, 0);
 
         // Set the position of the light
         Matrix.multiplyMV(lightPosInEyeSpace, 0, mView, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
@@ -329,9 +335,11 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
     public void drawMolecule(int index){
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
-        //    float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+
+        //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelMolecule, 0);
-        //  Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+        //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
         molecules[index].draw(lightPosInEyeSpace, mModelMolecule, mModelView, Sphere.NUMBER_OF_VERTICES, true);
     }
 
@@ -340,51 +348,38 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
         Matrix.multiplyMM(mModelView, 0, mView, 0, mModelBonding, 0);
+
         //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+
         bondings[index].draw(lightPosInEyeSpace, mModelBonding, mModelView, Cylinder.NUMBER_OF_VERTICES,false);
     }
 
     /*Draw Isosurface*/
+
     public void drawIsosurface(int index, int subindex){
+
         //if density exists
         if (isosurface[index][subindex] != null) {
             // Build the ModelView and ModelViewProjection matrices
             // for calculating cube position and light.
             //float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+
             Matrix.multiplyMM(mModelView, 0, mView, 0, mModelIsosurface, 0);
+
             //Matrix.multiplyMM(mModelViewProjection, 0, perspective, 0, mModelView, 0);
+
             isosurface[index][subindex].draw(null, mModelIsosurface, mModelView, nTriangleInIso[index][subindex], false);
         }
     }
 
     @Override
     public void onCardboardTrigger() {
-       /* if (isLookingAtObject()) {
-            mScore++;
-            mOverlayView.show3DToast("Found it! Look around for another one.\nScore = " + mScore);
-            ...
-        } else {
-            mOverlayView.show3DToast("Look around to find the object!");
-        }*/
         // Always give user feedback
         vibrator.vibrate(50);
+
         idx = (idx + 1) % NUM_MOLECULE;
         switchBGM(idx);
-        /*
-        switch (idx){
-            case 0:
-                mOverlay.show3DToast(titles );
-                break;
-            case 1:
-                mOverlay.show3DToast("Switched to the second molecule" );
-                break;
-            case 2:
-                mOverlay.show3DToast("Switched to the third molecule" );
-                break;
-            default:
-                mOverlay.show3DToast("Switched to the "+(idx+1) +"-th molecule" );
-                break;
-        }*/
+
 
         if (titles[idx] != null)
             mOverlay.show3DToast(titles[idx]);
@@ -490,7 +485,6 @@ public class MainActivity extends CardboardActivity implements CardboardView.Ste
         int shader = GLES20.glCreateShader(type);
         GLES20.glShaderSource(shader, code);
         GLES20.glCompileShader(shader);
-
         // Get the compilation status.
         final int[] compileStatus = new int[1];
         GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0);

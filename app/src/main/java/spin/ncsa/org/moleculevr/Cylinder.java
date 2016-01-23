@@ -1,10 +1,14 @@
+/**
+ * Created by Xusheng on 28/05/2015.
+ *
+ * 3D primitive object -- Cylinder
+ *
+ */
 package spin.ncsa.org.moleculevr;
 
 import android.util.Log;
 
-/**
- * Created by Xusheng on 28/05/2015.
- */
+
 public class Cylinder {
 
     //If degree of refinement is changed, be sure to change NUMBER_OF_FACES to corresponding value, 8 * (2^degree_of_refinement)

@@ -5,22 +5,25 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 /**
  * Created by Xusheng on 19/06/2015.
+ *
+ *
  */
 
-public class Drawable {
+public class Drawable implements Serializable{
 
         int numOfSubItem;
         String drawableName;
 
-        private FloatBuffer mCoordinates;
-        private FloatBuffer mColors;
-        private FloatBuffer mNormals;
+        transient private FloatBuffer mCoordinates;
+        transient private FloatBuffer mColors;
+        transient private FloatBuffer mNormals;
 
         private float[] coords;
         private float[] colors;
@@ -50,7 +53,7 @@ public class Drawable {
         //init two basic attributes of the drawable: its name and number of items it has to draw
         drawableName = name;
         numOfSubItem = NI;
-        coords = coordinates;
+        this.coords = coordinates;
         this.colors = colors;
         this.normals = normals;
 
@@ -98,12 +101,43 @@ public class Drawable {
 
     }
 
+    /***
+     * This function takes care of assigning mCoordinates, mColor and mNormal corrrectly after an instance is deserialize
+     * Required*
+     */
+    public void postDeserialize(){
+        //Create ByteBuffer of vertices' position , normal vectors and color based on the float array created by "Sphere"
+        ByteBuffer ByteVertices = ByteBuffer.allocateDirect(coords.length * 4);
+        ByteVertices.order(ByteOrder.nativeOrder());
+        mCoordinates = ByteVertices.asFloatBuffer();
+        mCoordinates.put(coords);
+        mCoordinates.position(0);
+
+        ByteBuffer ByteColors = ByteBuffer.allocateDirect(colors.length * 4);
+        ByteColors.order(ByteOrder.nativeOrder());
+        mColors = ByteColors.asFloatBuffer();
+        mColors.put(colors);
+        mColors.position(0);
+
+        if (normals != null){
+            ByteBuffer ByteNormals = ByteBuffer.allocateDirect(normals.length * 4);
+            ByteNormals.order(ByteOrder.nativeOrder());
+            mNormals = ByteNormals.asFloatBuffer();
+            mNormals.put(normals);
+            mNormals.position(0);
+        }
+    }
+
+
     //constructor that omits normals and lightPosition
     public Drawable(  float[] coordinates,float[] colors, int vertexShader, int fragShader, int NI, String name) {
 
         //init two basic attributes of the drawable: its name and number of items it has to draw
         drawableName = name;
         numOfSubItem = NI;
+        this.coords = coordinates;
+        this.colors = colors;
+        this.normals = null;
 
         //Create ByteBuffer of vertices' position , normal vectors and color based on the float array created by "Sphere"
         ByteBuffer ByteVertices = ByteBuffer.allocateDirect(coordinates.length * 4);
