@@ -1,3 +1,11 @@
+/**
+ *  Created by Xusheng on 10/03/2015
+ *
+ *  This activity serves as an entry point to the main activity.
+ *
+ *  Some other feature such as setting, selection, could be put into this activity.
+ */
+
 package spin.ncsa.org.moleculevr;
 
 import android.content.Intent;
